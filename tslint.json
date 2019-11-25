@@ -1,0 +1,59 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-config-prettier",
+    "tslint-immutable"
+  ],
+  "rules": {
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-trailing-underscore",
+      "allow-pascal-case"
+    ],
+    "no-console": false,
+    // TODO: allow devDependencies only in **/*.spec.ts files:
+    // waiting on https://github.com/palantir/tslint/pull/3708
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
+    /* tslint-immutable rules */
+    // Recommended built-in rules
+    "no-var-keyword": true,
+    "no-parameter-reassignment": true,
+    "typedef": [
+      true
+    ],
+    // Immutability rules
+    "readonly-keyword": true,
+    "readonly-array": true,
+    "no-let": false,
+    // "no-let": true,
+    "no-object-mutation": true,
+    "no-delete": true,
+    "no-method-signature": true,
+    // Functional style rules
+    "no-this": false,
+    "no-class": false,
+    // "no-mixed-interface": true,
+    "no-mixed-interface": false,
+    "no-expression-statement": [
+      // true,
+      false,
+      {
+        "ignore-prefix": [
+          "console.",
+          "process.exit"
+        ]
+      }
+    ]
+    /* end tslint-immutable rules */
+  }
+}
