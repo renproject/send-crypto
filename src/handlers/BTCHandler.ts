@@ -17,28 +17,46 @@ export class BTCHandler implements Handler {
     }
 
     // Returns whether or not this can handle the asset
-    readonly handlesAsset = (asset: Asset): boolean => {
-        return asset === "BTC";
-    }
+    public readonly handlesAsset = (asset: Asset): boolean => {
+        return asset === 'BTC';
+    };
 
     // Balance
-    readonly balanceOf = (asset: Asset): Promise<BigNumber> => {
-        return Promise.resolve(new BigNumber(0));
-    }
+    public readonly balanceOf = async (asset: Asset, address?: string): Promise<BigNumber> => {
+        return (await this.balanceOfInSats(asset)).dividedBy(
+            new BigNumber(10).exponentiatedBy(8)
+        );
+    };
 
-    readonly balanceOfInSats = (asset: Asset): Promise<BigNumber> => {
+    public readonly balanceOfInSats = (asset: Asset, address?: string): Promise<BigNumber> => {
         return Promise.resolve(new BigNumber(0));
     };
 
     // Transfer
-    readonly send = (to: string | Buffer, value: Value, asset: Asset, options?: Options): PromiEvent<string> => {
-        const promiEvent = newPromiEvent<string>()
-        promiEvent.resolve("");
-        return promiEvent;
+    public readonly send = (
+        to: string | Buffer,
+        value: BigNumber,
+        asset: Asset,
+        options?: Options
+    ): PromiEvent<string> => {
+        return this.sendSats(
+            to,
+            value.times(new BigNumber(10).exponentiatedBy(8)),
+            asset,
+            options
+        );
     };
-    readonly sendSats = (to: string | Buffer, value: Value, asset: Asset, options?: Options): PromiEvent<string> => {
-        const promiEvent = newPromiEvent<string>()
-        promiEvent.resolve("");
+
+    public readonly sendSats = (
+        to: string | Buffer,
+        value: BigNumber,
+        asset: Asset,
+        options?: Options
+    ): PromiEvent<string> => {
+        const promiEvent = newPromiEvent<string>();
+        promiEvent.resolve('');
+        promiEvent.emit('transactionHash', '0x1234');
+        promiEvent.emit('confirmations', 1);
         return promiEvent;
     };
 }
