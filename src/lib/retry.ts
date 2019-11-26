@@ -1,0 +1,41 @@
+export const extractError = (error: any): string => {
+    if (typeof error === "object") {
+        if (error.response && error.response.request && error.response.request.statusText) { return extractError(error.response.request.statusText); }
+        if (error.response) { return extractError(error.response); }
+        if (error.statusText) { return extractError(error.statusText); }
+        if (error.error) { return extractError(error.error); }
+        if (error.message) { return extractError(error.message); }
+        if (error.data) { return extractError(error.data); }
+        try {
+            return JSON.stringify(error);
+        } catch (error) {
+            // Ignore JSON error
+        }
+    }
+    return String(error);
+};
+
+export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) => {
+    let returnError;
+    // tslint:disable-next-line: no-constant-condition
+    for (let i = 0; i < retries; i++) {
+        // if (i > 0) {
+        //     console.debug(`Retrying...`);
+        // }
+        try {
+            return await fnCall();
+        } catch (error) {
+            if (String(error).match(/timeout of .* exceeded/)) {
+                returnError = error;
+            } else {
+                const errorMessage = extractError(error);
+                if (errorMessage) {
+                    // tslint:disable-next-line: no-object-mutation
+                    error.message += ` (${errorMessage})`;
+                }
+                throw error;
+            }
+        }
+    }
+    throw returnError;
+};

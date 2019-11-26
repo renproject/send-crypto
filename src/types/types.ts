@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import BN from "bn.js";
 
-import { PromiEvent } from "../promiEvent";
+import { PromiEvent } from "../lib/promiEvent";
 
 export type Asset = string | any;
 export type Value = string | number | BigNumber | BN;
@@ -12,18 +12,19 @@ export interface Handler<Options = {}> {
 
     readonly address?: (
         asset: Asset,
-        defer?: (asset: Asset) => Promise<string>
+        options?: any & {},
+        defer?: (asset: Asset, options?: any & {}) => Promise<string>
     ) => Promise<string>;
 
     // Balance
     readonly balanceOf?: (
         asset: Asset,
-        address?: string,
+        options?: any & { readonly address?: string },
         defer?: (asset: Asset, address?: string) => Promise<BigNumber>
     ) => Promise<BigNumber>;
     readonly balanceOfInSats?: (
         asset: Asset,
-        address?: string,
+        options?: any & { readonly address?: string },
         defer?: (asset: Asset, address?: string) => Promise<BigNumber>
     ) => Promise<BigNumber>;
 

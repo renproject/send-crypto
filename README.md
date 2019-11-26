@@ -6,11 +6,14 @@ Currently doesn't support hierarchical or single-use addresses.
 
 ## Supported assets
 
-1. BTC
-2. BCH
-3. ZEC (transparent txs only)
-4. ETH
-5. ERC20 tokens
+* BTC
+
+Planned:
+
+* BCH
+* ZEC (transparent txs only)
+* ETH
+* ERC20 tokens
 
 <br /><br /><hr />
 
@@ -46,23 +49,26 @@ Specification:
 ```ts
 type Asset = "BTC" | "BCH" | "ZEC" | "ETH" | { type: "ERC20", address?: "0x408...", name?: "REN" };
 
+type AddressOptions = {/* see per-blockchain instructions */};
+// `bn` allows you pass in a BigNumber constructor
+type BalanceOptions = { address?: string, bn?: { new(s: string): Num } } & {/* see per-blockchain instructions */};
 type TxOptions = {/* see per-blockchain instructions */};
 
 type Value = number | string | BigNumber | BN;
 
 class CryptoAccount {
-    constructor(privateKey: string, network?: "mainnet" | "testnet" | EthNetwork) {};
+    static newPrivateKey(): string;
 
-    address(asset: Asset): Promise<string>;
+    constructor(privateKey: string, options?: { network?: "mainnet" | "testnet" | EthNetwork, defaultAsset?: Asset };
 
-    balanceOf(asset: Asset, address?: string): Promise<number>;
-    // Optionally provide a big-number class:
-    balanceOf<Num = number>(asset: Asset, address?: string, bn?: { new(s: string): Num }): Promise<Num>;
-    balanceOfInSats<Num = number>(asset: Asset, address?: string, bn?: { new(s: string): Num }): Promise<Num>;
+    address(asset?: Asset, options?: any): Promise<string>;
 
-    send(to: string, value: Value, asset: Asset, options?: TxOptions):
+    balanceOf(asset?: Asset, options?: BalanceOptions: Promise<number>;
+    balanceOfInSats(asset?: Asset, options?: BalanceOptions): Promise<number>;
+
+    send(to: string, value: Value, asset?: Asset, options?: TxOptions):
         PromiEvent<string>;
-    sendSats(to: string, v: Value, asset: Asset, options?: TxOptions):
+    sendSats(to: string, v: Value, asset?: Asset, options?: TxOptions):
         PromiEvent<string>;
 }
 ```
@@ -93,8 +99,12 @@ interface PromiEvent<T> extends Promise<T> {
 The fee defaults to 10 000 sats/zats. It can be overridden by passing in an extra options argument.
 
 ```ts
-interface TxOptions {
-    fee?: number;      // defaults to 10000
+interface AddressOptions {}
+interface BalanceOptions extends AddressOptions {
+    confirmations?: number; // defaults to 0
+}
+interface TxOptions extends BalanceOptions {
+    fee?: number;           // defaults to 10000
 }
 ```
 
@@ -107,7 +117,11 @@ import { TransactionReceipt } from "web3-core";
 
 type EthNetwork = "mainnet" | "ropsten" | "kovan" | "rinkeby" | "gorli";
 
-interface TxOptions {
+interface AddressOptions {}
+interface BalanceOptions extends AddressOptions {
+    confirmations?: number; // defaults to 0
+}
+interface TxOptions extends BalanceOptions {
     from?: string | number;
     to?: string;
     value?: number | string | BN;
@@ -136,21 +150,29 @@ const CryptoAccount = require("send-crypto");
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 ```
 
+Or generate a new key:
+
+```ts
+const privateKey = CryptoAccount.newPrivateKey();
+console.log(`Save your key somewhere: ${privateKey}`);
+const account = new CryptoAccount(privateKey);
+```
+
 <hr />
 
 ### Use testnet
 
 ```ts
 // Use "testnet" BTC, BCH & ZEC; use "ropsten" ETH.
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, "testnet");
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "testnet" });
 ```
 ```ts
 // Same as above
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, "ropsten");
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ropsten" });
 ```
 ```ts
 // Use "testnet" BTC, BCH & ZEC; use "kovan" ETH.
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, "kovan");
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "kovan" });
 ```
 
 
@@ -192,11 +214,11 @@ export interface Handler<Options = {}> {
     // Returns whether or not this can handle the asset
     handlesAsset: (asset: Asset) => boolean;
 
-    address?: (asset: Asset, defer?) => Promise<string>;
+    address?: (asset: Asset, options?: any, defer?) => Promise<string>;
 
     // Balance
-    balanceOf?: (asset: Asset, address?: string, defer?) => Promise<BigNumber>;
-    balanceOfInSats?: (asset: Asset, address?: string, defer?) => Promise<BigNumber>;
+    balanceOf?: (asset: Asset, options?: any & { address?: string }, defer?) => Promise<BigNumber>;
+    balanceOfInSats?: (asset: Asset, options?: any & { address?: string }, defer?) => Promise<BigNumber>;
 
     // Transfer
     send?: (
