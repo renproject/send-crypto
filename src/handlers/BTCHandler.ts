@@ -3,8 +3,9 @@ import * as bitcoin from "bitgo-utxo-lib";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 
-import { getUTXOs, UTXO } from "../lib/mercury";
+import { fetchFromChainSo, getUTXOs, UTXO } from "../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../lib/promiEvent";
+import { retryNTimes, sleep } from "../lib/retry";
 import { Asset, Handler } from "../types/types";
 
 interface AddressOptions { }
@@ -16,9 +17,97 @@ interface TxOptions extends BalanceOptions {
     fee?: number;           // defaults to 10000
 }
 
+interface BlockstreamUTXO<vout = number> {
+    readonly status: {
+        readonly confirmed: false,
+    } | {
+        readonly confirmed: true,
+        readonly block_height: number,
+        readonly block_hash: string,
+        readonly block_time: number,
+    };
+    readonly txid: string;
+    readonly value: number;
+    readonly vout: vout;
+};
+
+interface BlockstreamDetailsUTXO extends BlockstreamUTXO<Array<{
+    scriptpubkey: string,
+    scriptpubkey_asm: string,
+    scriptpubkey_type: string,
+    scriptpubkey_address: string,
+    value: number,
+}>> {
+    locktime: number;
+    vin: Array<{
+        txid: string,
+        vout: number,
+        prevout: any,
+        scriptsig: string,
+        scriptsig_asm: string,
+        is_coinbase: false,
+        sequence: number,
+    }>,
+    size: number,
+    weight: number,
+    fee: number,
+}
+
+export const fetchConfirmationsFromBlockstream = async (txid: string, testnet: boolean): Promise<number> => {
+    const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+
+    const response = await retryNTimes(
+        () => axios.get<BlockstreamDetailsUTXO>(`${apiUrl}/tx/${txid}`),
+        5,
+    );
+
+    const heightResponse = () => retryNTimes(
+        () => axios.get<string>(`${apiUrl}/blocks/tip/height`),
+        5,
+    );
+
+    const utxo = response.data;
+    return utxo.status.confirmed ? 1 + parseInt((await heightResponse()).data, 10) - utxo.status.block_height : 0;
+};
+export const fetchFromBlockstream = async (address: string, testnet: boolean): Promise<readonly UTXO[]> => {
+    const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+
+    const response = await retryNTimes(
+        () => axios.get<ReadonlyArray<{
+            readonly status: {
+                readonly confirmed: boolean,
+                readonly block_height: number,
+                readonly block_hash: string,
+                readonly block_time: number,
+            };
+            readonly txid: string;
+            readonly value: number;
+            readonly vout: number;
+        }>>(`${apiUrl}/address/${address}/utxo`),
+        5,
+    );
+
+    const heightResponse = await retryNTimes(
+        () => axios.get<string>(`${apiUrl}/blocks/tip/height`),
+        5,
+    );
+
+    // tslint:disable-next-line: no-object-literal-type-assertion
+    return response.data.map(utxo => ({
+        txid: utxo.txid,
+        value: utxo.value,
+        // Placeholder
+        script_hex: "76a914b0c08e3b7da084d7dbe9431e9e49fb61fb3b64d788ac",
+        output_no: utxo.vout,
+        confirmations: utxo.status.confirmed ? 1 + parseInt(heightResponse.data, 10) - utxo.status.block_height : 0,
+    }));
+};
+
 export class BTCHandler implements Handler {
     private readonly privateKey: { getAddress: () => string; };
     private readonly testnet: boolean;
+
+    private readonly decimals = 8;
 
     constructor(privateKey: string, network: string) {
         this.testnet = network !== "mainnet";
@@ -38,7 +127,7 @@ export class BTCHandler implements Handler {
     // tslint:disable-next-line: readonly-keyword
     public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
         return (await this.balanceOfInSats(asset, options)).dividedBy(
-            new BigNumber(10).exponentiatedBy(8)
+            new BigNumber(10).exponentiatedBy(this.decimals)
         );
     };
 
@@ -57,7 +146,7 @@ export class BTCHandler implements Handler {
     ): PromiEvent<string> => {
         return this.sendSats(
             to,
-            value.times(new BigNumber(10).exponentiatedBy(8)),
+            value.times(new BigNumber(10).exponentiatedBy(this.decimals)),
             asset,
             options
         );
@@ -70,6 +159,9 @@ export class BTCHandler implements Handler {
         options?: TxOptions
     ): PromiEvent<string> => {
         const promiEvent = newPromiEvent<string>();
+
+        let txHash: string;
+        let errored: boolean;
 
         (async () => {
             const utxos = await this._getUTXOs(asset, { ...options, address: await this.address(asset) });
@@ -104,19 +196,64 @@ export class BTCHandler implements Handler {
 
             const built = tx.build();
 
-            const txHash = await this._sendRawTransaction(built.toHex());
+            txHash = await this._sendRawTransaction(built.toHex());
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
-        })().catch(promiEvent.reject);
+        })().catch((error) => { errored = true; promiEvent.reject(error) });
 
-        // promiEvent.emit('confirmations', 1);
+        let mutex;
+        const watchForConfirmations = async () => {
+            const lock = Symbol();
+            mutex = lock;
+            while (!txHash) {
+                if (errored || watchingConfirmations === 0 || mutex !== lock) {
+                    return;
+                }
+                await sleep(100);
+            }
+            // Yield to task manager
+            await sleep(0);
+
+            let confirmations = 0;
+            while (watchingConfirmations && mutex === lock) {
+                const newConfirmations = await fetchConfirmationsFromBlockstream(txHash, this.testnet);
+                if (newConfirmations > confirmations) {
+                    confirmations = newConfirmations;
+                    promiEvent.emit("confirmation", confirmations);
+                }
+            }
+        };
+
+        let watchingConfirmations = 0;
+        promiEvent.on("newListener", eventName => {
+            if (eventName === "confirmation") {
+                watchingConfirmations++;
+                if (watchingConfirmations === 1) {
+                    watchForConfirmations();
+                }
+            }
+        });
+
+        promiEvent.on("removeListener", eventName => {
+            if (eventName === "confirmation") {
+                watchingConfirmations--;
+            }
+        });
+
         return promiEvent;
     };
 
     // tslint:disable-next-line: readonly-keyword
     private readonly _getUTXOs = async (asset: Asset, options?: { address?: string, confirmations?: number }): Promise<readonly UTXO[]> => {
-        return getUTXOs(this.testnet, "BTC")(options && options.address || await this.address(asset), options && options.confirmations !== undefined ? options.confirmations : 0);
+        const address = options && options.address || await this.address(asset);
+        const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
+
+        const endpoints = [
+            () => fetchFromBlockstream(address, this.testnet),
+            () => fetchFromChainSo(`https://sochain.com/api/v2/get_tx_unspent/${this.testnet ? "BTCTEST" : "BTC"}/${address}/${confirmations}`),
+        ];
+        return getUTXOs(this.testnet, "BTC", endpoints)(address, confirmations);
     };
 
     private readonly _sendRawTransaction = async (txHex: string): Promise<string> => {

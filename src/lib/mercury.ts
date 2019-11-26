@@ -2,6 +2,7 @@ import Axios from "axios";
 import BigNumber from "bignumber.js";
 import https from "https";
 
+import { fetchFromBlockstream } from "../handlers/BTCHandler";
 import { retryNTimes } from "./retry";
 
 export interface UTXO {
@@ -24,45 +25,12 @@ const fixValues = (utxos: readonly UTXO[], decimals: number) => {
 };
 
 export const fetchFromChainSo = async (url: string) => {
-    console.log("Fetching from sochain!");
     const response = await retryNTimes(
         () => Axios.get<{ readonly data: { readonly txs: readonly UTXO[] } }>(url),
         5.
     );
 
     return fixValues(response.data.data.txs, 8);
-};
-
-export const fetchFromBlockstream = async (url: string, getHeight: string): Promise<readonly UTXO[]> => {
-    const response = await retryNTimes(
-        () => Axios.get<ReadonlyArray<{
-            readonly status: {
-                readonly confirmed: boolean,
-                readonly block_height: number,
-                readonly block_hash: string,
-                readonly block_time: number,
-            };
-            readonly txid: string;
-            readonly value: number;
-            readonly vout: number;
-        }>>(url),
-        5,
-    );
-
-    const heightResponse = await retryNTimes(
-        () => Axios.get<string>(getHeight),
-        5,
-    );
-
-    // tslint:disable-next-line: no-object-literal-type-assertion
-    return response.data.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.value,
-        // Placeholder
-        script_hex: "76a914b0c08e3b7da084d7dbe9431e9e49fb61fb3b64d788ac",
-        output_no: utxo.vout,
-        confirmations: utxo.status.confirmed ? 1 + parseInt(heightResponse.data, 10) - utxo.status.block_height : 0,
-    }));
 };
 
 export const fetchFromInsight = async (url: string): Promise<readonly UTXO[]> => {
@@ -160,36 +128,32 @@ export const fetchFromBitcoinDotCom = async (url: string): Promise<readonly UTXO
  * @param endpoint An offset to allow trying different endpoints first, in case
  * o      one is out of sync.
  */
-export const getUTXOs = (testnet: boolean, currencyName: string) => async (address: string, confirmations: number, endpoint = 0): Promise<readonly UTXO[]> => {
+export const getUTXOs = (testnet: boolean, currencyName: string, endpointsIn?: Array<() => Promise<readonly UTXO[]>>) => async (address: string, confirmations: number, endpoint = 0): Promise<readonly UTXO[]> => {
     const chainSoFn = () => fetchFromChainSo(`https://sochain.com/api/v2/get_tx_unspent/${currencyName}/${address}/${confirmations}`);
 
-    // tslint:disable-next-line: readonly-array
-    let endpoints: Array<() => Promise<readonly UTXO[]>> = [];
-    if (currencyName.match(/btc/i)) {
-        endpoints = [
-            () => fetchFromBlockstream(`https://blockstream.info/${testnet ? "testnet/" : ""}api/address/${address}/utxo`, `https://blockstream.info/${testnet ? "testnet/" : ""}api/blocks/tip/height`),
-            chainSoFn,
-        ];
-    } else if (currencyName.match(/zec/i)) {
-        endpoints = [
-            chainSoFn,
-        ];
-        if (testnet) {
-            endpoints.push(() => fetchFromInsight(`https://explorer.testnet.z.cash/api/addr/${address}/utxo`));
-        } else {
-            endpoints.push(() => fetchFromInsight(`https://zcash.blockexplorer.com/api/addr/${address}/utxo`));
-            // endpoints.push(() => fetchFromInsight(`https://zecblockexplorer.com/addr/${address}/utxo`));
-            // endpoints.push(() => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`));
-        }
-    } else if (currencyName.match(/bch/i)) {
-        if (testnet) {
+    let endpoints = endpointsIn || [];
+    if (endpoints.length === 0) {
+        if (currencyName.match(/zec/i)) {
             endpoints = [
-                () => fetchFromBitcoinDotCom(`https://trest.bitcoin.com/v2/address/utxo/${address}`),
+                chainSoFn,
             ];
-        } else {
-            endpoints = [
-                () => fetchFromBitcoinDotCom(`https://rest.bitcoin.com/v2/address/utxo/${address}`),
-            ];
+            if (testnet) {
+                endpoints.push(() => fetchFromInsight(`https://explorer.testnet.z.cash/api/addr/${address}/utxo`));
+            } else {
+                endpoints.push(() => fetchFromInsight(`https://zcash.blockexplorer.com/api/addr/${address}/utxo`));
+                // endpoints.push(() => fetchFromInsight(`https://zecblockexplorer.com/addr/${address}/utxo`));
+                // endpoints.push(() => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`));
+            }
+        } else if (currencyName.match(/bch/i)) {
+            if (testnet) {
+                endpoints = [
+                    () => fetchFromBitcoinDotCom(`https://trest.bitcoin.com/v2/address/utxo/${address}`),
+                ];
+            } else {
+                endpoints = [
+                    () => fetchFromBitcoinDotCom(`https://rest.bitcoin.com/v2/address/utxo/${address}`),
+                ];
+            }
         }
     }
 

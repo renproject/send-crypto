@@ -1,3 +1,5 @@
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const extractError = (error: any): string => {
     if (typeof error === "object") {
         if (error.response && error.response.request && error.response.request.statusText) { return extractError(error.response.request.statusText); }
@@ -36,6 +38,7 @@ export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) 
                 throw error;
             }
         }
+        await sleep(100);
     }
     throw returnError;
 };

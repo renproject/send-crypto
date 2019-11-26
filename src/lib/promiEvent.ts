@@ -24,8 +24,8 @@
 
 // tslint:disable: no-any
 
-import { EventEmitter } from 'events';
-import { TransactionReceipt } from 'web3-core';
+import { EventEmitter } from "events";
+import { TransactionReceipt } from "web3-core";
 
 class InternalPromiEvent<T> {
     public readonly [Symbol.toStringTag]: 'Promise';
@@ -58,6 +58,10 @@ class InternalPromiEvent<T> {
     public readonly catch: Promise<T>['catch'];
     // @ts-ignore no initializer because of proxyHandler
     public readonly finally: Promise<T>['finally'];
+    // @ts-ignore no initializer because of proxyHandler
+    public readonly listeners: PromiEvent<T>["listeners"];
+    // @ts-ignore no initializer because of proxyHandler
+    public readonly eventNames: PromiEvent<T>["eventNames"];
 
     /**
      * @constructor

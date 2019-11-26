@@ -84,12 +84,12 @@ export default class CryptoAccount {
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
 
-    public readonly send = async <Options extends {} = {}>(
+    public readonly send = <Options extends {} = {}>(
         to: string | Buffer,
         value: Value,
         asset?: Asset,
         options?: Options
-    ) => {
+    ): PromiEvent<string> => {
         const defer = (thisHandler?: Handler) => (
             deferredTo: string | Buffer,
             deferredValue: BigNumber,
@@ -117,12 +117,12 @@ export default class CryptoAccount {
         return defer()(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
     };
 
-    public readonly sendSats = async <Options extends {} = {}>(
+    public readonly sendSats = <Options extends {} = {}>(
         to: string | Buffer,
         value: Value,
         asset?: Asset,
         options?: Options
-    ) => {
+    ): PromiEvent<string> => {
         const defer = (thisHandler?: Handler) => (
             deferredTo: string | Buffer,
             deferredValue: BigNumber,
