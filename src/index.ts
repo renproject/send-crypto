@@ -14,7 +14,7 @@ export default class CryptoAccount {
     }
 
     // tslint:disable-next-line: readonly-array
-    private readonly handlers: Handler[] = [];
+    private readonly handlers: Array<{ handler: Handler, priority: number }> = [];
     private readonly privateKey: string;
     private readonly network: string;
     private readonly defaultAsset: Asset | undefined;
@@ -24,7 +24,7 @@ export default class CryptoAccount {
     constructor(privateKey: string, options?: { network?: string, defaultAsset?: Asset, extraHandlers?: readonly HandlerClass[] }) {
         this.privateKey = privateKey; // Buffer.from(privateKey, "base64").toString("hex");
         this.network = options && options.network || 'mainnet';
-        this.registerHandler(BTCHandler);
+        this.registerHandler(BTCHandler, 100);
         // this.registerHandler(BCHHandler);
         // this.registerHandler(ZECHandler);
         // this.registerHandler(ETHandERC20Handler);
@@ -36,8 +36,12 @@ export default class CryptoAccount {
         this.defaultAsset = options && options.defaultAsset;
     }
 
-    public readonly registerHandler = (handlerClass: HandlerClass) => {
-        this.handlers.push(new handlerClass(this.privateKey, this.network));
+    public readonly registerHandler = (handlerClass: HandlerClass, priorityIn?: number) => {
+        const priority = priorityIn === undefined ?
+            (this.handlers.length === 0 ? 0 : this.handlers[this.handlers.length - 1].priority) :
+            priorityIn;
+        const lastPosition = this.handlers.reduce((index, item, currentIndex) => item.priority <= priority ? currentIndex + 1 : index, 0);
+        this.handlers.splice(lastPosition, 0, { handler: new handlerClass(this.privateKey, this.network), priority });
     }
 
     public readonly address = async <Options extends {} = {}>(asset?: Asset, options?: Options) => {
@@ -153,7 +157,7 @@ export default class CryptoAccount {
             i >= 0;
             i--
         ) {
-            const handler = this.handlers[i];
+            const handler = this.handlers[i].handler;
             if (handler.handlesAsset(asset)) {
                 return handler;
             }

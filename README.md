@@ -1,5 +1,7 @@
 <img alt="send crypto" src="./send-crypto.svg" width="200px" />
 
+<hr />
+
 A minimal JavaScript library for sending crypto assets.
 
 Currently doesn't support hierarchical or single-use addresses.
@@ -210,24 +212,26 @@ await account.send(
 You can add support for custom assets by implementing a handler:
 
 ```ts
-export interface Handler<Options = {}> {
+export interface Handler<
+    AddressOptions = {},
+    BalanceOptions extends { address?: string } = { address?: string },
+    TxOptions = {},
+> {
     // Returns whether or not this can handle the asset
     handlesAsset: (asset: Asset) => boolean;
 
-    address?: (asset: Asset, options?: any, defer?) => Promise<string>;
+    address?: (asset: Asset, options?: AddressOptions, defer?) => Promise<string>;
 
     // Balance
-    balanceOf?: (asset: Asset, options?: any & { address?: string }, defer?) => Promise<BigNumber>;
-    balanceOfInSats?: (asset: Asset, options?: any & { address?: string }, defer?) => Promise<BigNumber>;
+    balanceOf?: (asset: Asset, options?: BalanceOptions, defer?) => Promise<BigNumber>;
+    balanceOfInSats?: (asset: Asset, options?: BalanceOptions, defer?) => Promise<BigNumber>;
 
     // Transfer
     send?: (
-        to: string | Buffer, value: BigNumber, asset: Asset,
-        options?: Options, defer?
+        to: string | Buffer, value: BigNumber, asset: Asset, options?: TxOptions, defer?
     ) => PromiEvent<string>;
     sendSats?: (
-        to: string | Buffer, value: BigNumber, asset: Asset,
-        options?: Options, defer?
+        to: string | Buffer, value: BigNumber, asset: Asset, options?: TxOptions, defer?
     ) => PromiEvent<string>;
 }
 ```
@@ -240,9 +244,23 @@ const account = new CryptoAccount(process.env.PRIVATE_KEY);
 account.registerHandler(MyCystomHandler);
 ```
 
-The handler will be used for any asset for which `handlesAsset` returns true. You can wrap around other handlers by using the `defer` parameter passed in to each function.
+The handler will be used for any asset for which `handlesAsset` returns true. You can wrap around other handlers by using the `defer` parameter passed in to each function (passing in the same arguments except `defer`). `registerHandler` accepts an optional parameter for setting the order of handlers (see [`index.ts`](./src/index.ts) to see the default ordering).
 
-For example, to add support for ENS names for Ethereum, you could resolve the `to` address and then call `defer`.
+For example, to add support for ENS names for Ethereum, you can resolve the `to` address and then call `defer`:
+
+```ts
+class ENSResolver {
+    /* ... */
+
+    resolveENSName = (to: string): Promise<string> => { /* ... */ }
+
+    send = async (
+        to: string, value: BigNumber, asset: Asset, defer: (to, value, asset) => PromiEvent<string>
+    ): PromiEvent<string> => {
+        return defer(await resolveENSName(to), value, asset);
+    }
+}
+```
 
 See the following handlers as references:
 
