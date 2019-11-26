@@ -18,7 +18,7 @@
     "fix:tslint": "tslint --fix --project .",
     "test": "run-s build test:*",
     "test:lint": "tslint --project .",
-    "test:unit": "nyc --silent ava",
+    "test:unit": "nyc --silent ava --verbose",
     "lint": "yarn test:lint",
     "lint:strict": "yarn lint && prettier \"src/**/*.ts\" --list-different --tab-width 4",
     "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",

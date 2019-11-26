@@ -189,6 +189,16 @@ const balanceInSats = await account.balanceOfInSats("BTC");
 await account.sendSats("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balanceInSats, "BTC");
 ```
 
+### Wait for 6 confirmations
+
+```ts
+await new Promise((resolve, reject) => 
+    account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
+        .on("confirmation", confirmations => { if (confirmations >= 6) { resolve(); } })
+        .catch(reject);
+);
+```
+
 ### Send an ERC20 token
 
 ```ts

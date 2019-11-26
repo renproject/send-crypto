@@ -4,10 +4,10 @@ export const extractError = (error: any): string => {
     if (typeof error === "object") {
         if (error.response && error.response.request && error.response.request.statusText) { return extractError(error.response.request.statusText); }
         if (error.response) { return extractError(error.response); }
-        if (error.statusText) { return extractError(error.statusText); }
         if (error.error) { return extractError(error.error); }
         if (error.message) { return extractError(error.message); }
         if (error.data) { return extractError(error.data); }
+        if (error.statusText) { return extractError(error.statusText); }
         try {
             return JSON.stringify(error);
         } catch (error) {
@@ -16,6 +16,18 @@ export const extractError = (error: any): string => {
     }
     return String(error);
 };
+
+export const fallback = async <T>(fallbacks: Array<() => Promise<T>>) => {
+    let firstError: Error | undefined;
+    for (const fn of fallbacks) {
+        try {
+            return fn();
+        } catch (error) {
+            firstError = firstError || error;
+        }
+    }
+    throw (firstError || new Error("No result returned"));
+}
 
 export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) => {
     let returnError;

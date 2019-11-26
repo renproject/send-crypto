@@ -1,9 +1,8 @@
-import Axios from "axios";
 import BigNumber from "bignumber.js";
-import https from "https";
 
-import { fetchFromBlockstream } from "../handlers/BTCHandler";
-import { retryNTimes } from "./retry";
+import { BitcoinDotCom } from "../apis/bitcoinDotCom";
+import { Insight } from "../apis/insight";
+import { Sochain } from "../apis/sochain";
 
 export interface UTXO {
     readonly txid: string; // hex string without 0x prefix
@@ -13,107 +12,14 @@ export interface UTXO {
     readonly confirmations: number;
 }
 
-
-const fixValue = (value: number, decimals: number) => new BigNumber(value).multipliedBy(new BigNumber(10).exponentiatedBy(decimals)).decimalPlaces(0).toNumber();
+export const fixValue = (value: number, decimals: number) => new BigNumber(value).multipliedBy(new BigNumber(10).exponentiatedBy(decimals)).decimalPlaces(0).toNumber();
 
 // Convert values to correct unit
-const fixValues = (utxos: readonly UTXO[], decimals: number) => {
+export const fixValues = (utxos: readonly UTXO[], decimals: number) => {
     return utxos.map(utxo => ({
         ...utxo,
         value: fixValue(utxo.value, decimals),
     }));
-};
-
-export const fetchFromChainSo = async (url: string) => {
-    const response = await retryNTimes(
-        () => Axios.get<{ readonly data: { readonly txs: readonly UTXO[] } }>(url),
-        5.
-    );
-
-    return fixValues(response.data.data.txs, 8);
-};
-
-export const fetchFromInsight = async (url: string): Promise<readonly UTXO[]> => {
-    const response = await retryNTimes(
-        () => Axios.get<ReadonlyArray<{
-            readonly address: string;
-            readonly txid: string;
-            readonly vout: number;
-            readonly scriptPubKey: string;
-            readonly amount: number;
-            readonly satoshis: number;
-            readonly confirmations: number;
-            readonly ts: number;
-        }>>(url, {
-            // TTODO: Remove when certificate is fixed.
-            httpsAgent: new https.Agent({
-                rejectUnauthorized: false
-            })
-        }),
-        5,
-    );
-
-    return response.data.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.satoshis || fixValue(utxo.amount, 8),
-        script_hex: utxo.scriptPubKey,
-        output_no: utxo.vout,
-        confirmations: utxo.confirmations,
-    }));
-};
-
-// export const fetchFromZechain = async (url: string): Promise<ZcashUTXO[]> => {
-//     // Mainnet ZEC only!
-//     const resp = await retryNTimes(
-//         () => Axios.get<Array<{
-//             address: string; // "t1eUHMR2k3NjZBuxmveSfee71otew7RFdwt"
-//             txid: string; // "3b144316b919d01105378c0f4e3b1d3914c04d6b1ca009dae800295f1cfb35a8"
-//             vout: number; // 0
-//             scriptPubKey: string; // "76a914e1f180bffadc561719c64c76b2fa3efacf955e0088ac"
-//             amount: number; // 0.11912954
-//             satoshis: number; // 11912954
-//             height: number; // 573459
-//             confirmations: number; // 4
-//         }>>(url),
-//         5,
-//     );
-
-//     return resp.data.map((utxo) => ({
-//         txid: utxo.txid,
-//         value: utxo.amount,
-//         script_hex: utxo.scriptPubKey,
-//         output_no: utxo.vout,
-//     }));
-// };
-
-export const fetchFromBitcoinDotCom = async (url: string): Promise<readonly UTXO[]> => {
-    const response = await retryNTimes(
-        () => Axios.get<{
-            readonly utxos: ReadonlyArray<{
-                readonly address: string;
-                readonly txid: string;
-                readonly vout: number;
-                readonly scriptPubKey: string;
-                readonly amount: number;
-                readonly satoshis: number;
-                readonly confirmations: number;
-                readonly ts: number;
-            }>
-        }>(url, {
-            // TTODO: Remove when certificate is fixed.
-            httpsAgent: new https.Agent({
-                rejectUnauthorized: false
-            })
-        }),
-        5,
-    );
-    return fixValues(response.data.utxos.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.amount,
-        script_hex: utxo.scriptPubKey,
-        output_no: utxo.vout,
-        confirmations: utxo.confirmations,
-    })), 8);
 };
 
 /**
@@ -129,29 +35,29 @@ export const fetchFromBitcoinDotCom = async (url: string): Promise<readonly UTXO
  * o      one is out of sync.
  */
 export const getUTXOs = (testnet: boolean, currencyName: string, endpointsIn?: Array<() => Promise<readonly UTXO[]>>) => async (address: string, confirmations: number, endpoint = 0): Promise<readonly UTXO[]> => {
-    const chainSoFn = () => fetchFromChainSo(`https://sochain.com/api/v2/get_tx_unspent/${currencyName}/${address}/${confirmations}`);
 
     let endpoints = endpointsIn || [];
     if (endpoints.length === 0) {
+        const chainSoFn = () => Sochain.fetchUTXOs(`https://sochain.com/api/v2/get_tx_unspent/${currencyName}/${address}/${confirmations}`);
         if (currencyName.match(/zec/i)) {
             endpoints = [
                 chainSoFn,
             ];
             if (testnet) {
-                endpoints.push(() => fetchFromInsight(`https://explorer.testnet.z.cash/api/addr/${address}/utxo`));
+                endpoints.push(() => Insight.fetchUTXOs(`https://explorer.testnet.z.cash/api/addr/${address}/utxo`));
             } else {
-                endpoints.push(() => fetchFromInsight(`https://zcash.blockexplorer.com/api/addr/${address}/utxo`));
-                // endpoints.push(() => fetchFromInsight(`https://zecblockexplorer.com/addr/${address}/utxo`));
+                endpoints.push(() => Insight.fetchUTXOs(`https://zcash.blockexplorer.com/api/addr/${address}/utxo`));
+                // endpoints.push(() => Insight.getUTXOs(`https://zecblockexplorer.com/addr/${address}/utxo`));
                 // endpoints.push(() => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`));
             }
         } else if (currencyName.match(/bch/i)) {
             if (testnet) {
                 endpoints = [
-                    () => fetchFromBitcoinDotCom(`https://trest.bitcoin.com/v2/address/utxo/${address}`),
+                    () => BitcoinDotCom.fetchUTXOs(`https://trest.bitcoin.com/v2/address/utxo/${address}`),
                 ];
             } else {
                 endpoints = [
-                    () => fetchFromBitcoinDotCom(`https://rest.bitcoin.com/v2/address/utxo/${address}`),
+                    () => BitcoinDotCom.fetchUTXOs(`https://rest.bitcoin.com/v2/address/utxo/${address}`),
                 ];
             }
         }
