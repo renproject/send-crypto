@@ -17,14 +17,7 @@ Planned:
 * ETH
 * ERC20 tokens
 
-<br /><br /><hr />
-
-1. [Usage](#usage)
-1. [Blockchain specific instructions](#Blockchain-specific-instructions)
-1. [Examples](#examples)
-1. [Custom assets](#custom-assets)
-
-<hr /><br /><br />
+<br /><br />
 
 # Usage
 
@@ -34,6 +27,9 @@ Basic usage:
 const CryptoAccount = require("send-crypto");
 
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
+
+console.log(await account.address("BTC"));
+// > "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
 console.log(await account.balanceOf("BTC"));
 // > 0.01
@@ -46,100 +42,20 @@ await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
 // > 2 ...
 ```
 
-Specification:
+**UNITS**: `balanceOf` and `send` can be replaced with `balanceOfInSats` and `sendSats` respectively to use the blockchain's smallest units (satoshis for BTC, wei for ETH, etc.).
 
-```ts
-type Asset = "BTC" | "BCH" | "ZEC" | "ETH" | { type: "ERC20", address?: "0x408...", name?: "REN" };
+**TESTNET**: A network can be provided in the constructor. If network is `testnet`, `ropsten` is used for ETH. If it's set to an Ethereum testnet (`ropsten`, `kovan`, etc.), testnet will be used for all assets (ETH, BTC, etc.).
 
-type AddressOptions = {/* see per-blockchain instructions */};
-// `bn` allows you pass in a BigNumber constructor
-type BalanceOptions = { address?: string, bn?: { new(s: string): Num } } & {/* see per-blockchain instructions */};
-type TxOptions = {/* see per-blockchain instructions */};
+**CONFIG**: Each of the functions `address`, `balanceOf` and `send` accept an optional `options` parameter. See the available options [below](#all-options).
 
-type Value = number | string | BigNumber | BN;
-
-class CryptoAccount {
-    static newPrivateKey(): string;
-
-    constructor(privateKey: string, options?: { network?: "mainnet" | "testnet" | EthNetwork, defaultAsset?: Asset };
-
-    address(asset?: Asset, options?: any): Promise<string>;
-
-    balanceOf(asset?: Asset, options?: BalanceOptions: Promise<number>;
-    balanceOfInSats(asset?: Asset, options?: BalanceOptions): Promise<number>;
-
-    send(to: string, value: Value, asset?: Asset, options?: TxOptions):
-        PromiEvent<string>;
-    sendSats(to: string, v: Value, asset?: Asset, options?: TxOptions):
-        PromiEvent<string>;
-}
-```
-
-Notes:
-
-* **Testnet**: A network can be provided in the constructor. If network is `testnet`, `ropsten` is used for ETH. If it's set to an Ethereum testnet (`ropsten`, `kovan`, etc.), testnet will be used for all assets (ETH, BTC, etc.).
-* `to` should be provided in whatever format is standard for the asset (base58 for BTC, hex for ETH, etc.).
-* `sendSats` will treat `value` as the smallest unit of the asset (satoshis for BTC, wei for ETH, etc.). `balanceOfInSats` will return the balance in the smallest unit.
-
-PromiEvent definition:
-
-```ts
-interface PromiEvent<T> extends Promise<T> {
-    on("transactionHash", (hash: string) => void): void;
-    on("confirmation", (confirmations: number) => void): void;
-    // ETH only
-    on("receipt", (receipt: TransactionReceipt) => void): void;
-}
-```
-
-<hr /><br /><br />
-
-# Blockchain specific instructions
-
-### BTC, BCH, ZEC
-
-The fee defaults to 10 000 sats/zats. It can be overridden by passing in an extra options argument.
-
-```ts
-interface AddressOptions {}
-interface BalanceOptions extends AddressOptions {
-    confirmations?: number; // defaults to 0
-}
-interface TxOptions extends BalanceOptions {
-    fee?: number;           // defaults to 10000
-}
-```
-
-### ETH, ERC20
-
-A few well known ERC20 tokens are provided by name.
-
-```ts
-import { TransactionReceipt } from "web3-core";
-
-type EthNetwork = "mainnet" | "ropsten" | "kovan" | "rinkeby" | "gorli";
-
-interface AddressOptions {}
-interface BalanceOptions extends AddressOptions {
-    confirmations?: number; // defaults to 0
-}
-interface TxOptions extends BalanceOptions {
-    from?: string | number;
-    to?: string;
-    value?: number | string | BN;
-    gas?: number | string;
-    gasPrice?: number | string | BN;
-    data?: string;
-    nonce?: number;
-    chainId?: number;
-}
-```
-
-<hr /><br /><br />
+<br /><br />
 
 # Examples
 
-### Setup
+## Setup
+
+<details>
+<summary>Load private key from a .env file</summary>
 
 `.env`:
 ```sh
@@ -152,7 +68,12 @@ const CryptoAccount = require("send-crypto");
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 ```
 
-Or generate a new key:
+</details>
+
+<details>
+<summary>Create new account</summary>
+
+Or create a new account:
 
 ```ts
 const privateKey = CryptoAccount.newPrivateKey();
@@ -160,36 +81,42 @@ console.log(`Save your key somewhere: ${privateKey}`);
 const account = new CryptoAccount(privateKey);
 ```
 
-<hr />
+</details>
 
-### Use testnet
+
+## BTC, ZEC, BCH examples
+
+You can replace `"BTC"` with `"ZEC"` or `"BCH"` in the following examples
+
+<details>
+<summary>Use testnet</summary>
 
 ```ts
-// Use "testnet" BTC, BCH & ZEC; use "ropsten" ETH.
+// Use "testnet" BTC, BCH & ZEC
 const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "testnet" });
 ```
-```ts
-// Same as above
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ropsten" });
-```
-```ts
-// Use "testnet" BTC, BCH & ZEC; use "kovan" ETH.
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "kovan" });
-```
 
+</details>
 
-### Send entire BTC balance
+<details>
+<summary>Send entire balance</summary>
+
+<!-- ### Send entire BTC balance -->
 
 ```ts
 const balance = await account.balanceOf("BTC");
-await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balance, "BTC");
+await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balance, "BTC", { subtractFee: true });
 
 // Or using sats as the unit
 const balanceInSats = await account.balanceOfInSats("BTC");
-await account.sendSats("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balanceInSats, "BTC");
+await account.sendSats("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balanceInSats, "BTC", { subtractFee: true });
 ```
 
-### Wait for 6 confirmations
+</details>
+
+
+<details>
+<summary>Wait for 6 confirmations</summary>
 
 ```ts
 await new Promise((resolve, reject) => 
@@ -198,8 +125,28 @@ await new Promise((resolve, reject) =>
         .catch(reject);
 );
 ```
+</details>
 
-### Send an ERC20 token
+
+## ETH, ERC20 examples
+
+<details>
+<summary>Use testnet</summary>
+
+```ts
+// Use "testnet" BTC, BCH & ZEC; use "ropsten" ETH.
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "testnet" });
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ropsten" });
+```
+```ts
+// Use "testnet" BTC, BCH & ZEC; use "kovan" ETH.
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "kovan" });
+```
+
+</details>
+
+<details>
+<summary>Send an ERC20 token</summary>
 
 ```ts
 await account.send(
@@ -208,16 +155,101 @@ await account.send(
     { type: "ERC20", address: "0x408e41876cccdc0f92210600ef50372656052a38" },
 );
 
-await account.send(
-    "0x05a56e2d52c817161883f50c441c3228cfe54d9f",
-    1.234,
-    { type: "ERC20", address: "DAI" },
-);
+// A few well known ERC20 tokens can be referenced by name:
+await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, "DAI");
 ```
 
-<hr /><br /><br /><br /><br /><br /><br />
+</details>
+
+<br /><br />
+
+# All options
+
+<details>
+<summary style="font-size: 20px;">BTC, ZEC & BCH options</summary>
+
+The `balanceOf` and `balanceOfInSats` options are:
+
+```ts
+{
+    // Get the balance of an address other than the current account's
+    address?: string;
+
+    // The number of confirmations UTXOs must have to be included in the balance
+    confirmations?: number; // defaults to 0
+}
+```
+
+The `send` and `sendSats` options are:
+
+```ts
+{
+    // The number of confirmations UTXOs must have to be included in the inputs
+    confirmations?: number; // defaults to 0
+
+    // The fee in satoshis to use
+    fee?: number;           // defaults to 10000
+
+    // Whether the fee should be included or excluded from `value`
+    subtractFee?: boolean;  // defaults to false
+}
+```
+
+</details>
+
+<details>
+<summary style="font-size: 20px;">ETH & ERC20 options</summary>
+
+A few well known ERC20 tokens can be referenced by name. All others can be used by providing an address.
+
+<details>
+<summary>Known ERC20 tokens</summary>
+    <details>
+    <summary>Mainnet</summary>
+    DAI: <a href="https://ethersca.io/token/0x6b175474e89094c44da98b954eedeac495271d0f">0x6b175474e89094c44da98b954eedeac495271d0f</a>
+    </details>
+</details>
+
+The supported testnets are `mainnet`, `ropsten`, `kovan`, `rinkeby` and `gorli`.
+
+The `balanceOf` and `balanceOfInSats` options are:
+
+```ts
+{
+    // Get the balance of an address other than the current account's
+    address?: string;
+}
+```
+
+The `send` and `sendSats` options are:
+
+```ts
+{
+    // Gas limit
+    gas?: number | string;
+
+    // Gas price in WEI
+    gasPrice?: number | string | BN;
+
+    // Include data with the transfer
+    data?: string;
+
+    // Override the transaction nonce
+    nonce?: number;
+}
+```
+
+</details>
+
+
+<br /><br /><br /><br /><br /><br />
 
 # Custom assets
+
+If you want to send a cryptocurrency or token that isn't supported by the library, or enhance support for one of the assets above, you can write your own handler using the instructions below.
+
+<details>
+<summary style="font-size: 20px;">Adding custom assets</summary>
 
 You can add support for custom assets by implementing a handler:
 
@@ -275,3 +307,5 @@ class ENSResolver {
 See the following handlers as references:
 
 * [BTC Handler](./src/handlers/BTCHandler.ts)
+
+</details>

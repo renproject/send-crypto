@@ -18,6 +18,7 @@ interface BalanceOptions extends AddressOptions {
 }
 interface TxOptions extends BalanceOptions {
     fee?: number;           // defaults to 10000
+    subtractFee?: boolean;  // defaults to false
 }
 
 export class BTCHandler implements Handler {
@@ -33,7 +34,7 @@ export class BTCHandler implements Handler {
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        asset === 'BTC';
+        asset.toUpperCase() === 'BTC' || asset.toUpperCase() === "BITCOIN";
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         this.privateKey.getAddress();
@@ -67,7 +68,7 @@ export class BTCHandler implements Handler {
 
     public readonly sendSats = (
         to: string | Buffer,
-        value: BigNumber,
+        valueIn: BigNumber,
         asset: Asset,
         options?: TxOptions
     ): PromiEvent<string> => {
@@ -80,6 +81,8 @@ export class BTCHandler implements Handler {
             const utxos = List(await this._getUTXOs(asset, { ...options, address: await this.address(asset) })).sortBy(utxo => utxo.value).reverse().toArray();
 
             const fees = new BigNumber(options && options.fee !== undefined ? options.fee : 10000);
+
+            const value = options && options.subtractFee ? valueIn.minus(fees) : valueIn;
 
             const tx = new bitcoin.TransactionBuilder(this.testnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin);
 

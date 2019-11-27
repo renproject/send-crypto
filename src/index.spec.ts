@@ -18,7 +18,7 @@ test('send BTC', async t => {
     const balanceSats = (await account.balanceOfInSats<BigNumber>('BTC', { bn: BigNumber }));
     t.is(balanceSats.div(new BigNumber(10).exponentiatedBy(8)).toFixed(), balance.toFixed());
     console.log(`BTC address: ${address} (${balance.toFixed()} BTC)`);
-    const txP = account.send(address, 0.001, "BTC");
+    const txP = account.send(address, balance, "BTC", { subtractFee: true });
     await new Promise((resolve, reject) => txP.on("transactionHash", hash => { console.log(`Got hash!!! ${hash}`); resolve(hash); }).catch(reject))
     // await new Promise((resolve, reject) => txP.on("confirmation", confirmations => { console.log(`Got confirmation!!! ${confirmations}`); if (confirmations > 0) { resolve(confirmations); } }).catch(reject))
     const tx = await txP;
