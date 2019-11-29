@@ -30,24 +30,24 @@ export interface Handler<Options = {}> {
 
     // Transfer
     readonly send?: (
-        to: string | Buffer,
+        to: string,
         value: BigNumber,
         asset: Asset,
         options?: Options,
         defer?: (
-            to: string | Buffer,
+            to: string,
             value: BigNumber,
             asset: Asset,
             options?: Options
         ) => PromiEvent<string>,
     ) => PromiEvent<string>;
     readonly sendSats?: (
-        to: string | Buffer,
+        to: string,
         value: BigNumber,
         asset: Asset,
         options?: Options,
         defer?: (
-            to: string | Buffer,
+            to: string,
             value: BigNumber,
             asset: Asset,
             options?: Options

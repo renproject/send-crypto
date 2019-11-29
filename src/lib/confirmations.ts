@@ -12,10 +12,14 @@ export const subscribeToConfirmations = <T>(promiEvent: PromiEvent<T>, cancelled
 
         let confirmations = 0;
         while (!cancelled() && watchingConfirmations && mutex === lock) {
-            const newConfirmations = await getConfirmations();;
-            if (newConfirmations > confirmations) {
-                confirmations = newConfirmations;
-                promiEvent.emit("confirmation", confirmations);
+            try {
+                const newConfirmations = await getConfirmations();
+                if (newConfirmations > confirmations) {
+                    confirmations = newConfirmations;
+                    promiEvent.emit("confirmation", confirmations);
+                }
+            } catch (error) {
+                console.error(error);
             }
             await sleep(5000);
         }

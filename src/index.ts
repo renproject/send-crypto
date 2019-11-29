@@ -1,16 +1,36 @@
 import BigNumber from "bignumber.js";
-import crypto from "crypto";
+import BN from "bn.js";
 
 import { BTCHandler } from "./handlers/BTCHandler";
+import { ZECHandler } from "./handlers/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
 import { Asset, Handler, Value } from "./types/types";
 
 type HandlerClass = new (privateKey: string, network: string) => Handler;
 
+// Remove 0x prefix from a hex string
+export const strip0x = (hex: string) => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
+
+// Add a 0x prefix to a hex value, converting to a string first
+export const Ox = (hex: string | BN | Buffer) => {
+    const hexString = typeof hex === "string" ? hex : hex.toString("hex");
+    return hexString.substring(0, 2) === "0x" ? hexString : `0x${hexString}`;
+};
+
 export default class CryptoAccount {
 
     public static readonly newPrivateKey = () => {
-        return crypto.randomBytes(32).toString("hex");
+        // @ts-ignore
+        if (typeof window !== "undefined") {
+            // @ts-ignore
+            console.log(`Inside window branch!`, window);
+            const array = new Uint32Array(32);
+            // @ts-ignore
+            window.crypto.getRandomBytes(array);
+            return new Buffer(array).toString("hex");
+        } else {
+            return require("crypto").randomBytes(32).toString("hex");
+        }
     }
 
     // tslint:disable-next-line: readonly-array
@@ -22,9 +42,10 @@ export default class CryptoAccount {
 
     // tslint:disable-next-line: readonly-keyword
     constructor(privateKey: string, options?: { network?: string, defaultAsset?: Asset, extraHandlers?: readonly HandlerClass[] }) {
-        this.privateKey = privateKey; // Buffer.from(privateKey, "base64").toString("hex");
+        this.privateKey = strip0x(privateKey); // Buffer.from(privateKey, "base64").toString("hex");
         this.network = options && options.network || 'mainnet';
-        this.registerHandler(BTCHandler, 100);
+        this.registerHandler(BTCHandler, 0);
+        this.registerHandler(ZECHandler, 0);
         // this.registerHandler(BCHHandler);
         // this.registerHandler(ZECHandler);
         // this.registerHandler(ETHandERC20Handler);
@@ -85,13 +106,13 @@ export default class CryptoAccount {
     };
 
     public readonly send = <Options extends {} = {}>(
-        to: string | Buffer,
+        to: string,
         value: Value,
         asset?: Asset,
         options?: Options
     ): PromiEvent<string> => {
         const defer = (thisHandler?: Handler) => (
-            deferredTo: string | Buffer,
+            deferredTo: string,
             deferredValue: BigNumber,
             deferredAsset: Asset,
             deferredOptions?: any
@@ -118,13 +139,13 @@ export default class CryptoAccount {
     };
 
     public readonly sendSats = <Options extends {} = {}>(
-        to: string | Buffer,
+        to: string,
         value: Value,
         asset?: Asset,
         options?: Options
     ): PromiEvent<string> => {
         const defer = (thisHandler?: Handler) => (
-            deferredTo: string | Buffer,
+            deferredTo: string,
             deferredValue: BigNumber,
             deferredAsset: Asset,
             deferredOptions?: any

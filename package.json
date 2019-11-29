@@ -1,13 +1,13 @@
 {
   "name": "send-crypto",
   "version": "0.0.0",
-  "description": "ChaosDEX trading bot",
+  "description": "A minimal JavaScript library / wallet for sending crypto assets",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": "https://github.com/renproject/send-crypto",
   "license": "MIT",
-  "keywords": [],
+  "keywords": ["cryptocurrencies", "wallet", "crypto", "javascript", "library", "bitcoin", "btc", "zcash", "bitcoin cash", "ethereum", "erc20", "transfer", "send"],
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "run-s clean && run-p build:*",

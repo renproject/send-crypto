@@ -1,6 +1,6 @@
 export const unused = 0;
 
-// export const fetchFromZechain = async (url: string): Promise<ZcashUTXO[]> => {
+// export const fetchFromZechain = (url: string) => async (confirmations: number): Promise<ZcashUTXO[]> => {
 //     // Mainnet ZEC only!
 //     const resp = await retryNTimes(
 //         () => Axios.get<Array<{
@@ -21,5 +21,5 @@ export const unused = 0;
 //         value: utxo.amount,
 //         script_hex: utxo.scriptPubKey,
 //         output_no: utxo.vout,
-//     }));
+//     })).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations);
 // };
