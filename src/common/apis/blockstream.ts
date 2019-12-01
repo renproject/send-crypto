@@ -1,8 +1,8 @@
 
 import axios from "axios";
 
-import { UTXO } from "../lib/mercury";
-import { retryNTimes } from "../lib/retry";
+import { UTXO } from "../../lib/mercury";
+import { retryNTimes } from "../../lib/retry";
 
 interface BlockstreamUTXO<vout = number> {
     readonly status: {
@@ -41,7 +41,7 @@ interface BlockstreamDetailsUTXO extends BlockstreamUTXO<Array<{
 }
 
 
-const fetchConfirmations = async (txid: string, testnet: boolean): Promise<number> => {
+const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<number> => {
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
     const response = await retryNTimes(
@@ -58,7 +58,7 @@ const fetchConfirmations = async (txid: string, testnet: boolean): Promise<numbe
     return utxo.status.confirmed ? 1 + parseInt((await heightResponse()).data, 10) - utxo.status.block_height : 0;
 };
 
-const fetchUTXOs = async (address: string, confirmations: number, testnet: boolean): Promise<readonly UTXO[]> => {
+const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
     const response = await retryNTimes(
@@ -89,12 +89,12 @@ const fetchUTXOs = async (address: string, confirmations: number, testnet: boole
         script_hex: "76a914b0c08e3b7da084d7dbe9431e9e49fb61fb3b64d788ac",
         output_no: utxo.vout,
         confirmations: utxo.status.confirmed ? 1 + parseInt(heightResponse.data, 10) - utxo.status.block_height : 0,
-    })).filter(utxo => utxo.confirmations >= confirmations);
+    })).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations);
 };
 
 
-const broadcastTransaction = async (txHex: string, testnet: boolean): Promise<string> => {
-    const response = await retryNTimes(() => axios.post<string>("https://blockstream.info/testnet/api/tx", txHex), 2);
+const broadcastTransaction = (testnet: boolean) => async (txHex: string): Promise<string> => {
+    const response = await retryNTimes(() => axios.post<string>(`https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`, txHex), 2);
     return response.data;
 };
 

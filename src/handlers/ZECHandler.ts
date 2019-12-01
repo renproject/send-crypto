@@ -3,7 +3,7 @@ import * as bitcoin from "bitgo-utxo-lib";
 import BigNumber from "bignumber.js";
 import { List } from "immutable";
 
-import { Blockstream } from "../common/apis/blockstream";
+import { Insight } from "../common/apis/insight";
 import { Sochain } from "../common/apis/sochain";
 import { BitgoUTXOLib } from "../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../lib/confirmations";
@@ -22,7 +22,7 @@ interface TxOptions extends BalanceOptions {
     subtractFee?: boolean;  // defaults to false
 }
 
-export class BTCHandler implements Handler {
+export class ZECHandler implements Handler {
     private readonly privateKey: { getAddress: () => string; };
     private readonly testnet: boolean;
 
@@ -30,12 +30,12 @@ export class BTCHandler implements Handler {
 
     constructor(privateKey: string, network: string) {
         this.testnet = network !== "mainnet";
-        this.privateKey = BitgoUTXOLib.loadPrivateKey(this.testnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin, privateKey);
+        this.privateKey = BitgoUTXOLib.loadPrivateKey(this.testnet ? bitcoin.networks.zcashTest : bitcoin.networks.zcash, privateKey);
     }
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        asset.toUpperCase() === 'BTC' || asset.toUpperCase() === "BITCOIN";
+        asset.toUpperCase() === 'ZEC' || asset.toUpperCase() === "ZCASH";
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         this.privateKey.getAddress();
@@ -84,13 +84,14 @@ export class BTCHandler implements Handler {
             const utxos = List(await this._getUTXOs(asset, { ...options, address: fromAddress })).sortBy(utxo => utxo.value).reverse().toArray();
 
             const built = await BitgoUTXOLib.buildUTXO(
-                this.testnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin,
-                this.privateKey, changeAddress, to, valueIn, utxos, options,
+                this.testnet ? bitcoin.networks.zcashTest : bitcoin.networks.zcash,
+                this.privateKey, changeAddress, to, valueIn, utxos,
+                { ...options, version: bitcoin.Transaction.ZCASH_SAPLING_VERSION, versionGroupID: parseInt("0x892F2085", 16) },
             );
 
             txHash = await fallback([
-                () => Blockstream.broadcastTransaction(this.testnet)(built.toHex()),
-                () => Sochain.broadcastTransaction(this.testnet ? "BTCTEST" : "BTC")(built.toHex()),
+                () => Insight.broadcastTransaction(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(built.toHex()),
+                () => Sochain.broadcastTransaction(this.testnet ? "ZECTEST" : "ZEC")(built.toHex()),
             ]);
 
             promiEvent.emit('transactionHash', txHash);
@@ -100,7 +101,7 @@ export class BTCHandler implements Handler {
         subscribeToConfirmations(
             promiEvent,
             () => errored,
-            async () => txHash ? Blockstream.fetchConfirmations(this.testnet)(txHash) : 0,
+            async () => txHash ? Insight.fetchConfirmations(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(txHash) : 0,
         )
 
         return promiEvent;
@@ -112,8 +113,12 @@ export class BTCHandler implements Handler {
         const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
         const endpoints = [
-            () => Blockstream.fetchUTXOs(this.testnet)(address, confirmations),
-            () => Sochain.fetchUTXOs(this.testnet ? "BTCTEST" : "BTC")(address, confirmations),
+            () => Insight.fetchUTXOs(this.testnet ? `https://explorer.testnet.z.cash/api/` : `https://zcash.blockexplorer.com/api/`)(address, confirmations),
+            () => Sochain.fetchUTXOs(this.testnet ? "ZECTEST" : "ZEC")(address, confirmations),
+
+            // Mainnet:
+            // () => Insight.fetchUTXOs(`https://zecblockexplorer.com/addr/${address}/utxo`, confirmations),
+            // () => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`, confirmations),
         ];
         return fallback(endpoints);
     };
