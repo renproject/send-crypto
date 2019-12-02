@@ -21,6 +21,10 @@ Planned:
 
 # Usage
 
+```sh
+npm install --save send-crypto
+```
+
 Replace "BTC" with any supported asset:
 
 ```ts
@@ -65,7 +69,7 @@ const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "B
 PRIVATE_KEY="1234512341"
 ```
 
-Use the `dotenv` library or run `source .env` before running:
+Use the `dotenv` library (installed with `npm i -D dotenv`) or run `source .env` before running:
 
 ```ts
 require("dotenv").config();
