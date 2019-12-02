@@ -26,14 +26,18 @@ Replace "BTC" with any supported asset:
 ```ts
 const CryptoAccount = require("send-crypto");
 
+/* Load account from private key */
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 
+/* Print address */
 console.log(await account.address("BTC"));
 // > "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
+/* Print balance */
 console.log(await account.balanceOf("BTC"));
 // > 0.01
 
+/* Send 0.01 BTC */
 const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
     .on("transactionHash", console.log)
 // > "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"
@@ -74,8 +78,6 @@ const account = new CryptoAccount(process.env.PRIVATE_KEY);
 <details>
 <hr />
 <summary>Create new account</summary>
-
-Or create a new account:
 
 ```ts
 const privateKey = CryptoAccount.newPrivateKey();
