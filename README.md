@@ -40,10 +40,10 @@ console.log(await account.balanceOf("BTC"));
 /* Send 0.01 BTC */
 const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
     .on("transactionHash", console.log)
-// > "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"
+    // > "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"
     .on("confirmation", console.log);
-// > 1
-// > 2 ...
+    // > 1
+    // > 2 ...
 ```
 
 **UNITS**: `balanceOf` and `send` can be replaced with `balanceOfInSats` and `sendSats` respectively to use the blockchain's smallest units (satoshis for BTC, wei for ETH, etc.).
