@@ -53,7 +53,7 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
     test("send ZEC", sendToken, "ZEC", 8, "testnet");
     test("send BCH", sendToken, "BCH", 8, "testnet");
     test("send ETH", sendToken, "ETH", 18, "kovan");
-    test.failing("send DAI", sendToken, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, 18, "kovan");
+    test("send DAI", sendToken, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, 18, "kovan");
 }
 
 { // Generating private key
@@ -71,5 +71,5 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
     test("generate private key for ZEC", generatePrivateKey, "ZEC", "testnet");
     test("generate private key for BCH", generatePrivateKey, "BCH", "testnet");
     test("generate private key for ETH", generatePrivateKey, "ETH", "testnet");
-    test.failing("generate private key for ERC20", generatePrivateKey, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, "kovan");
+    test("generate private key for ERC20", generatePrivateKey, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, "kovan");
 }

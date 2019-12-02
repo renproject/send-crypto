@@ -12,9 +12,6 @@ Currently doesn't support hierarchical or single-use addresses.
 * ZEC (transparent txs only)
 * BCH
 * ETH
-
-Planned:
-
 * ERC20 tokens
 
 <br /><br />
@@ -254,14 +251,7 @@ A few well known ERC20 tokens can be referenced by name:
 await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, { type: "ERC20", name: "DAI" });
 ```
 
-Expand the following sections to see the tokens than can be referenced by name:
-
-<details>
-<hr />
-<summary>Mainnet</summary>
-DAI: <a href="https://ethersca.io/token/0x6b175474e89094c44da98b954eedeac495271d0f">0x6b175474e89094c44da98b954eedeac495271d0f</a>
-<hr />
-</details>
+See the [ERC20s.ts](./src/handlers/ERC20/ERC20s.ts) to see the tokens than can be referenced by name.
 
 <hr />
 </details>
