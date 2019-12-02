@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 
 import { BCHHandler } from "./handlers/BCH/BCHHandler";
 import { BTCHandler } from "./handlers/BTC/BTCHandler";
+import { ERC20Handler } from "./handlers/ERC20/ERC20Handler";
 import { ETHHandler } from "./handlers/ETH/ETHHandler";
 import { ZECHandler } from "./handlers/ZEC/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
@@ -46,6 +47,7 @@ export default class CryptoAccount {
         this.registerHandler(ZECHandler, 10);
         this.registerHandler(BCHHandler, 20);
         this.registerHandler(ETHHandler, 30);
+        this.registerHandler(ERC20Handler, 40);
         if (options && options.extraHandlers) {
             for (const handler of options.extraHandlers) {
                 this.registerHandler(handler);
