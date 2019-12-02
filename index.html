@@ -1,0 +1,590 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>send-crypto</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">send-crypto</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> send-crypto</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<img alt="send crypto" src="./send-crypto.svg" width="200px" />
+				<hr />
+				<p>A minimal JavaScript library for sending crypto assets.</p>
+				<p>Currently doesn&#39;t support hierarchical or single-use addresses.</p>
+				<a href="#supported-assets" id="supported-assets" style="color: inherit; text-decoration: none;">
+					<h2>Supported assets</h2>
+				</a>
+				<ul>
+					<li>BTC</li>
+					<li>ZEC (transparent txs only)</li>
+					<li>BCH</li>
+					<li>ETH</li>
+					<li>ERC20 tokens</li>
+				</ul>
+				<p><br /><br /></p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h1>Usage</h1>
+				</a>
+				<pre><code class="language-sh">npm install --save send-crypto</code></pre>
+				<p>Replace &quot;BTC&quot; with any supported asset:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+
+<span class="hljs-comment">/* Load account from private key */</span>
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-comment">/* Print address */</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> account.address(<span class="hljs-string">"BTC"</span>));
+<span class="hljs-comment">// &gt; "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>
+
+<span class="hljs-comment">/* Print balance */</span>
+<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> account.balanceOf(<span class="hljs-string">"BTC"</span>));
+<span class="hljs-comment">// &gt; 0.01</span>
+
+<span class="hljs-comment">/* Send 0.01 BTC */</span>
+<span class="hljs-keyword">const</span> txHash = <span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>)
+    .on(<span class="hljs-string">"transactionHash"</span>, <span class="hljs-built_in">console</span>.log)
+    <span class="hljs-comment">// &gt; "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"</span>
+    .on(<span class="hljs-string">"confirmation"</span>, <span class="hljs-built_in">console</span>.log);
+    <span class="hljs-comment">// &gt; 1</span>
+    <span class="hljs-comment">// &gt; 2 ...</span></code></pre>
+				<p><strong>UNITS</strong>: <code>balanceOf</code> and <code>send</code> can be replaced with <code>balanceOfInSats</code> and <code>sendSats</code> respectively to use the blockchain&#39;s smallest units (satoshis for BTC, wei for ETH, etc.).</p>
+				<p><strong>CONFIG</strong>: Each of the functions <code>address</code>, <code>balanceOf</code> and <code>send</code> accept an optional <code>options</code> parameter. See the available options in the sections &quot;All balance and transaction options&quot; for each asset below.</p>
+				<p><br /><br /></p>
+				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
+					<h1>Examples</h1>
+				</a>
+				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+					<h2>Setup</h2>
+				</a>
+				<details>
+					<hr />
+					<summary>Load private key from a .env file</summary>
+					<p><code>.env</code>:</p>
+					<pre><code class="language-sh">PRIVATE_KEY=<span class="hljs-string">"1234512341"</span></code></pre>
+					<p>Use the <code>dotenv</code> library (installed with <code>npm i -D dotenv</code>) or run <code>source .env</code> before running:</p>
+					<pre><code class="language-ts"><span class="hljs-built_in">require</span>(<span class="hljs-string">"dotenv"</span>).config();
+<span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Create new account</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> privateKey = CryptoAccount.newPrivateKey();
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Save your key somewhere: <span class="hljs-subst">${privateKey}</span>`</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(privateKey);</code></pre>
+					<hr />
+				</details>
+				<a href="#btc-zec-bch" id="btc-zec-bch" style="color: inherit; text-decoration: none;">
+					<h2>BTC, ZEC, BCH</h2>
+				</a>
+				<details>
+					<hr />
+					<summary>Send BTC (Bitcoin)</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-comment">// Send BTC</span>
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Send ZEC (Zcash)</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-comment">// Send ZEC</span>
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"t3Vz22vK5z2LcKEdg16Yv4FFneEL1zg9ojd"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"ZEC"</span>);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Send BCH (Bitcoin Cash)</summary>
+					<p>CashAddr, BitPay and legacy addresses are supported.</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-comment">// Send BCH</span>
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BCH"</span>);</code></pre>
+					<hr />
+				</details>
+				<p>You can replace <code>&quot;BTC&quot;</code> with <code>&quot;ZEC&quot;</code> or <code>&quot;BCH&quot;</code> in the following examples:</p>
+				<details>
+					<hr />
+					<summary>Send entire balance</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> account.balanceOf(<span class="hljs-string">"BTC"</span>);
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balance, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });
+
+<span class="hljs-comment">// Or using sats as the unit</span>
+<span class="hljs-keyword">const</span> balanceInSats = <span class="hljs-keyword">await</span> account.balanceOfInSats(<span class="hljs-string">"BTC"</span>);
+<span class="hljs-keyword">await</span> account.sendSats(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balanceInSats, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Wait for 6 confirmations</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span>
+    account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>)
+        .on(<span class="hljs-string">"confirmation"</span>, <span class="hljs-function"><span class="hljs-params">confirmations</span> =&gt;</span> { <span class="hljs-keyword">if</span> (confirmations &gt;= <span class="hljs-number">6</span>) { resolve(); } })
+        .catch(reject);
+);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Send testnet funds</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"testnet"</span> });
+<span class="hljs-keyword">await</span> testnetAccount.send(<span class="hljs-string">"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary><b>All balance and transaction options</b></summary>
+					<p>The <code>balanceOf</code> and <code>balanceOfInSats</code> options are:</p>
+					<pre><code class="language-ts">{
+    <span class="hljs-comment">// Get the balance of an address other than the current account's</span>
+    address?: <span class="hljs-built_in">string</span>;
+
+    <span class="hljs-comment">// The number of confirmations UTXOs must have to be included in the balance</span>
+    confirmations?: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// defaults to 0</span>
+}</code></pre>
+					<p>The <code>send</code> and <code>sendSats</code> options are:</p>
+					<pre><code class="language-ts">{
+    <span class="hljs-comment">// The number of confirmations UTXOs must have to be included in the inputs</span>
+    confirmations?: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// defaults to 0</span>
+
+    <span class="hljs-comment">// The fee in satoshis/zatoshis to use</span>
+    fee?: <span class="hljs-built_in">number</span>;           <span class="hljs-comment">// defaults to 10000</span>
+
+    <span class="hljs-comment">// Whether the fee should be included or excluded from `value`</span>
+    subtractFee?: <span class="hljs-built_in">boolean</span>;  <span class="hljs-comment">// defaults to false</span>
+}</code></pre>
+					<hr />
+				</details>
+				<a href="#eth-erc20" id="eth-erc20" style="color: inherit; text-decoration: none;">
+					<h2>ETH, ERC20</h2>
+				</a>
+				<details>
+					<hr />
+					<summary>Send ETH (Ether, Ethereum)</summary>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-comment">// Send ETH</span>
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"ETH"</span>);</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Send ERC20 tokens</summary>
+					<p>You can transfer arbitrary ERC20 tokens by providing the token&#39;s address:</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+
+<span class="hljs-keyword">await</span> account.send(
+    <span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>,
+    { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, address: <span class="hljs-string">"0x408e41876cccdc0f92210600ef50372656052a38"</span> },
+);</code></pre>
+					<p>A few well known ERC20 tokens can be referenced by name:</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>, { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, name: <span class="hljs-string">"DAI"</span> });</code></pre>
+					<p>See the <a href="./src/handlers/ERC20/ERC20s.ts">ERC20s.ts</a> to see the tokens than can be referenced by name.</p>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary>Send testnet funds (<i>ropsten</i>, <i>kovan</i>, etc.)</summary>
+					<p>The supported testnets are <code>mainnet</code>, <code>ropsten</code>, <code>kovan</code>, <code>rinkeby</code> and <code>goerli</code>.</p>
+					<pre><code class="language-ts"><span class="hljs-comment">// Use "testnet" BTC, BCH &amp; ZEC; use "ropsten" ETH.</span>
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"testnet"</span> });
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"ropsten"</span> });</code></pre>
+					<pre><code class="language-ts"><span class="hljs-comment">// Use "testnet" BTC, BCH &amp; ZEC; use "kovan" ETH.</span>
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"kovan"</span> });</code></pre>
+					<hr />
+				</details>
+				<details>
+					<hr />
+					<summary><b>All balance and transaction options</b></summary>
+					<p>The <code>balanceOf</code> and <code>balanceOfInSats</code> options are:</p>
+					<pre><code class="language-ts">{
+    <span class="hljs-comment">// Get the balance of an address other than the current account's</span>
+    address?: <span class="hljs-built_in">string</span>;
+}</code></pre>
+					<p>The <code>send</code> and <code>sendSats</code> options are:</p>
+					<pre><code class="language-ts">{
+    <span class="hljs-comment">// Gas limit</span>
+    gas?: <span class="hljs-built_in">number</span> | <span class="hljs-built_in">string</span>;
+
+    <span class="hljs-comment">// Gas price in WEI</span>
+    gasPrice?: <span class="hljs-built_in">number</span> | <span class="hljs-built_in">string</span> | BN;
+
+    <span class="hljs-comment">// Include data with the transfer</span>
+    data?: <span class="hljs-built_in">string</span>;
+
+    <span class="hljs-comment">// Override the transaction nonce</span>
+    nonce?: <span class="hljs-built_in">number</span>;
+
+    <span class="hljs-comment">// [WIP] Whether the fee should be included or excluded from `value`</span>
+    <span class="hljs-comment">// subtractFee?: boolean;  // defaults to false</span>
+}</code></pre>
+					<hr />
+				</details>
+				<p><br /><br /><br /><br /><br /><br /></p>
+				<a href="#custom-assets" id="custom-assets" style="color: inherit; text-decoration: none;">
+					<h1>Custom assets</h1>
+				</a>
+				<p>If you want to send a cryptocurrency or token that isn&#39;t supported by the library, or enhance support for one of the assets above (e.g. add support for a new address format), you can write your own handler using the instructions below.</p>
+				<details>
+					<hr />
+					<summary style="font-size: 20px;">Adding custom assets</summary>
+					<p>Handlers must implement the (TypeScript) interface below.</p>
+					<p>The <code>handlesAsset</code> function is called to ask if the handler can handle an asset.</p>
+					<p>All other functions are optional. If a function isn&#39;t provided, the next handler is called instead.</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> Handler&lt;
+    ConstructorOptions = {},
+    AddressOptions = {},
+    BalanceOptions <span class="hljs-keyword">extends</span> { address?: <span class="hljs-built_in">string</span> } = { address?: <span class="hljs-built_in">string</span> },
+    TxOptions = {},
+&gt; {
+    <span class="hljs-comment">// sharedState allows multiple handlers access common state.</span>
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">privateKey: <span class="hljs-built_in">string</span>, network: <span class="hljs-built_in">string</span>, constructorOptions?: ConstructorOptions, sharedState?: <span class="hljs-built_in">any</span></span>) { <span class="hljs-comment">/* */</span> }
+
+    <span class="hljs-comment">// Returns whether or not this can handle the asset</span>
+    <span class="hljs-keyword">public</span> handlesAsset!: <span class="hljs-function">(<span class="hljs-params">asset: Asset</span>) =&gt;</span> <span class="hljs-built_in">boolean</span>;
+
+    <span class="hljs-comment">// Returns the address of the account</span>
+    <span class="hljs-keyword">public</span> address?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler</span>) =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+
+    <span class="hljs-comment">// Returns the balance of the account</span>
+    <span class="hljs-keyword">public</span> balanceOf?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
+        =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
+    <span class="hljs-keyword">public</span> balanceOfInSats?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
+        =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
+
+    <span class="hljs-comment">// Transfers the asset to the provided address</span>
+    <span class="hljs-keyword">public</span> send?: <span class="hljs-function">(<span class="hljs-params">to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler</span>)
+        =&gt;</span> PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
+    <span class="hljs-keyword">public</span> sendSats?: <span class="hljs-function">(<span class="hljs-params">to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler</span>)
+        =&gt;</span> PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
+}</code></pre>
+					<p>And then register the handler:</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+account.registerHandler(MyCystomHandler);</code></pre>
+					<p><code>registerHandler</code> accepts an optional <code>priority</code> parameter for setting the order of handlers (see <a href="./src/index.ts"><code>index.ts</code></a> to see the default ordering).</p>
+					<p>You can wrap around other handlers by using the <code>defer</code> parameter passed in to each function. For example, to add support for ENS names for Ethereum, you can resolve the <code>to</code> address and then call <code>defer</code>:</p>
+					<pre><code class="language-ts"><span class="hljs-keyword">class</span> ENSResolver {
+    <span class="hljs-comment">/* ... */</span>
+
+    resolveENSName = (to: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; =&gt; { <span class="hljs-comment">/* ... */</span> }
+
+    send = <span class="hljs-keyword">async</span> (
+        to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, deferHandler: Handler,
+    ): PromiEvent&lt;<span class="hljs-built_in">string</span>&gt; =&gt; {
+        <span class="hljs-keyword">return</span> deferHandler.send(<span class="hljs-keyword">await</span> resolveENSName(to), value, asset);
+    }
+}</code></pre>
+					<p>See the following handlers as references:</p>
+					<ul>
+						<li><a href="./src/handlers/BTCHandler.ts">BTC Handler</a><hr />
+				</details>
+				</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/network.html" class="tsd-kind-icon">Network</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/bchhandler.html" class="tsd-kind-icon">BCHHandler</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/btchandler.html" class="tsd-kind-icon">BTCHandler</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cryptoaccount.html" class="tsd-kind-icon">Crypto<wbr>Account</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/erc20handler.html" class="tsd-kind-icon">ERC20<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/ethhandler.html" class="tsd-kind-icon">ETHHandler</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/handler.html" class="tsd-kind-icon">Handler</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-not-exported">
+						<a href="classes/internalpromievent.html" class="tsd-kind-icon">Internal<wbr>Promi<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/zechandler.html" class="tsd-kind-icon">ZECHandler</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/addressoptions.html" class="tsd-kind-icon">Address<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/balanceoptions.html" class="tsd-kind-icon">Balance<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/blockstreamdetailsutxo.html" class="tsd-kind-icon">Blockstream<wbr>DetailsUTXO</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-not-exported">
+						<a href="interfaces/blockstreamutxo.html" class="tsd-kind-icon">BlockstreamUTXO</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/constructoroptions.html" class="tsd-kind-icon">Constructor<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/deferhandler.html" class="tsd-kind-icon">Defer<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/txoptions.html" class="tsd-kind-icon">Tx<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/utxo.html" class="tsd-kind-icon">UTXO</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#asset" class="tsd-kind-icon">Asset</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#handlerclass" class="tsd-kind-icon">Handler<wbr>Class</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#promievent" class="tsd-kind-icon">Promi<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#value" class="tsd-kind-icon">Value</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#erc20abi" class="tsd-kind-icon">ERC20ABI</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#defaultinfurakey" class="tsd-kind-icon">default<wbr>Infura<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#unused" class="tsd-kind-icon">unused</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ox" class="tsd-kind-icon">Ox</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#broadcasttransaction" class="tsd-kind-icon">broadcast<wbr>Transaction</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#buildutxo" class="tsd-kind-icon">buildUTXO</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#endpoint" class="tsd-kind-icon">endpoint</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#extracterror" class="tsd-kind-icon">extract<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#fallback" class="tsd-kind-icon">fallback</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#fetchconfirmations" class="tsd-kind-icon">fetch<wbr>Confirmations</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#fetchutxos" class="tsd-kind-icon">fetchUTXOs</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fixvalue" class="tsd-kind-icon">fix<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fixvalues" class="tsd-kind-icon">fix<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#forwardevents" class="tsd-kind-icon">forward<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getendpoint" class="tsd-kind-icon">get<wbr>Endpoint</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getnetwork" class="tsd-kind-icon">get<wbr>Network</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getutxos" class="tsd-kind-icon">getUTXOs</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getweb3" class="tsd-kind-icon">get<wbr>Web3</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#loadprivatekey" class="tsd-kind-icon">load<wbr>Private<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#newpromievent" class="tsd-kind-icon">new<wbr>Promi<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#resolveasset" class="tsd-kind-icon">resolve<wbr>Asset</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#retryntimes" class="tsd-kind-icon">retryNTimes</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sleep" class="tsd-kind-icon">sleep</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#strip0x" class="tsd-kind-icon">strip0x</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#subscribetoconfirmations" class="tsd-kind-icon">subscribe<wbr>ToConfirmations</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bitcoindotcom" class="tsd-kind-icon">Bitcoin<wbr>Dot<wbr>Com</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bitgoutxolib" class="tsd-kind-icon">BitgoUTXOLib</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#blockstream" class="tsd-kind-icon">Blockstream</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#erc20s" class="tsd-kind-icon">ERC20s</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#insight" class="tsd-kind-icon">Insight</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sochain" class="tsd-kind-icon">Sochain</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
