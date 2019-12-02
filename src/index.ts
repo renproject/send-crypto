@@ -20,7 +20,6 @@ export default class CryptoAccount {
         // @ts-ignore
         if (typeof window !== "undefined") {
             // @ts-ignore
-            console.log(`Inside window branch!`, window);
             const array = new Uint32Array(32);
             // @ts-ignore
             window.crypto.getRandomBytes(array);
@@ -44,9 +43,9 @@ export default class CryptoAccount {
         this.constructorOptions = options;
         this.sharedState = {};
         this.registerHandler(BTCHandler, 0);
-        this.registerHandler(ZECHandler, 0);
-        this.registerHandler(BCHHandler, 0);
-        this.registerHandler(ETHHandler, 0);
+        this.registerHandler(ZECHandler, 10);
+        this.registerHandler(BCHHandler, 20);
+        this.registerHandler(ETHHandler, 30);
         if (options && options.extraHandlers) {
             for (const handler of options.extraHandlers) {
                 this.registerHandler(handler);
@@ -63,39 +62,49 @@ export default class CryptoAccount {
         this.handlers.splice(lastPosition, 0, { handler: new handlerClass(this.privateKey, this.network, this.constructorOptions, this.sharedState), priority });
     }
 
-    public readonly address = async <Options extends {} = {}>(asset?: Asset, options?: Options) => {
-        return this.deferHandler().address(asset || this.defaultAsset, options);
+    public readonly address = async <Options extends {} = {}>(assetIn?: Asset, options?: Options) => {
+        const asset = assetIn || this.defaultAsset;
+        if (!asset) { throw new Error(`Must provide an asset`) };
+        return this.deferHandler().address(asset, options);
     };
 
-    public readonly balanceOf = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(asset?: Asset, options?: Options): Promise<T> => {
-        const bn = await this.deferHandler().balanceOf(asset || this.defaultAsset, options);
+    public readonly balanceOf = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
+        const asset = assetIn || this.defaultAsset;
+        if (!asset) { throw new Error(`Must provide an asset`) };
+        const bn = await this.deferHandler().balanceOf(asset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
 
-    public readonly balanceOfInSats = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(asset?: Asset, options?: Options): Promise<T> => {
-        const bn = await this.deferHandler().balanceOfInSats(asset || this.defaultAsset, options);
+    public readonly balanceOfInSats = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
+        const asset = assetIn || this.defaultAsset;
+        if (!asset) { throw new Error(`Must provide an asset`) };
+        const bn = await this.deferHandler().balanceOfInSats(asset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
 
     public readonly send = <Options extends {} = {}>(
         to: string,
         value: Value,
-        asset?: Asset,
+        assetIn?: Asset,
         options?: Options
     ): PromiEvent<string> => {
-        return this.deferHandler().send(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
+        const asset = assetIn || this.defaultAsset;
+        if (!asset) { throw new Error(`Must provide an asset`) };
+        return this.deferHandler().send(to, new BigNumber(value.toString()), asset, options);
     };
 
     public readonly sendSats = <Options extends {} = {}>(
         to: string,
         value: Value,
-        asset?: Asset,
+        assetIn?: Asset,
         options?: Options
     ): PromiEvent<string> => {
-        return this.deferHandler().sendSats(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
+        const asset = assetIn || this.defaultAsset;
+        if (!asset) { throw new Error(`Must provide an asset`) };
+        return this.deferHandler().sendSats(to, new BigNumber(value.toString()), asset, options);
     };
 
-    private readonly deferHandler = (thisHandler?: Asset): DeferHandler => {
+    private readonly deferHandler = (thisHandler?: Handler): DeferHandler => {
         return {
             address: (
                 deferredAsset: Asset,
@@ -159,14 +168,15 @@ export default class CryptoAccount {
         }
     }
 
-    private readonly findHandler = (asset: Asset, from?: Asset): Handler => {
-        const fromIndex = from ? this.handlers.indexOf(from) : -1;
+    private readonly findHandler = (asset: Asset, from?: Handler): Handler => {
+        const fromIndex = from ? this.handlers.findIndex(i => i.handler === from) : -1;
         for (
             let i = (fromIndex === -1 ? this.handlers.length : fromIndex) - 1;
             i >= 0;
             i--
         ) {
             const handler = this.handlers[i].handler;
+            // console.log(handler);
             if (handler.handlesAsset(asset)) {
                 return handler;
             }

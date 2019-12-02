@@ -251,8 +251,6 @@ await account.send(
 A few well known ERC20 tokens can be referenced by name:
 
 ```ts
-await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, "DAI");
-// Or
 await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, { type: "ERC20", name: "DAI" });
 ```
 
@@ -316,8 +314,8 @@ The `send` and `sendSats` options are:
     // Override the transaction nonce
     nonce?: number;
 
-    // Whether the fee should be included or excluded from `value`
-    subtractFee?: boolean;  // defaults to false
+    // [WIP] Whether the fee should be included or excluded from `value`
+    // subtractFee?: boolean;  // defaults to false
 }
 ```
 <hr />
@@ -347,6 +345,7 @@ export abstract class Handler<
     BalanceOptions extends { address?: string } = { address?: string },
     TxOptions = {},
 > {
+    // sharedState allows multiple handlers access common state.
     constructor(privateKey: string, network: string, constructorOptions?: ConstructorOptions, sharedState?: any) { /* */ }
 
     // Returns whether or not this can handle the asset

@@ -35,7 +35,7 @@ export class ZECHandler implements Handler {
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        ["ZEC", "ZCASH"].indexOf(asset.toUpperCase()) !== -1;
+        typeof asset === "string" && ["ZEC", "ZCASH"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         this.privateKey.getAddress();

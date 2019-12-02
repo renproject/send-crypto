@@ -36,7 +36,7 @@ export class BCHHandler implements Handler {
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(asset.toUpperCase()) !== -1;
+        typeof asset === "string" && ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         toCashAddress(this.privateKey.getAddress());

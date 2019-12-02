@@ -1,3 +1,4 @@
+// import HDWalletProvider from "@truffle/hdwallet-provider";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig } from "web3-core";
@@ -18,16 +19,17 @@ interface BalanceOptions extends AddressOptions {
     confirmations?: number; // defaults to 0
 }
 interface TxOptions extends TransactionConfig {
-    fee?: number;           // defaults to 10000
     // subtractFee?: boolean;  // defaults to false
 }
 
 const getWeb3 = (privateKey: string, endpoint: string): [Web3, string] => {
+    // const provider = new HDWalletProvider(privateKey, endpoint);
     const web3 = new Web3(endpoint);
     const account = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
     web3.eth.accounts.wallet.add(account);
     // tslint:disable-next-line: no-object-mutation
     web3.eth.defaultAccount = account.address;
+    // return new Web3(provider as any);
     return [web3, account.address];
 };
 
@@ -93,10 +95,11 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        ["ETH", "ETHER", "ETHEREUM"].indexOf(asset.toUpperCase()) !== -1;
+        typeof asset === "string" && ["ETH", "ETHER", "ETHEREUM"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         this.unlockedAddress;
+    // (await this.sharedState.web3.eth.getAccounts())[0];
 
     // Balance
     public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
@@ -111,8 +114,7 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
             atBlock = currentBlock.minus(options.confirmations).plus(1).toNumber();
         }
         const address = options && options.address || await this.address(asset);
-        return new BigNumber(await this.sharedState.web3.eth.getBalance(address, atBlock as any))
-            .div(new BigNumber(10).pow(this.decimals));
+        return new BigNumber(await this.sharedState.web3.eth.getBalance(address, atBlock as any));
     };
 
     // Transfer

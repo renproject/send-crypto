@@ -3,7 +3,7 @@ import BN from "bn.js";
 
 import { PromiEvent } from "../lib/promiEvent";
 
-export type Asset = string | any;
+export type Asset = string | object;
 export type Value = string | number | BigNumber | BN;
 
 export interface DeferHandler<Options = {}> {
