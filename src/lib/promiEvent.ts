@@ -31,10 +31,8 @@ class InternalPromiEvent<T> {
     public readonly [Symbol.toStringTag]: 'Promise';
     public readonly promise: Promise<T>;
     // @ts-ignore no initializer because of proxyHandler
-    // tslint:disable-next-line: readonly-keyword
     public resolve: (value?: T) => void;
     // @ts-ignore no initializer because of proxyHandler
-    // tslint:disable-next-line: readonly-keyword
     public reject: (reason?: any) => void;
     public readonly eventEmitter: EventEmitter;
 

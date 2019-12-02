@@ -6,51 +6,68 @@ import { PromiEvent } from "../lib/promiEvent";
 export type Asset = string | any;
 export type Value = string | number | BigNumber | BN;
 
-export interface Handler<Options = {}> {
-    // Returns whether or not this can handle the asset
-    readonly handlesAsset: (asset: Asset) => boolean;
-
-    readonly address?: (
+export interface DeferHandler<Options = {}> {
+    readonly address: (
         asset: Asset,
         options?: any & {},
-        defer?: (asset: Asset, options?: any & {}) => Promise<string>
     ) => Promise<string>;
 
     // Balance
-    readonly balanceOf?: (
+    readonly balanceOf: (
         asset: Asset,
         options?: any & { readonly address?: string },
-        defer?: (asset: Asset, address?: string) => Promise<BigNumber>
     ) => Promise<BigNumber>;
-    readonly balanceOfInSats?: (
+    readonly balanceOfInSats: (
         asset: Asset,
         options?: any & { readonly address?: string },
-        defer?: (asset: Asset, address?: string) => Promise<BigNumber>
     ) => Promise<BigNumber>;
 
     // Transfer
-    readonly send?: (
+    readonly send: (
         to: string,
         value: BigNumber,
         asset: Asset,
         options?: Options,
-        defer?: (
-            to: string,
-            value: BigNumber,
-            asset: Asset,
-            options?: Options
-        ) => PromiEvent<string>,
     ) => PromiEvent<string>;
-    readonly sendSats?: (
+    readonly sendSats: (
         to: string,
         value: BigNumber,
         asset: Asset,
         options?: Options,
-        defer?: (
-            to: string,
-            value: BigNumber,
-            asset: Asset,
-            options?: Options
-        ) => PromiEvent<string>,
     ) => PromiEvent<string>;
 }
+
+// tslint:disable: member-ordering
+export abstract class Handler<
+    ConstructorOptions = {},
+    AddressOptions = {},
+    BalanceOptions extends { address?: string } = { address?: string },
+    TxOptions = {},
+    > {
+    constructor(privateKey: string, network: string, constructorOptions?: ConstructorOptions, sharedState?: any) { /* */ }
+
+    // Returns whether or not this can handle the asset
+    public handlesAsset!: (asset: Asset) => boolean;
+
+    // Returns the address of the account
+    public address?: (asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler) => Promise<string>;
+
+    // Returns the balance of the account
+    public balanceOf?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+        => Promise<BigNumber>;
+    public balanceOfInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+        => Promise<BigNumber>;
+
+    // Transfers the asset to the provided address
+    public send?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+        => PromiEvent<string>;
+    public sendSats?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+        => PromiEvent<string>;
+}
+
+export type HandlerClass = new <Options extends {}>(
+    privateKey: string,
+    network: string,
+    constructorOptions?: Options,
+    sharedState?: any,
+) => Handler;

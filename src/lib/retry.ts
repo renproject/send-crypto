@@ -31,7 +31,6 @@ export const fallback = async <T>(fallbacks: Array<() => Promise<T>>) => {
 
 export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) => {
     let returnError;
-    // tslint:disable-next-line: no-constant-condition
     for (let i = 0; i < retries; i++) {
         // if (i > 0) {
         //     console.debug(`Retrying...`);

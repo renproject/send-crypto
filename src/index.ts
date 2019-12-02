@@ -1,22 +1,17 @@
 import BigNumber from "bignumber.js";
-import BN from "bn.js";
 
 import { BCHHandler } from "./handlers/BCHHandler";
 import { BTCHandler } from "./handlers/BTCHandler";
 import { ZECHandler } from "./handlers/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
-import { Asset, Handler, Value } from "./types/types";
+import { strip0x } from "./lib/utils";
+import { Asset, DeferHandler, Handler, HandlerClass, Value } from "./types/types";
 
-type HandlerClass = new (privateKey: string, network: string) => Handler;
-
-// Remove 0x prefix from a hex string
-export const strip0x = (hex: string) => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
-
-// Add a 0x prefix to a hex value, converting to a string first
-export const Ox = (hex: string | BN | Buffer) => {
-    const hexString = typeof hex === "string" ? hex : hex.toString("hex");
-    return hexString.substring(0, 2) === "0x" ? hexString : `0x${hexString}`;
-};
+interface ConstructorOptions {
+    network?: string;
+    defaultAsset?: Asset;
+    extraHandlers?: readonly HandlerClass[];
+}
 
 export default class CryptoAccount {
 
@@ -34,22 +29,22 @@ export default class CryptoAccount {
         }
     }
 
-    // tslint:disable-next-line: readonly-array
     private readonly handlers: Array<{ handler: Handler, priority: number }> = [];
     private readonly privateKey: string;
     private readonly network: string;
     private readonly defaultAsset: Asset | undefined;
+    private readonly constructorOptions: ConstructorOptions | undefined;
 
+    private sharedState: any;
 
-    // tslint:disable-next-line: readonly-keyword
-    constructor(privateKey: string, options?: { network?: string, defaultAsset?: Asset, extraHandlers?: readonly HandlerClass[] }) {
+    constructor(privateKey: string, options: ConstructorOptions) {
         this.privateKey = strip0x(privateKey); // Buffer.from(privateKey, "base64").toString("hex");
         this.network = options && options.network || 'mainnet';
+        this.constructorOptions = options;
+        this.sharedState = {};
         this.registerHandler(BTCHandler, 0);
         this.registerHandler(ZECHandler, 0);
         this.registerHandler(BCHHandler, 0);
-        // this.registerHandler(ZECHandler);
-        // this.registerHandler(ETHandERC20Handler);
         if (options && options.extraHandlers) {
             for (const handler of options.extraHandlers) {
                 this.registerHandler(handler);
@@ -63,46 +58,20 @@ export default class CryptoAccount {
             (this.handlers.length === 0 ? 0 : this.handlers[this.handlers.length - 1].priority) :
             priorityIn;
         const lastPosition = this.handlers.reduce((index, item, currentIndex) => item.priority <= priority ? currentIndex + 1 : index, 0);
-        this.handlers.splice(lastPosition, 0, { handler: new handlerClass(this.privateKey, this.network), priority });
+        this.handlers.splice(lastPosition, 0, { handler: new handlerClass(this.privateKey, this.network, this.constructorOptions, this.sharedState), priority });
     }
 
     public readonly address = async <Options extends {} = {}>(asset?: Asset, options?: Options) => {
-        const defer = (thisHandler?: Handler) => (deferredAsset: Asset, deferredOptions?: any): Promise<string> => {
-            const nextHandler = this.findHandler(deferredAsset, thisHandler);
-            if (nextHandler.address) {
-                return nextHandler.address(deferredAsset, deferredOptions, defer(nextHandler));
-            } else {
-                return defer(nextHandler)(deferredAsset, deferredOptions);
-            }
-        };
-        return defer()(asset || this.defaultAsset, options);
+        return this.deferHandler().address(asset || this.defaultAsset, options);
     };
 
-    // tslint:disable-next-line: readonly-keyword
     public readonly balanceOf = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(asset?: Asset, options?: Options): Promise<T> => {
-        const defer = (thisHandler?: Handler) => (deferredAsset: Asset, deferredOptions?: any): Promise<BigNumber> => {
-            const nextHandler = this.findHandler(deferredAsset, thisHandler);
-            if (nextHandler.balanceOf) {
-                return nextHandler.balanceOf(deferredAsset, deferredOptions, defer(nextHandler));
-            } else {
-                return defer(nextHandler)(deferredAsset, deferredOptions);
-            }
-        };
-        const bn = await defer()(asset || this.defaultAsset, options);
+        const bn = await this.deferHandler().balanceOf(asset || this.defaultAsset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
 
-    // tslint:disable-next-line: readonly-keyword
     public readonly balanceOfInSats = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(asset?: Asset, options?: Options): Promise<T> => {
-        const defer = (thisHandler?: Handler) => (deferredAsset: Asset, deferredOptions?: any): Promise<BigNumber> => {
-            const nextHandler = this.findHandler(deferredAsset, thisHandler);
-            if (nextHandler.balanceOfInSats) {
-                return nextHandler.balanceOfInSats(deferredAsset, deferredOptions, defer(nextHandler));
-            } else {
-                return defer(nextHandler)(deferredAsset, deferredOptions);
-            }
-        };
-        const bn = await defer()(asset || this.defaultAsset, options);
+        const bn = await this.deferHandler().balanceOfInSats(asset || this.defaultAsset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
 
@@ -112,31 +81,7 @@ export default class CryptoAccount {
         asset?: Asset,
         options?: Options
     ): PromiEvent<string> => {
-        const defer = (thisHandler?: Handler) => (
-            deferredTo: string,
-            deferredValue: BigNumber,
-            deferredAsset: Asset,
-            deferredOptions?: any
-        ): PromiEvent<string> => {
-            const nextHandler = this.findHandler(deferredAsset, thisHandler);
-            if (nextHandler.send) {
-                return nextHandler.send(
-                    deferredTo,
-                    deferredValue,
-                    deferredAsset,
-                    deferredOptions,
-                    defer(nextHandler)
-                );
-            } else {
-                return defer(nextHandler)(
-                    deferredTo,
-                    deferredValue,
-                    deferredAsset,
-                    deferredOptions,
-                );
-            }
-        };
-        return defer()(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
+        return this.deferHandler().send(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
     };
 
     public readonly sendSats = <Options extends {} = {}>(
@@ -145,32 +90,72 @@ export default class CryptoAccount {
         asset?: Asset,
         options?: Options
     ): PromiEvent<string> => {
-        const defer = (thisHandler?: Handler) => (
-            deferredTo: string,
-            deferredValue: BigNumber,
-            deferredAsset: Asset,
-            deferredOptions?: any
-        ): PromiEvent<string> => {
-            const nextHandler = this.findHandler(deferredAsset, thisHandler);
-            if (nextHandler.sendSats) {
-                return nextHandler.sendSats(
-                    deferredTo,
-                    deferredValue,
-                    deferredAsset,
-                    deferredOptions,
-                    defer(nextHandler)
-                );
-            } else {
-                return defer(nextHandler)(
-                    deferredTo,
-                    deferredValue,
-                    deferredAsset,
-                    deferredOptions,
-                );
-            }
-        };
-        return defer()(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
+        return this.deferHandler().sendSats(to, new BigNumber(value.toString()), asset || this.defaultAsset, options);
     };
+
+    private readonly deferHandler = (thisHandler?: Asset): DeferHandler => {
+        return {
+            address: (
+                deferredAsset: Asset,
+                deferredOptions?: any,
+            ) => {
+                const nextHandler = this.findHandler(deferredAsset, thisHandler);
+                if (nextHandler.address) {
+                    return nextHandler.address(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                } else {
+                    return this.deferHandler(nextHandler).address(deferredAsset, deferredOptions);
+                }
+            },
+            balanceOf: (
+                deferredAsset: Asset,
+                deferredOptions?: any,
+            ) => {
+                const nextHandler = this.findHandler(deferredAsset, thisHandler);
+                if (nextHandler.balanceOf) {
+                    return nextHandler.balanceOf(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                } else {
+                    return this.deferHandler(nextHandler).balanceOf(deferredAsset, deferredOptions);
+                }
+            },
+            balanceOfInSats: (
+                deferredAsset: Asset,
+                deferredOptions?: any,
+            ) => {
+                const nextHandler = this.findHandler(deferredAsset, thisHandler);
+                if (nextHandler.balanceOfInSats) {
+                    return nextHandler.balanceOfInSats(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                } else {
+                    return this.deferHandler(nextHandler).balanceOfInSats(deferredAsset, deferredOptions);
+                }
+            },
+            send: (
+                deferredTo: string,
+                deferredValue: BigNumber,
+                deferredAsset: Asset,
+                deferredOptions?: any
+            ) => {
+                const nextHandler = this.findHandler(deferredAsset, thisHandler);
+                if (nextHandler.send) {
+                    return nextHandler.send(deferredTo, deferredValue, deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                } else {
+                    return this.deferHandler(nextHandler).send(deferredTo, deferredValue, deferredAsset, deferredOptions);
+                }
+            },
+            sendSats: (
+                deferredTo: string,
+                deferredValue: BigNumber,
+                deferredAsset: Asset,
+                deferredOptions?: any
+            ) => {
+                const nextHandler = this.findHandler(deferredAsset, thisHandler);
+                if (nextHandler.sendSats) {
+                    return nextHandler.sendSats(deferredTo, deferredValue, deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                } else {
+                    return this.deferHandler(nextHandler).sendSats(deferredTo, deferredValue, deferredAsset, deferredOptions);
+                }
+            }
+        }
+    }
 
     private readonly findHandler = (asset: Asset, from?: Asset): Handler => {
         const fromIndex = from ? this.handlers.indexOf(from) : -1;

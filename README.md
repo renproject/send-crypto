@@ -185,7 +185,7 @@ await testnetAccount.send("12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX", 0.01, "BTC");
 
 <details>
 <hr />
-<summary>All balance and transaction options</summary>
+<summary><b>All balance and transaction options</b></summary>
 
 The `balanceOf` and `balanceOfInSats` options are:
 
@@ -272,7 +272,7 @@ DAI: <a href="https://ethersca.io/token/0x6b175474e89094c44da98b954eedeac495271d
 <hr />
 <summary>Send testnet funds (<i>ropsten</i>, <i>kovan</i>, etc.)</summary>
 
-The supported testnets are `mainnet`, `ropsten`, `kovan`, `rinkeby` and `gorli`.
+The supported testnets are `mainnet`, `ropsten`, `kovan`, `rinkeby` and `goerli`.
 
 
 ```ts
@@ -289,7 +289,7 @@ const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ko
 
 <details>
 <hr />
-<summary>All balance and transaction options</summary>
+<summary><b>All balance and transaction options</b></summary>
 
 The `balanceOf` and `balanceOfInSats` options are:
 
@@ -341,27 +341,31 @@ The `handlesAsset` function is called to ask if the handler can handle an asset.
 All other functions are optional. If a function isn't provided, the next handler is called instead.
 
 ```ts
-export interface Handler<
+export abstract class Handler<
+    ConstructorOptions = {},
     AddressOptions = {},
     BalanceOptions extends { address?: string } = { address?: string },
     TxOptions = {},
 > {
+    constructor(privateKey: string, network: string, constructorOptions?: ConstructorOptions, sharedState?: any) { /* */ }
+
     // Returns whether or not this can handle the asset
-    handlesAsset: (asset: Asset) => boolean;
+    public handlesAsset!: (asset: Asset) => boolean;
 
-    address?: (asset: Asset, options?: AddressOptions, defer?) => Promise<string>;
+    // Returns the address of the account
+    public address?: (asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler) => Promise<string>;
 
-    // Balance
-    balanceOf?: (asset: Asset, options?: BalanceOptions, defer?) => Promise<BigNumber>;
-    balanceOfInSats?: (asset: Asset, options?: BalanceOptions, defer?) => Promise<BigNumber>;
+    // Returns the balance of the account
+    public balanceOf?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+        => Promise<BigNumber>;
+    public balanceOfInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+        => Promise<BigNumber>;
 
-    // Transfer
-    send?: (
-        to: string, value: BigNumber, asset: Asset, options?: TxOptions, defer?
-    ) => PromiEvent<string>;
-    sendSats?: (
-        to: string, value: BigNumber, asset: Asset, options?: TxOptions, defer?
-    ) => PromiEvent<string>;
+    // Transfers the asset to the provided address
+    public send?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+        => PromiEvent<string>;
+    public sendSats?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+        => PromiEvent<string>;
 }
 ```
 
@@ -384,9 +388,9 @@ class ENSResolver {
     resolveENSName = (to: string): Promise<string> => { /* ... */ }
 
     send = async (
-        to: string, value: BigNumber, asset: Asset, defer: (to, value, asset) => PromiEvent<string>
+        to: string, value: BigNumber, asset: Asset, deferHandler: Handler,
     ): PromiEvent<string> => {
-        return defer(await resolveENSName(to), value, asset);
+        return deferHandler.send(await resolveENSName(to), value, asset);
     }
 }
 ```

@@ -81,7 +81,6 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
         5,
     );
 
-    // tslint:disable-next-line: no-object-literal-type-assertion
     return response.data.map(utxo => ({
         txid: utxo.txid,
         value: utxo.value,

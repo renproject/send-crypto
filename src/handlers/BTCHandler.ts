@@ -35,19 +35,17 @@ export class BTCHandler implements Handler {
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        asset.toUpperCase() === 'BTC' || asset.toUpperCase() === "BITCOIN";
+        ["BTC", "BITCOIN"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
         this.privateKey.getAddress();
 
     // Balance
-    // tslint:disable-next-line: readonly-keyword
     public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
         (await this.balanceOfInSats(asset, options)).dividedBy(
             new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
-    // tslint:disable-next-line: readonly-keyword
     public readonly balanceOfInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
         const utxos = await this._getUTXOs(asset, options);
         return utxos.reduce((sum, utxo) => sum.plus(utxo.value), new BigNumber(0));
@@ -106,7 +104,6 @@ export class BTCHandler implements Handler {
         return promiEvent;
     };
 
-    // tslint:disable-next-line: readonly-keyword
     private readonly _getUTXOs = async (asset: Asset, options?: { address?: string, confirmations?: number }): Promise<readonly UTXO[]> => {
         const address = options && options.address || await this.address(asset);
         const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;

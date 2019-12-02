@@ -10,40 +10,48 @@ if (result.error) {
     throw result.error;
 };
 
+const WAIT_FOR_CONFIRMATIONS = !!process.env.CI; // For BTC, ZEC & BCH
+
 { // Sending tokens
-    const sendToken = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", address: string }) => {
-        const account = new CryptoAccount(process.env.PRIVATE_KEY || "", { network: "testnet" });
+    const sendToken = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", address: string }, decimals: number, network: string) => {
+        const account = new CryptoAccount(process.env.PRIVATE_KEY || "", { network });
         const address = await account.address(asset);
         const balance = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }));
         const balanceSats = (await account.balanceOfInSats<BigNumber>(asset, { bn: BigNumber }));
-        t.is(balanceSats.div(new BigNumber(10).exponentiatedBy(8)).toFixed(), balance.toFixed());
+        t.is(balanceSats.div(new BigNumber(10).exponentiatedBy(decimals)).toFixed(), balance.toFixed());
         console.log(`[${asset}] address: ${address} (${balance.toFixed()} ${asset})`);
 
-        console.log(`[${asset}] Sending balance ${asset} to ${address}...`);
-        const txP = account.send(address, balance, asset, { subtractFee: true });
+        const amount = "0.001"; // balance;
+        console.log(`[${asset}] Sending ${amount} ${asset} to ${address}...`);
+        const txP = account.send(address, amount, asset, { subtractFee: true });
 
         console.log(`[${asset}] Waiting for transaction hash...`);
-        await new Promise((resolve, reject) => txP.on("transactionHash", hash => { console.log(`Got transaction hash: ${hash}`); resolve(hash); }).catch(reject))
+        await new Promise((resolve, reject) => txP.on("transactionHash", hash => { console.log(`[${asset}] Got transaction hash: ${hash}`); resolve(hash); }).catch(reject))
 
-        // console.log(`Waiting for confirmation...`);
-        // await new Promise((resolve, reject) => txP.on("confirmation", confirmations => { console.log(`Got confirmation: ${confirmations}`); if (confirmations > 0) { resolve(confirmations); } }).catch(reject))
+        if (!WAIT_FOR_CONFIRMATIONS && (asset === "BTC" || asset === "ZEC" || asset === "BCH")) {
+            await sleep(10 * 1000);
+        } else {
+            console.log(`[${asset}] Waiting for 1 confirmation...`);
+            await new Promise((resolve, reject) => txP.on("confirmation", confirmations => { console.log(`[${asset}] Got confirmation: ${confirmations}`); if (confirmations > 0) { resolve(confirmations); } }).catch(reject))
+        }
 
         await txP;
 
-        await sleep(10 * 1000);
-        const balanceAfter = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }))
-        const balanceAfterConfirmed = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber, confirmations: 1 }))
+        if (asset === "BTC" || asset === "ZEC" || asset === "BCH") {
+            const balanceAfter = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }));
+            const balanceAfterConfirmed = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber, confirmations: 1 }));
 
-        t.is(balanceAfter.minus(balanceAfterConfirmed).isPositive(), true);
-
-        t.is(balance.minus(balanceAfter).toNumber(), 0.0001);
+            t.is(balanceAfter.minus(balanceAfterConfirmed).isPositive(), true);
+            t.is(balance.minus(balanceAfter).toNumber(), 0.0001);
+        }
+        t.is(0, 0);
     }
 
-    test("send BTC", sendToken, "BTC");
-    test("send ZEC", sendToken, "ZEC");
-    test("send BCH", sendToken, "BCH");
-    test.failing("send ETH", sendToken, "ETH");
-    test.failing("send ERC20", sendToken, { type: "ERC20", address: "0x1234" });
+    test("send BTC", sendToken, "BTC", 8, "testnet");
+    test("send ZEC", sendToken, "ZEC", 8, "testnet");
+    test("send BCH", sendToken, "BCH", 8, "testnet");
+    test.failing("send ETH", sendToken, "ETH", 18, "kovan");
+    test.failing("send ERC20", sendToken, { type: "ERC20", address: "0x1234" }, 18, "kovan");
 }
 
 { // Generating private key
