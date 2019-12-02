@@ -10,10 +10,10 @@ Currently doesn't support hierarchical or single-use addresses.
 
 * BTC
 * ZEC (transparent txs only)
+* BCH
 
 Planned:
 
-* BCH
 * ETH
 * ERC20 tokens
 
