@@ -7,7 +7,21 @@
   "module": "build/module/index.js",
   "repository": "https://github.com/renproject/send-crypto",
   "license": "MIT",
-  "keywords": ["cryptocurrencies", "wallet", "crypto", "javascript", "library", "bitcoin", "btc", "zcash", "bitcoin cash", "ethereum", "erc20", "transfer", "send"],
+  "keywords": [
+    "cryptocurrencies",
+    "wallet",
+    "crypto",
+    "javascript",
+    "library",
+    "bitcoin",
+    "btc",
+    "zcash",
+    "bitcoin cash",
+    "ethereum",
+    "erc20",
+    "transfer",
+    "send"
+  ],
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "run-s clean && run-p build:*",
@@ -54,6 +68,7 @@
   },
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.0.25",
+    "@types/bchaddrjs": "^0.4.0",
     "@types/web3-provider-engine": "^14.0.0",
     "axios": "^0.19.0",
     "bchaddrjs": "^0.4.4",

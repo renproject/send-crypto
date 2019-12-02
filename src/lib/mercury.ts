@@ -32,17 +32,7 @@ export const fixValues = (utxos: readonly UTXO[], decimals: number) => {
  * @param endpoint An offset to allow trying different endpoints first, in case
  * o      one is out of sync.
  */
-export const getUTXOs = (testnet: boolean, currencyName: string, endpointsIn?: Array<() => Promise<readonly UTXO[]>>) => async (address: string, confirmations: number, endpoint = 0): Promise<readonly UTXO[]> => {
-
-    let endpoints = endpointsIn || [];
-    if (endpoints.length === 0) {
-        if (currencyName.match(/bch/i)) {
-            endpoints = [
-                () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
-            ];
-        }
-    }
-
+export const getUTXOs = (testnet: boolean, currencyName: string, endpoints: Array<() => Promise<readonly UTXO[]>>) => async (address: string, confirmations: number, endpoint = 0): Promise<readonly UTXO[]> => {
     let firstError;
 
     for (let i = 0; i < endpoints.length; i++) {
