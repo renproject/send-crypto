@@ -38,7 +38,7 @@ export default class CryptoAccount {
 
     private sharedState: any;
 
-    constructor(privateKey: string, options: ConstructorOptions) {
+    constructor(privateKey: string, options?: ConstructorOptions) {
         this.privateKey = strip0x(privateKey); // Buffer.from(privateKey, "base64").toString("hex");
         this.network = options && options.network || 'mainnet';
         this.constructorOptions = options;
@@ -192,3 +192,8 @@ export default class CryptoAccount {
         throw new Error(`Unsupported asset ${assetString}`);
     };
 }
+
+// tslint:disable: no-object-mutation
+module.exports = CryptoAccount
+module.exports.CryptoAccount = CryptoAccount
+module.exports.default = CryptoAccount
