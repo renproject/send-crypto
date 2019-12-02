@@ -1,17 +1,16 @@
 import * as bitcoin from "bitgo-utxo-lib";
 
-import { toCashAddress, toLegacyAddress } from "bchaddrjs";
 import BigNumber from "bignumber.js";
 import { List } from "immutable";
 
-import { BitcoinDotCom } from "../common/apis/bitcoinDotCom";
-import { Sochain } from "../common/apis/sochain";
-import { BitgoUTXOLib } from "../common/libraries/bitgoUtxoLib";
-import { subscribeToConfirmations } from "../lib/confirmations";
-import { UTXO } from "../lib/mercury";
-import { newPromiEvent, PromiEvent } from "../lib/promiEvent";
-import { fallback } from "../lib/retry";
-import { Asset, Handler } from "../types/types";
+import { Insight } from "../../common/apis/insight";
+import { Sochain } from "../../common/apis/sochain";
+import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
+import { subscribeToConfirmations } from "../../lib/confirmations";
+import { UTXO } from "../../lib/mercury";
+import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
+import { fallback } from "../../lib/retry";
+import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
 interface BalanceOptions extends AddressOptions {
@@ -23,7 +22,7 @@ interface TxOptions extends BalanceOptions {
     subtractFee?: boolean;  // defaults to false
 }
 
-export class BCHHandler implements Handler {
+export class ZECHandler implements Handler {
     private readonly privateKey: { getAddress: () => string; };
     private readonly testnet: boolean;
 
@@ -31,15 +30,15 @@ export class BCHHandler implements Handler {
 
     constructor(privateKey: string, network: string) {
         this.testnet = network !== "mainnet";
-        this.privateKey = BitgoUTXOLib.loadPrivateKey(this._bitgoNetwork(), privateKey);
+        this.privateKey = BitgoUTXOLib.loadPrivateKey(this.testnet ? bitcoin.networks.zcashTest : bitcoin.networks.zcash, privateKey);
     }
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(asset.toUpperCase()) !== -1;
+        ["ZEC", "ZCASH"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
-        toCashAddress(this.privateKey.getAddress());
+        this.privateKey.getAddress();
 
     // Balance
     public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
@@ -78,19 +77,19 @@ export class BCHHandler implements Handler {
         let errored: boolean;
 
         (async () => {
-            const fromAddress = toLegacyAddress(await this.address(asset));
-            const toAddress = toLegacyAddress(to);
+            const fromAddress = await this.address(asset);
             const changeAddress = fromAddress;
             const utxos = List(await this._getUTXOs(asset, { ...options, address: fromAddress })).sortBy(utxo => utxo.value).reverse().toArray();
 
             const built = await BitgoUTXOLib.buildUTXO(
-                this._bitgoNetwork(),
-                // tslint:disable-next-line: no-bitwise
-                this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
+                this.testnet ? bitcoin.networks.zcashTest : bitcoin.networks.zcash,
+                this.privateKey, changeAddress, to, valueIn, utxos,
+                { ...options, version: bitcoin.Transaction.ZCASH_SAPLING_VERSION, versionGroupID: parseInt("0x892F2085", 16) },
             );
 
             txHash = await fallback([
-                () => BitcoinDotCom.broadcastTransaction(this.testnet)(built.toHex()),
+                () => Insight.broadcastTransaction(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(built.toHex()),
+                () => Sochain.broadcastTransaction(this.testnet ? "ZECTEST" : "ZEC")(built.toHex()),
             ]);
 
             promiEvent.emit('transactionHash', txHash);
@@ -100,22 +99,24 @@ export class BCHHandler implements Handler {
         subscribeToConfirmations(
             promiEvent,
             () => errored,
-            async () => txHash ? BitcoinDotCom.fetchConfirmations(this.testnet)(txHash) : 0,
+            async () => txHash ? Insight.fetchConfirmations(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(txHash) : 0,
         )
 
         return promiEvent;
     };
 
     private readonly _getUTXOs = async (asset: Asset, options?: { address?: string, confirmations?: number }): Promise<readonly UTXO[]> => {
-        const address = toCashAddress(options && options.address || await this.address(asset));
+        const address = options && options.address || await this.address(asset);
         const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
         const endpoints = [
-            () => BitcoinDotCom.fetchUTXOs(this.testnet)(address, confirmations),
-            () => Sochain.fetchUTXOs(this.testnet ? "BTCTEST" : "BTC")(address, confirmations),
+            () => Insight.fetchUTXOs(this.testnet ? `https://explorer.testnet.z.cash/api/` : `https://zcash.blockexplorer.com/api/`)(address, confirmations),
+            () => Sochain.fetchUTXOs(this.testnet ? "ZECTEST" : "ZEC")(address, confirmations),
+
+            // Mainnet:
+            // () => Insight.fetchUTXOs(`https://zecblockexplorer.com/addr/${address}/utxo`, confirmations),
+            // () => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`, confirmations),
         ];
         return fallback(endpoints);
     };
-
-    private readonly _bitgoNetwork = () => this.testnet ? bitcoin.networks.bitcoincashTestnet : bitcoin.networks.bitcoincash;
 }

@@ -50,18 +50,18 @@ export abstract class Handler<
     public handlesAsset!: (asset: Asset) => boolean;
 
     // Returns the address of the account
-    public address?: (asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler) => Promise<string>;
+    public address?: (asset: Asset, options: AddressOptions, deferHandler: DeferHandler) => Promise<string>;
 
     // Returns the balance of the account
-    public balanceOf?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+    public balanceOf?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
         => Promise<BigNumber>;
-    public balanceOfInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+    public balanceOfInSats?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
         => Promise<BigNumber>;
 
     // Transfers the asset to the provided address
-    public send?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+    public send?: (to: string, value: BigNumber, asset: Asset, options: TxOptions, deferHandler: DeferHandler)
         => PromiEvent<string>;
-    public sendSats?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
+    public sendSats?: (to: string, value: BigNumber, asset: Asset, options: TxOptions, deferHandler: DeferHandler)
         => PromiEvent<string>;
 }
 

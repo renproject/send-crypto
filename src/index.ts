@@ -1,9 +1,9 @@
 import BigNumber from "bignumber.js";
 
-import { BCHHandler } from "./handlers/BCHHandler";
-import { BTCHandler } from "./handlers/BTCHandler";
-import { ETHHandler } from "./handlers/ETHHandler";
-import { ZECHandler } from "./handlers/ZECHandler";
+import { BCHHandler } from "./handlers/BCH/BCHHandler";
+import { BTCHandler } from "./handlers/BTC/BTCHandler";
+import { ETHHandler } from "./handlers/ETH/ETHHandler";
+import { ZECHandler } from "./handlers/ZEC/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
 import { strip0x } from "./lib/utils";
 import { Asset, DeferHandler, Handler, HandlerClass, Value } from "./types/types";
@@ -103,7 +103,7 @@ export default class CryptoAccount {
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
                 if (nextHandler.address) {
-                    return nextHandler.address(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                    return nextHandler.address(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
                     return this.deferHandler(nextHandler).address(deferredAsset, deferredOptions);
                 }
@@ -114,7 +114,7 @@ export default class CryptoAccount {
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
                 if (nextHandler.balanceOf) {
-                    return nextHandler.balanceOf(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                    return nextHandler.balanceOf(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
                     return this.deferHandler(nextHandler).balanceOf(deferredAsset, deferredOptions);
                 }
@@ -125,7 +125,7 @@ export default class CryptoAccount {
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
                 if (nextHandler.balanceOfInSats) {
-                    return nextHandler.balanceOfInSats(deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                    return nextHandler.balanceOfInSats(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
                     return this.deferHandler(nextHandler).balanceOfInSats(deferredAsset, deferredOptions);
                 }
@@ -138,7 +138,7 @@ export default class CryptoAccount {
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
                 if (nextHandler.send) {
-                    return nextHandler.send(deferredTo, deferredValue, deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                    return nextHandler.send(deferredTo, deferredValue, deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
                     return this.deferHandler(nextHandler).send(deferredTo, deferredValue, deferredAsset, deferredOptions);
                 }
@@ -151,7 +151,7 @@ export default class CryptoAccount {
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
                 if (nextHandler.sendSats) {
-                    return nextHandler.sendSats(deferredTo, deferredValue, deferredAsset, deferredOptions, this.deferHandler(nextHandler));
+                    return nextHandler.sendSats(deferredTo, deferredValue, deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
                     return this.deferHandler(nextHandler).sendSats(deferredTo, deferredValue, deferredAsset, deferredOptions);
                 }

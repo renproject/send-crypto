@@ -2,10 +2,13 @@ import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig } from "web3-core";
 
-import { forwardEvents, newPromiEvent, PromiEvent } from "../lib/promiEvent";
-import { Asset, Handler } from "../types/types";
+import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
+import { Asset, Handler } from "../../types/types";
 
-interface ConstructorOptions { }
+interface ConstructorOptions {
+    infuraKey?: string;
+    ethereumNode?: string;
+}
 interface AddressOptions { }
 interface BalanceOptions extends AddressOptions {
     address?: string;
@@ -43,7 +46,7 @@ enum Network {
     Görli = "goerli",
 }
 
-const getNetwork = (network: string): Network => {
+export const getNetwork = (network: string): Network => {
     switch (network.toLowerCase()) {
         case "mainnet":
         case "main":
@@ -67,7 +70,6 @@ const getNetwork = (network: string): Network => {
     }
 }
 
-
 export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
     private readonly privateKey: string;
     private readonly network: string;
@@ -80,7 +82,7 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
         web3: Web3;
     };
 
-    constructor(privateKey: string, network: string, options?: { infuraKey?: string, ethereumNode?: string }, sharedState?: any) {
+    constructor(privateKey: string, network: string, options?: ConstructorOptions, sharedState?: any) {
         this.network = getNetwork(network);
         this.privateKey = privateKey;
         const [web3, address] = getWeb3(this.privateKey, getEndpoint(this.network, options && options.ethereumNode, options && options.infuraKey));
