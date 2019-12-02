@@ -50,7 +50,7 @@ const WAIT_FOR_CONFIRMATIONS = !!process.env.CI; // For BTC, ZEC & BCH
     test("send BTC", sendToken, "BTC", 8, "testnet");
     test("send ZEC", sendToken, "ZEC", 8, "testnet");
     test("send BCH", sendToken, "BCH", 8, "testnet");
-    test.failing("send ETH", sendToken, "ETH", 18, "kovan");
+    test("send ETH", sendToken, "ETH", 18, "kovan");
     test.failing("send ERC20", sendToken, { type: "ERC20", address: "0x1234" }, 18, "kovan");
 }
 
@@ -68,6 +68,6 @@ const WAIT_FOR_CONFIRMATIONS = !!process.env.CI; // For BTC, ZEC & BCH
     test("generate private key for BTC", generatePrivateKey, "BTC");
     test("generate private key for ZEC", generatePrivateKey, "ZEC");
     test("generate private key for BCH", generatePrivateKey, "BCH");
-    test.failing("generate private key for ETH", generatePrivateKey, "ETH");
+    test("generate private key for ETH", generatePrivateKey, "ETH");
     test.failing("generate private key for ERC20", generatePrivateKey, { type: "ERC20", address: "0x1234" });
 }
