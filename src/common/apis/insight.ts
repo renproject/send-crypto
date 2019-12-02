@@ -35,7 +35,7 @@ const fetchUTXOs = (insightURL: string) => async (address: string, confirmations
 };
 
 const fetchConfirmations = (insightURL: string) => async (txid: string): Promise<number> => {
-    const url = `${insightURL.replace(/\/$/, "")}`
+    const url = `${insightURL.replace(/\/$/, "")}/tx/${txid}`;
 
     const response = await retryNTimes(
         () => axios.get<{
@@ -58,7 +58,7 @@ const fetchConfirmations = (insightURL: string) => async (txid: string): Promise
             valueBalance: number; // 0,
             spendDescs: any[]; // [],
             outputDescs: any[]; // []
-        }>(`${url}/tx/${txid}`),
+        }>(url),
         5,
     );
 
