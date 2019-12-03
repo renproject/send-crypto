@@ -54,15 +54,15 @@ export class ERC20Handler implements Handler<ConstructorOptions, AddressOptions,
         deferHandler.address("ETH", options);
 
     // Balance
-    public readonly balanceOf = async (assetIn: Asset, options: BalanceOptions, deferHandler: DeferHandler): Promise<BigNumber> => {
+    public readonly getBalance = async (assetIn: Asset, options: BalanceOptions, deferHandler: DeferHandler): Promise<BigNumber> => {
         const asset = resolveAsset(this.network, assetIn);
         const decimals = await this.decimals(asset);
-        return (await this.balanceOfInSats(asset, options, deferHandler)).dividedBy(
+        return (await this.getBalanceInSats(asset, options, deferHandler)).dividedBy(
             new BigNumber(10).exponentiatedBy(decimals)
         );
     }
 
-    public readonly balanceOfInSats = async (assetIn: Asset, options: BalanceOptions, deferHandler: DeferHandler): Promise<BigNumber> => {
+    public readonly getBalanceInSats = async (assetIn: Asset, options: BalanceOptions, deferHandler: DeferHandler): Promise<BigNumber> => {
         const asset = resolveAsset(this.network, assetIn);
         const address = options && options.address || deferHandler && await deferHandler.address("ETH", options) || "";
         return new BigNumber(await this.getContract(asset).methods.balanceOf(address).call());

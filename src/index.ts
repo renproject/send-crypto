@@ -38,8 +38,8 @@ export default class CryptoAccount {
 
     private sharedState: any;
 
-    constructor(privateKey: string, options?: ConstructorOptions) {
-        this.privateKey = strip0x(privateKey); // Buffer.from(privateKey, "base64").toString("hex");
+    constructor(privateKey: string | Buffer, options?: ConstructorOptions) {
+        this.privateKey = strip0x(Buffer.isBuffer(privateKey) ? privateKey.toString("hex") : privateKey); // Buffer.from(privateKey, "base64").toString("hex");
         this.network = options && options.network || 'mainnet';
         this.constructorOptions = options;
         this.sharedState = {};
@@ -70,19 +70,23 @@ export default class CryptoAccount {
         return this.deferHandler().address(asset, options);
     };
 
-    public readonly balanceOf = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
+    public readonly getBalance = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
         const asset = assetIn || this.defaultAsset;
         if (!asset) { throw new Error(`Must provide an asset`) };
-        const bn = await this.deferHandler().balanceOf(asset, options);
+        const bn = await this.deferHandler().getBalance(asset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
+    // tslint:disable-next-line: member-ordering
+    public readonly balanceOf = this.getBalance;
 
-    public readonly balanceOfInSats = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
+    public readonly getBalanceInSats = async <T = number, Options extends { address?: string, bn?: new (v: string) => T } = {}>(assetIn?: Asset, options?: Options): Promise<T> => {
         const asset = assetIn || this.defaultAsset;
         if (!asset) { throw new Error(`Must provide an asset`) };
-        const bn = await this.deferHandler().balanceOfInSats(asset, options);
+        const bn = await this.deferHandler().getBalanceInSats(asset, options);
         return (options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()) as T;
     };
+    // tslint:disable-next-line: member-ordering
+    public readonly balanceOfInSats = this.getBalanceInSats;
 
     public readonly send = <Options extends {} = {}>(
         to: string,
@@ -119,26 +123,26 @@ export default class CryptoAccount {
                     return this.deferHandler(nextHandler).address(deferredAsset, deferredOptions);
                 }
             },
-            balanceOf: (
+            getBalance: (
                 deferredAsset: Asset,
                 deferredOptions?: any,
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
-                if (nextHandler.balanceOf) {
-                    return nextHandler.balanceOf(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
+                if (nextHandler.getBalance) {
+                    return nextHandler.getBalance(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
-                    return this.deferHandler(nextHandler).balanceOf(deferredAsset, deferredOptions);
+                    return this.deferHandler(nextHandler).getBalance(deferredAsset, deferredOptions);
                 }
             },
-            balanceOfInSats: (
+            getBalanceInSats: (
                 deferredAsset: Asset,
                 deferredOptions?: any,
             ) => {
                 const nextHandler = this.findHandler(deferredAsset, thisHandler);
-                if (nextHandler.balanceOfInSats) {
-                    return nextHandler.balanceOfInSats(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
+                if (nextHandler.getBalanceInSats) {
+                    return nextHandler.getBalanceInSats(deferredAsset, deferredOptions || {}, this.deferHandler(nextHandler));
                 } else {
-                    return this.deferHandler(nextHandler).balanceOfInSats(deferredAsset, deferredOptions);
+                    return this.deferHandler(nextHandler).getBalanceInSats(deferredAsset, deferredOptions);
                 }
             },
             send: (

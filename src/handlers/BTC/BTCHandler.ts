@@ -41,13 +41,13 @@ export class BTCHandler implements Handler {
         this.privateKey.getAddress();
 
     // Balance
-    public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
-        (await this.balanceOfInSats(asset, options)).dividedBy(
+    public readonly getBalance = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
+        (await this.getBalanceInSats(asset, options)).dividedBy(
             new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
-    public readonly balanceOfInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
-        const utxos = await this._getUTXOs(asset, options);
+    public readonly getBalanceInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
+        const utxos = await getUTXOs(this.testnet, { ...options, address: options && options.address || await this.address(asset) });
         return utxos.reduce((sum, utxo) => sum.plus(utxo.value), new BigNumber(0));
     };
 
@@ -79,7 +79,7 @@ export class BTCHandler implements Handler {
         (async () => {
             const fromAddress = await this.address(asset);
             const changeAddress = fromAddress;
-            const utxos = List(await this._getUTXOs(asset, { ...options, address: fromAddress })).sortBy(utxo => utxo.value).reverse().toArray();
+            const utxos = List(await getUTXOs(this.testnet, { ...options, address: fromAddress })).sortBy(utxo => utxo.value).reverse().toArray();
 
             const built = await BitgoUTXOLib.buildUTXO(
                 this.testnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin,
@@ -103,15 +103,14 @@ export class BTCHandler implements Handler {
 
         return promiEvent;
     };
-
-    private readonly _getUTXOs = async (asset: Asset, options?: { address?: string, confirmations?: number }): Promise<readonly UTXO[]> => {
-        const address = options && options.address || await this.address(asset);
-        const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
-
-        const endpoints = [
-            () => Blockstream.fetchUTXOs(this.testnet)(address, confirmations),
-            () => Sochain.fetchUTXOs(this.testnet ? "BTCTEST" : "BTC")(address, confirmations),
-        ];
-        return fallback(endpoints);
-    };
 }
+
+export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
+    const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
+
+    const endpoints = [
+        () => Blockstream.fetchUTXOs(testnet)(options.address, confirmations),
+        () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(options.address, confirmations),
+    ];
+    return fallback(endpoints);
+};

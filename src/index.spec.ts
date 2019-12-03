@@ -20,8 +20,8 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
         const account = new CryptoAccount(process.env.PRIVATE_KEY || "", { network });
         const address = await account.address(asset);
 
-        const balance = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }));
-        const balanceSats = (await account.balanceOfInSats<BigNumber>(asset, { bn: BigNumber }));
+        const balance = (await account.getBalance<BigNumber>(asset, { bn: BigNumber }));
+        const balanceSats = (await account.getBalanceInSats<BigNumber>(asset, { bn: BigNumber }));
         t.is(balanceSats.div(new BigNumber(10).exponentiatedBy(decimals)).toFixed(), balance.toFixed());
         console.log(`[${s(asset)}] address: ${address} (${balance.toFixed()} ${s(asset)})`);
 
@@ -42,8 +42,8 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
         await txP;
 
         if (asset === "BTC" || asset === "ZEC" || asset === "BCH") {
-            const balanceAfter = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }));
-            const balanceAfterConfirmed = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber, confirmations: 1 }));
+            const balanceAfter = (await account.getBalance<BigNumber>(asset, { bn: BigNumber }));
+            const balanceAfterConfirmed = (await account.getBalance<BigNumber>(asset, { bn: BigNumber, confirmations: 1 }));
 
             t.is(balanceAfter.minus(balanceAfterConfirmed).isPositive(), true);
             t.is(balance.minus(balanceAfter).toNumber(), 0.0001);
@@ -65,7 +65,7 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
 
         const account = new CryptoAccount(privateKey, { network });
         const address = await account.address(asset);
-        const balance = await account.balanceOf<BigNumber>(asset, { bn: BigNumber });
+        const balance = await account.getBalance<BigNumber>(asset, { bn: BigNumber });
         console.log(`[${s(asset)}] address: ${address} (${balance.toFixed()} ${s(asset)})`);
         t.is(0, 0);
     }

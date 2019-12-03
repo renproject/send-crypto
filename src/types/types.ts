@@ -13,11 +13,11 @@ export interface DeferHandler<Options = {}> {
     ) => Promise<string>;
 
     // Balance
-    readonly balanceOf: (
+    readonly getBalance: (
         asset: Asset,
         options?: any & { readonly address?: string },
     ) => Promise<BigNumber>;
-    readonly balanceOfInSats: (
+    readonly getBalanceInSats: (
         asset: Asset,
         options?: any & { readonly address?: string },
     ) => Promise<BigNumber>;
@@ -53,9 +53,9 @@ export abstract class Handler<
     public address?: (asset: Asset, options: AddressOptions, deferHandler: DeferHandler) => Promise<string>;
 
     // Returns the balance of the account
-    public balanceOf?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
+    public getBalance?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
         => Promise<BigNumber>;
-    public balanceOfInSats?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
+    public getBalanceInSats?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
         => Promise<BigNumber>;
 
     // Transfers the asset to the provided address

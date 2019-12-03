@@ -28,14 +28,15 @@ Replace "BTC" with any supported asset:
 const CryptoAccount = require("send-crypto");
 
 /* Load account from private key */
-const account = new CryptoAccount(process.env.PRIVATE_KEY);
+const privateKey = process.env.PRIVATE_KEY || CryptoAccount.newPrivateKey();
+const account = new CryptoAccount(privateKey);
 
 /* Print address */
 console.log(await account.address("BTC"));
 // > "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
 /* Print balance */
-console.log(await account.balanceOf("BTC"));
+console.log(await account.getBalance("BTC"));
 // > 0.01
 
 /* Send 0.01 BTC */
@@ -47,9 +48,9 @@ const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "B
     // > 2 ...
 ```
 
-**UNITS**: `balanceOf` and `send` can be replaced with `balanceOfInSats` and `sendSats` respectively to use the blockchain's smallest units (satoshis for BTC, wei for ETH, etc.).
+**UNITS**: `getBalance` and `send` can be replaced with `getBalanceInSats` and `sendSats` respectively to use the blockchain's smallest units (satoshis for BTC, wei for ETH, etc.).
 
-**CONFIG**: Each of the functions `address`, `balanceOf` and `send` accept an optional `options` parameter. See the available options in the sections "All balance and transaction options" for each asset below.
+**CONFIG**: Each of the functions `address`, `getBalance` and `send` accept an optional `options` parameter. See the available options in the sections "All balance and transaction options" for each asset below.
 
 <br /><br />
 
@@ -143,11 +144,11 @@ You can replace `"BTC"` with `"ZEC"` or `"BCH"` in the following examples:
 <summary>Send entire balance</summary>
 
 ```ts
-const balance = await account.balanceOf("BTC");
+const balance = await account.getBalance("BTC");
 await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balance, "BTC", { subtractFee: true });
 
 // Or using sats as the unit
-const balanceInSats = await account.balanceOfInSats("BTC");
+const balanceInSats = await account.getBalanceInSats("BTC");
 await account.sendSats("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balanceInSats, "BTC", { subtractFee: true });
 ```
 <hr />
@@ -184,7 +185,7 @@ await testnetAccount.send("12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX", 0.01, "BTC");
 <hr />
 <summary><b>All balance and transaction options</b></summary>
 
-The `balanceOf` and `balanceOfInSats` options are:
+The `getBalance` and `getBalanceInSats` options are:
 
 ```ts
 {
@@ -248,7 +249,11 @@ await account.send(
 A few well known ERC20 tokens can be referenced by name:
 
 ```ts
-await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, { type: "ERC20", name: "DAI" });
+await account.send(
+    "0x05a56e2d52c817161883f50c441c3228cfe54d9f",
+    1.234,
+    { type: "ERC20", name: "DAI" },
+);
 ```
 
 See the [ERC20s.ts](./src/handlers/ERC20/ERC20s.ts) to see the tokens than can be referenced by name.
@@ -279,7 +284,7 @@ const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ko
 <hr />
 <summary><b>All balance and transaction options</b></summary>
 
-The `balanceOf` and `balanceOfInSats` options are:
+The `getBalance` and `getBalanceInSats` options are:
 
 ```ts
 {
@@ -345,9 +350,9 @@ export abstract class Handler<
     public address?: (asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler) => Promise<string>;
 
     // Returns the balance of the account
-    public balanceOf?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+    public getBalance?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
         => Promise<BigNumber>;
-    public balanceOfInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
+    public getBalanceInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
         => Promise<BigNumber>;
 
     // Transfers the asset to the provided address
@@ -374,6 +379,8 @@ You can wrap around other handlers by using the `defer` parameter passed in to e
 class ENSResolver {
     /* ... */
 
+    handlesAsset = (asset: Asset) => asset === "ETH";
+
     resolveENSName = (to: string): Promise<string> => { /* ... */ }
 
     send = async (
@@ -386,6 +393,8 @@ class ENSResolver {
 
 See the following handlers as references:
 
-* [BTC Handler](./src/handlers/BTCHandler.ts)
+* [BTC Handler](./src/handlers/BTC/BTCHandler.ts) (ZEC and BCH handlers are similar)
+* [ETH Handler](./src/handlers/ETH/ETHHandler.ts)
+* [ERC20 Handler](./src/handlers/ERC20/ERC20Handler.ts)
 <hr />
 </details>

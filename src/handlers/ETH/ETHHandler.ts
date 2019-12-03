@@ -53,12 +53,12 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
     // (await this.sharedState.web3.eth.getAccounts())[0];
 
     // Balance
-    public readonly balanceOf = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
-        (await this.balanceOfInSats(asset, options)).dividedBy(
+    public readonly getBalance = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
+        (await this.getBalanceInSats(asset, options)).dividedBy(
             new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
-    public readonly balanceOfInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
+    public readonly getBalanceInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
         let atBlock;
         if (options && options.confirmations && options.confirmations > 0) {
             const currentBlock = new BigNumber(await this.sharedState.web3.eth.getBlockNumber());
