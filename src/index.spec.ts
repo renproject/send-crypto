@@ -16,16 +16,18 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
 
 { // Sending tokens
     const sendToken = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", name: string, address: string }, decimals: number, network: string) => {
+
         const account = new CryptoAccount(process.env.PRIVATE_KEY || "", { network });
         const address = await account.address(asset);
+
         const balance = (await account.balanceOf<BigNumber>(asset, { bn: BigNumber }));
         const balanceSats = (await account.balanceOfInSats<BigNumber>(asset, { bn: BigNumber }));
         t.is(balanceSats.div(new BigNumber(10).exponentiatedBy(decimals)).toFixed(), balance.toFixed());
         console.log(`[${s(asset)}] address: ${address} (${balance.toFixed()} ${s(asset)})`);
 
-        const amount = "0.001"; // balance;
+        const amount = balance;
         console.log(`[${s(asset)}] Sending ${amount} ${s(asset)} to ${address}...`);
-        const txP = account.send(address, amount, asset); // , { subtractFee: true });
+        const txP = account.send(address, amount, asset, { subtractFee: true });
 
         console.log(`[${s(asset)}] Waiting for transaction hash...`);
         await new Promise((resolve, reject) => txP.on("transactionHash", hash => { console.log(`[${s(asset)}] Got transaction hash: ${hash}`); resolve(hash); }).catch(reject))
@@ -53,7 +55,8 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
     test("send ZEC", sendToken, "ZEC", 8, "testnet");
     test("send BCH", sendToken, "BCH", 8, "testnet");
     test("send ETH", sendToken, "ETH", 18, "kovan");
-    test("send DAI", sendToken, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, 18, "kovan");
+    test.serial("send REN", sendToken, { type: "ERC20", name: "REN", address: "0x2cd647668494c1b15743ab283a0f980d90a87394" }, 18, "kovan");
+    test.serial("send DAI", sendToken, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, 18, "kovan");
 }
 
 { // Generating private key

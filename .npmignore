@@ -1,5 +1,21 @@
-src
+node_modules
+build
 test
+src/**.js
+.idea/*
+
+coverage
+.nyc_output
+*.log
+
+package-lock.json
+
+*.env
+
+
+# npmignore - content above this line is automatically generated and modifications may be omitted
+# see npmjs.com/npmignore for more details.
+src
 tsconfig.json
 tsconfig.module.json
 tslint.json
@@ -9,6 +25,4 @@ tslint.json
 .vscode
 build/docs
 **/*.spec.*
-coverage
-.nyc_output
-*.log
+!build

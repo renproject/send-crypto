@@ -4,7 +4,7 @@ import { TransactionConfig } from "web3-core";
 
 import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { Asset, DeferHandler, Handler } from "../../types/types";
-import { getNetwork } from "../ETH/ETHHandler";
+import { getNetwork, getTransactionConfig } from "../ETH/ethUtils";
 import { ERC20ABI } from "./ERC20ABI";
 import { ERC20s } from "./ERC20s";
 
@@ -14,7 +14,6 @@ interface BalanceOptions extends AddressOptions {
     address?: string;
 }
 interface TxOptions extends TransactionConfig {
-    // subtractFee?: boolean;  // defaults to false
 }
 
 const resolveAsset = (network: string, assetIn: Asset): { address: string } => {
@@ -83,11 +82,11 @@ export class ERC20Handler implements Handler<ConstructorOptions, AddressOptions,
         (async () => {
             const call = this.getContract(asset).methods.transfer(
                 to,
-                valueIn.times(new BigNumber(10).exponentiatedBy(await this.decimals(asset))).toString(),
+                valueIn.times(new BigNumber(10).exponentiatedBy(await this.decimals(asset))).toFixed(),
             );
             const config = {
                 from: await deferHandler.address("ETH"),
-                ...options,
+                ...(getTransactionConfig(options)),
             };
             // tslint:disable-next-line: no-object-mutation
             config.gas = await call.estimateGas(config);
@@ -113,11 +112,11 @@ export class ERC20Handler implements Handler<ConstructorOptions, AddressOptions,
         (async () => {
             const call = this.getContract(asset).methods.transfer(
                 to,
-                valueIn.toString(),
+                valueIn.toFixed(),
             );
             const config = {
                 from: await deferHandler.address("ETH"),
-                ...options,
+                ...(getTransactionConfig(options)),
             };
             // tslint:disable-next-line: no-object-mutation
             config.gas = await call.estimateGas(config);

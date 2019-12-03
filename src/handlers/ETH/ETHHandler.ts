@@ -5,6 +5,7 @@ import { TransactionConfig } from "web3-core";
 
 import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { Asset, Handler } from "../../types/types";
+import { getEndpoint, getNetwork, getTransactionConfig, getWeb3 } from "./ethUtils";
 
 interface ConstructorOptions {
     infuraKey?: string;
@@ -19,57 +20,7 @@ interface BalanceOptions extends AddressOptions {
     confirmations?: number; // defaults to 0
 }
 interface TxOptions extends TransactionConfig {
-    // subtractFee?: boolean;  // defaults to false
-}
-
-const getWeb3 = (privateKey: string, endpoint: string): [Web3, string] => {
-    // const provider = new HDWalletProvider(privateKey, endpoint);
-    const web3 = new Web3(endpoint);
-    const account = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
-    web3.eth.accounts.wallet.add(account);
-    // tslint:disable-next-line: no-object-mutation
-    web3.eth.defaultAccount = account.address;
-    // return new Web3(provider as any);
-    return [web3, account.address];
-};
-
-// Free tier - only used as a fallback.
-const defaultInfuraKey = "3b7a6c29f9c048d688a848899888aa96";
-
-const getEndpoint = (network: string | undefined, ethereumNode: string | undefined, infuraKey: string | undefined) => {
-    return ethereumNode ? ethereumNode : `https://${network}.infura.io/v3/${infuraKey || defaultInfuraKey}`;
-}
-
-enum Network {
-    Mainnet = "mainnet",
-    Ropsten = "ropsten",
-    Kovan = "kovan",
-    Rinkeby = "rinkeby",
-    Görli = "goerli",
-}
-
-export const getNetwork = (network: string): Network => {
-    switch (network.toLowerCase()) {
-        case "mainnet":
-        case "main":
-            return Network.Mainnet;
-
-        case "kovan":
-            return Network.Kovan;
-
-        case "rinkeby":
-            return Network.Rinkeby;
-
-        case "görli":
-        case "goerli":
-        case "gorli":
-            return Network.Görli;
-
-        case "ropsten":
-        case "testnet":
-        default:
-            return Network.Ropsten;
-    }
+    subtractFee?: boolean;  // defaults to false
 }
 
 export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
@@ -135,18 +86,30 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
         to: string,
         valueIn: BigNumber,
         asset: Asset,
-        options?: TxOptions
+        optionsIn?: TxOptions
     ): PromiEvent<string> => {
 
         const promiEvent = newPromiEvent<string>();
 
         (async () => {
+            const options = optionsIn || {};
+
+            let value = valueIn;
+
+            const txOptions = getTransactionConfig(options);
+
+            if (options.subtractFee) {
+                const gasPrice = txOptions.gasPrice || await this.sharedState.web3.eth.getGasPrice();
+                const gasLimit = txOptions.gas || 21000;
+                const fee = new BigNumber(gasPrice.toString()).times(gasLimit);
+                value = value.minus(fee);
+            }
             const web3PromiEvent = this.sharedState.web3.eth.sendTransaction({
                 from: await this.address(asset),
                 gas: 21000,
-                ...options,
+                ...txOptions,
                 to,
-                value: valueIn.toString(),
+                value: value.toFixed(),
             }) as unknown as PromiEvent<string>;
             forwardEvents(web3PromiEvent, promiEvent);
             web3PromiEvent.then(promiEvent.resolve);

@@ -304,8 +304,8 @@ The `send` and `sendSats` options are:
     // Override the transaction nonce
     nonce?: number;
 
-    // [WIP] Whether the fee should be included or excluded from `value`
-    // subtractFee?: boolean;  // defaults to false
+    // Whether the fee should be included or excluded from `value` (no effect on ERC20 txs)
+    subtractFee?: boolean;  // defaults to false
 }
 ```
 <hr />

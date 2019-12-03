@@ -12,6 +12,9 @@ const buildUTXO = async (
     const fees = new BigNumber(options && options.fee !== undefined ? options.fee : 10000);
 
     const value = options && options.subtractFee ? valueIn.minus(fees) : valueIn;
+    if (value.lt(0)) {
+        throw new Error("Unable to include fee in value, fee exceeds value");
+    }
 
     const tx = new bitcoin.TransactionBuilder(network);
     if (options && options.version) {
