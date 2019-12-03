@@ -87,14 +87,15 @@
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
 
 <span class="hljs-comment">/* Load account from private key */</span>
-<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
+<span class="hljs-keyword">const</span> privateKey = process.env.PRIVATE_KEY || CryptoAccount.newPrivateKey();
+<span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(privateKey);
 
 <span class="hljs-comment">/* Print address */</span>
 <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> account.address(<span class="hljs-string">"BTC"</span>));
 <span class="hljs-comment">// &gt; "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>
 
 <span class="hljs-comment">/* Print balance */</span>
-<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> account.balanceOf(<span class="hljs-string">"BTC"</span>));
+<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> account.getBalance(<span class="hljs-string">"BTC"</span>));
 <span class="hljs-comment">// &gt; 0.01</span>
 
 <span class="hljs-comment">/* Send 0.01 BTC */</span>
@@ -104,8 +105,8 @@
     .on(<span class="hljs-string">"confirmation"</span>, <span class="hljs-built_in">console</span>.log);
     <span class="hljs-comment">// &gt; 1</span>
     <span class="hljs-comment">// &gt; 2 ...</span></code></pre>
-				<p><strong>UNITS</strong>: <code>balanceOf</code> and <code>send</code> can be replaced with <code>balanceOfInSats</code> and <code>sendSats</code> respectively to use the blockchain&#39;s smallest units (satoshis for BTC, wei for ETH, etc.).</p>
-				<p><strong>CONFIG</strong>: Each of the functions <code>address</code>, <code>balanceOf</code> and <code>send</code> accept an optional <code>options</code> parameter. See the available options in the sections &quot;All balance and transaction options&quot; for each asset below.</p>
+				<p><strong>UNITS</strong>: <code>getBalance</code> and <code>send</code> can be replaced with <code>getBalanceInSats</code> and <code>sendSats</code> respectively to use the blockchain&#39;s smallest units (satoshis for BTC, wei for ETH, etc.).</p>
+				<p><strong>CONFIG</strong>: Each of the functions <code>address</code>, <code>getBalance</code> and <code>send</code> accept an optional <code>options</code> parameter. See the available options in the sections &quot;All balance and transaction options&quot; for each asset below.</p>
 				<p><br /><br /></p>
 				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
 					<h1>Examples</h1>
@@ -170,11 +171,11 @@
 				<details>
 					<hr />
 					<summary>Send entire balance</summary>
-					<pre><code class="language-ts"><span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> account.balanceOf(<span class="hljs-string">"BTC"</span>);
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> account.getBalance(<span class="hljs-string">"BTC"</span>);
 <span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balance, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });
 
 <span class="hljs-comment">// Or using sats as the unit</span>
-<span class="hljs-keyword">const</span> balanceInSats = <span class="hljs-keyword">await</span> account.balanceOfInSats(<span class="hljs-string">"BTC"</span>);
+<span class="hljs-keyword">const</span> balanceInSats = <span class="hljs-keyword">await</span> account.getBalanceInSats(<span class="hljs-string">"BTC"</span>);
 <span class="hljs-keyword">await</span> account.sendSats(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balanceInSats, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });</code></pre>
 					<hr />
 				</details>
@@ -198,7 +199,7 @@
 				<details>
 					<hr />
 					<summary><b>All balance and transaction options</b></summary>
-					<p>The <code>balanceOf</code> and <code>balanceOfInSats</code> options are:</p>
+					<p>The <code>getBalance</code> and <code>getBalanceInSats</code> options are:</p>
 					<pre><code class="language-ts">{
     <span class="hljs-comment">// Get the balance of an address other than the current account's</span>
     address?: <span class="hljs-built_in">string</span>;
@@ -244,7 +245,11 @@
     { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, address: <span class="hljs-string">"0x408e41876cccdc0f92210600ef50372656052a38"</span> },
 );</code></pre>
 					<p>A few well known ERC20 tokens can be referenced by name:</p>
-					<pre><code class="language-ts"><span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>, { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, name: <span class="hljs-string">"DAI"</span> });</code></pre>
+					<pre><code class="language-ts"><span class="hljs-keyword">await</span> account.send(
+    <span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>,
+    <span class="hljs-number">1.234</span>,
+    { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, name: <span class="hljs-string">"DAI"</span> },
+);</code></pre>
 					<p>See the <a href="./src/handlers/ERC20/ERC20s.ts">ERC20s.ts</a> to see the tokens than can be referenced by name.</p>
 					<hr />
 				</details>
@@ -262,7 +267,7 @@
 				<details>
 					<hr />
 					<summary><b>All balance and transaction options</b></summary>
-					<p>The <code>balanceOf</code> and <code>balanceOfInSats</code> options are:</p>
+					<p>The <code>getBalance</code> and <code>getBalanceInSats</code> options are:</p>
 					<pre><code class="language-ts">{
     <span class="hljs-comment">// Get the balance of an address other than the current account's</span>
     address?: <span class="hljs-built_in">string</span>;
@@ -281,8 +286,8 @@
     <span class="hljs-comment">// Override the transaction nonce</span>
     nonce?: <span class="hljs-built_in">number</span>;
 
-    <span class="hljs-comment">// [WIP] Whether the fee should be included or excluded from `value`</span>
-    <span class="hljs-comment">// subtractFee?: boolean;  // defaults to false</span>
+    <span class="hljs-comment">// Whether the fee should be included or excluded from `value` (no effect on ERC20 txs)</span>
+    subtractFee?: <span class="hljs-built_in">boolean</span>;  <span class="hljs-comment">// defaults to false</span>
 }</code></pre>
 					<hr />
 				</details>
@@ -313,9 +318,9 @@
     <span class="hljs-keyword">public</span> address?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler</span>) =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt;;
 
     <span class="hljs-comment">// Returns the balance of the account</span>
-    <span class="hljs-keyword">public</span> balanceOf?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
+    <span class="hljs-keyword">public</span> getBalance?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
         =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
-    <span class="hljs-keyword">public</span> balanceOfInSats?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
+    <span class="hljs-keyword">public</span> getBalanceInSats?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
         =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
 
     <span class="hljs-comment">// Transfers the asset to the provided address</span>
@@ -333,6 +338,8 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					<pre><code class="language-ts"><span class="hljs-keyword">class</span> ENSResolver {
     <span class="hljs-comment">/* ... */</span>
 
+    handlesAsset = <span class="hljs-function">(<span class="hljs-params">asset: Asset</span>) =&gt;</span> asset === <span class="hljs-string">"ETH"</span>;
+
     resolveENSName = (to: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; =&gt; { <span class="hljs-comment">/* ... */</span> }
 
     send = <span class="hljs-keyword">async</span> (
@@ -343,7 +350,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 }</code></pre>
 					<p>See the following handlers as references:</p>
 					<ul>
-						<li><a href="./src/handlers/BTCHandler.ts">BTC Handler</a><hr />
+						<li><a href="./src/handlers/BTC/BTCHandler.ts">BTC Handler</a> (ZEC and BCH handlers are similar)</li>
+						<li><a href="./src/handlers/ETH/ETHHandler.ts">ETH Handler</a></li>
+						<li><a href="./src/handlers/ERC20/ERC20Handler.ts">ERC20 Handler</a><hr />
 				</details>
 				</li>
 				</ul>
@@ -359,7 +368,7 @@ account.registerHandler(MyCystomHandler);</code></pre>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-is-not-exported">
+					<li class=" tsd-kind-enum">
 						<a href="enums/network.html" class="tsd-kind-icon">Network</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -464,16 +473,19 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="globals.html#forwardevents" class="tsd-kind-icon">forward<wbr>Events</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getendpoint" class="tsd-kind-icon">get<wbr>Endpoint</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getnetwork" class="tsd-kind-icon">get<wbr>Network</a>
 					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#gettransactionconfig" class="tsd-kind-icon">get<wbr>Transaction<wbr>Config</a>
+					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getutxos" class="tsd-kind-icon">getUTXOs</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
+					<li class=" tsd-kind-function">
 						<a href="globals.html#getweb3" class="tsd-kind-icon">get<wbr>Web3</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
