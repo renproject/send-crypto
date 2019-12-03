@@ -23,6 +23,6 @@ tslint.json
 .github
 .prettierignore
 .vscode
+!build
 build/docs
 **/*.spec.*
-!build

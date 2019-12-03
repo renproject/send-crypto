@@ -49,7 +49,7 @@
     "#reset": "git clean -dfx && git reset --hard && npm i",
     "reset": "npm i",
     "clean": "trash build test",
-    "prepare-release": "run-s reset cov:check doc:html version doc:publish"
+    "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
