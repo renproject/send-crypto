@@ -17,11 +17,11 @@ export const extractError = (error: any): string => {
     return String(error);
 };
 
-export const fallback = async <T>(fallbacks: Array<() => Promise<T>>) => {
+export const fallback = async <T>(fallbacks: Array<() => Promise<T>>): Promise<T> => {
     let firstError: Error | undefined;
     for (const fn of fallbacks) {
         try {
-            return fn();
+            return await fn();
         } catch (error) {
             firstError = firstError || error;
         }
@@ -49,7 +49,7 @@ export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) 
                 throw error;
             }
         }
-        await sleep(100);
+        await sleep(500);
     }
     throw returnError;
 };

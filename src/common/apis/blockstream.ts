@@ -2,7 +2,6 @@
 import axios from "axios";
 
 import { UTXO } from "../../lib/mercury";
-import { retryNTimes } from "../../lib/retry";
 
 interface BlockstreamUTXO<vout = number> {
     readonly status: {
@@ -44,15 +43,9 @@ interface BlockstreamDetailsUTXO extends BlockstreamUTXO<Array<{
 const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<number> => {
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
-    const response = await retryNTimes(
-        () => axios.get<BlockstreamDetailsUTXO>(`${apiUrl}/tx/${txid}`),
-        5,
-    );
+    const response = await axios.get<BlockstreamDetailsUTXO>(`${apiUrl}/tx/${txid}`);
 
-    const heightResponse = () => retryNTimes(
-        () => axios.get<string>(`${apiUrl}/blocks/tip/height`),
-        5,
-    );
+    const heightResponse = () => axios.get<string>(`${apiUrl}/blocks/tip/height`);
 
     const utxo = response.data;
     return utxo.status.confirmed ? 1 + parseInt((await heightResponse()).data, 10) - utxo.status.block_height : 0;
@@ -61,25 +54,19 @@ const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<n
 const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
-    const response = await retryNTimes(
-        () => axios.get<ReadonlyArray<{
-            readonly status: {
-                readonly confirmed: boolean,
-                readonly block_height: number,
-                readonly block_hash: string,
-                readonly block_time: number,
-            };
-            readonly txid: string;
-            readonly value: number;
-            readonly vout: number;
-        }>>(`${apiUrl}/address/${address}/utxo`),
-        5,
-    );
+    const response = await axios.get<ReadonlyArray<{
+        readonly status: {
+            readonly confirmed: boolean,
+            readonly block_height: number,
+            readonly block_hash: string,
+            readonly block_time: number,
+        };
+        readonly txid: string;
+        readonly value: number;
+        readonly vout: number;
+    }>>(`${apiUrl}/address/${address}/utxo`);
 
-    const heightResponse = await retryNTimes(
-        () => axios.get<string>(`${apiUrl}/blocks/tip/height`),
-        5,
-    );
+    const heightResponse = await axios.get<string>(`${apiUrl}/blocks/tip/height`);
 
     return response.data.map(utxo => ({
         txid: utxo.txid,
@@ -93,7 +80,7 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
 
 
 const broadcastTransaction = (testnet: boolean) => async (txHex: string): Promise<string> => {
-    const response = await retryNTimes(() => axios.post<string>(`https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`, txHex), 2);
+    const response = await axios.post<string>(`https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`, txHex);
     return response.data;
 };
 

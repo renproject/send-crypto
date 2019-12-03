@@ -1,14 +1,10 @@
 import axios from "axios";
 
 import { fixValues, UTXO } from "../../lib/mercury";
-import { retryNTimes } from "../../lib/retry";
 
 const fetchUTXOs = (network: string) => async (address: string, confirmations: number) => {
     const url = `https://sochain.com/api/v2/get_tx_unspent/${network}/${address}/${confirmations}`;
-    const response = await retryNTimes(
-        () => axios.get<{ readonly data: { readonly txs: readonly UTXO[] } }>(url),
-        5,
-    );
+    const response = await axios.get<{ readonly data: { readonly txs: readonly UTXO[] } }>(url);
 
     return fixValues(response.data.data.txs, 8).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations);
 };

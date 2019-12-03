@@ -12,10 +12,10 @@ if (result.error) {
 
 const WAIT_FOR_CONFIRMATIONS = !!process.env.CI; // For BTC, ZEC & BCH
 
-const s = (asset: string | { type: "ERC20", name: string, address: string }) => typeof asset === "string" ? asset : asset.name;
+const s = (asset: string | { type: "ERC20", name: string, address?: string }) => typeof asset === "string" ? asset : asset.name;
 
 { // Sending tokens
-    const sendToken = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", name: string, address: string }, decimals: number, network: string) => {
+    const sendToken = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", name: string, address?: string }, decimals: number, network: string) => {
 
         const account = new CryptoAccount(process.env.PRIVATE_KEY || "", { network });
         const address = await account.address(asset);
@@ -60,7 +60,7 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
 }
 
 { // Generating private key
-    const generatePrivateKey = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", name: string, address: string }, network: string) => {
+    const generatePrivateKey = async (t: ExecutionContext<unknown>, asset: string | { type: "ERC20", name: string, address?: string }, network: string) => {
         const privateKey = CryptoAccount.newPrivateKey();
 
         const account = new CryptoAccount(privateKey, { network });
@@ -70,9 +70,15 @@ const s = (asset: string | { type: "ERC20", name: string, address: string }) => 
         t.is(0, 0);
     }
 
-    test("generate private key for BTC", generatePrivateKey, "BTC", "testnet");
-    test("generate private key for ZEC", generatePrivateKey, "ZEC", "testnet");
-    test("generate private key for BCH", generatePrivateKey, "BCH", "testnet");
-    test("generate private key for ETH", generatePrivateKey, "ETH", "testnet");
-    test("generate private key for ERC20", generatePrivateKey, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, "kovan");
+    test("generate private key for BTC", generatePrivateKey, "BTC", "mainnet");
+    test("generate private key for ZEC", generatePrivateKey, "ZEC", "mainnet");
+    test("generate private key for BCH", generatePrivateKey, "BCH", "mainnet");
+    test("generate private key for ETH", generatePrivateKey, "ETH", "mainnet");
+    test("generate private key for ERC20", generatePrivateKey, { type: "ERC20", name: "DAI" }, "mainnet");
+
+    test("generate private key for BTC (testnet)", generatePrivateKey, "BTC", "testnet");
+    test("generate private key for ZEC (testnet)", generatePrivateKey, "ZEC", "testnet");
+    test("generate private key for BCH (testnet)", generatePrivateKey, "BCH", "testnet");
+    test("generate private key for ETH (testnet)", generatePrivateKey, "ETH", "testnet");
+    test("generate private key for ERC20 (testnet)", generatePrivateKey, { type: "ERC20", name: "DAI", address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2" }, "kovan");
 }

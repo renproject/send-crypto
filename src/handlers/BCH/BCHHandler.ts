@@ -10,7 +10,8 @@ import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
 import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
-import { fallback } from "../../lib/retry";
+import { fallback, retryNTimes } from "../../lib/retry";
+import { shuffleArray } from "../../lib/utils";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
@@ -89,9 +90,9 @@ export class BCHHandler implements Handler {
                 this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
             );
 
-            txHash = await fallback([
+            txHash = await retryNTimes(() => fallback(shuffleArray([
                 () => BitcoinDotCom.broadcastTransaction(this.testnet)(built.toHex()),
-            ]);
+            ])), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -100,12 +101,15 @@ export class BCHHandler implements Handler {
         subscribeToConfirmations(
             promiEvent,
             () => errored,
-            async () => txHash ? BitcoinDotCom.fetchConfirmations(this.testnet)(txHash) : 0,
+            async () => txHash ? this._getConfirmations(txHash) : 0,
         )
 
         return promiEvent;
     };
 
+    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback([
+        () => BitcoinDotCom.fetchConfirmations(this.testnet)(txHash),
+    ]), 5);
     private readonly _bitgoNetwork = () => this.testnet ? bitcoin.networks.bitcoincashTestnet : bitcoin.networks.bitcoincash;
 }
 
@@ -113,9 +117,9 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const address = toCashAddress(options.address);
     const confirmations = options.confirmations || 0;
 
-    const endpoints = [
+    const endpoints = shuffleArray([
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
         () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(address, confirmations),
-    ];
-    return fallback(endpoints);
+    ]);
+    return retryNTimes(() => fallback(endpoints), 5);
 };
