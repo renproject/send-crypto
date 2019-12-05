@@ -14,6 +14,7 @@ interface BalanceOptions extends AddressOptions {
     address?: string;
 }
 interface TxOptions extends TransactionConfig {
+    approve?: boolean;
 }
 
 const resolveAsset = (network: string, assetIn: Asset): { address: string } => {
@@ -80,7 +81,9 @@ export class ERC20Handler implements Handler<ConstructorOptions, AddressOptions,
         const promiEvent = newPromiEvent<string>();
 
         (async () => {
-            const call = this.getContract(asset).methods.transfer(
+            const contract = this.getContract(asset);
+            const method = options.approve ? contract.methods.approve : contract.methods.transfer;
+            const call = method(
                 to,
                 valueIn.times(new BigNumber(10).exponentiatedBy(await this.decimals(asset))).toFixed(),
             );
@@ -110,7 +113,9 @@ export class ERC20Handler implements Handler<ConstructorOptions, AddressOptions,
         const promiEvent = newPromiEvent<string>();
 
         (async () => {
-            const call = this.getContract(asset).methods.transfer(
+            const contract = this.getContract(asset);
+            const method = options.approve ? contract.methods.approve : contract.methods.transfer;
+            const call = method(
                 to,
                 valueIn.toFixed(),
             );

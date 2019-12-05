@@ -36,7 +36,8 @@
     "test:unit": "nyc --silent ava --verbose",
     "lint": "yarn test:lint",
     "lint:strict": "yarn lint && prettier \"src/**/*.ts\" --list-different --tab-width 4",
-    "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
+    "watch": "yarn clean && yarn build:main -- -w",
+    "watch:test": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
     "cov": "run-s build test:unit cov:html && open-cli coverage/index.html",
     "cov:html": "nyc report --reporter=html",
     "cov:send": "nyc report --reporter=lcov && codecov",
@@ -47,7 +48,7 @@
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "version": "standard-version",
     "#reset": "git clean -dfx && git reset --hard && npm i",
-    "reset": "npm i",
+    "reset": "yarn",
     "clean": "trash build test",
     "npmignore": "npmignore",
     "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish"

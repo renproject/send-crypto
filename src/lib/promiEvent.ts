@@ -57,9 +57,9 @@ class InternalPromiEvent<T> {
     // @ts-ignore no initializer because of proxyHandler
     public readonly finally: Promise<T>['finally'];
     // @ts-ignore no initializer because of proxyHandler
-    public readonly listeners: PromiEvent<T>["listeners"];
+    public readonly listeners: EventEmitter["listeners"];
     // @ts-ignore no initializer because of proxyHandler
-    public readonly eventNames: PromiEvent<T>["eventNames"];
+    public readonly eventNames: EventEmitter["eventNames"];
 
     /**
      * @constructor

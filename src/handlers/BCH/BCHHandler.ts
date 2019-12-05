@@ -24,6 +24,14 @@ interface TxOptions extends BalanceOptions {
     subtractFee?: boolean;  // defaults to false
 }
 
+const toCashAddr = (legacyAddress: string) => {
+    try {
+        return toCashAddress(legacyAddress);
+    } catch (error) {
+        return legacyAddress;
+    }
+}
+
 export class BCHHandler implements Handler {
     private readonly privateKey: { getAddress: () => string; };
     private readonly testnet: boolean;
@@ -40,7 +48,7 @@ export class BCHHandler implements Handler {
         typeof asset === "string" && ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(asset.toUpperCase()) !== -1;
 
     public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
-        toCashAddress(this.privateKey.getAddress());
+        toCashAddr(this.privateKey.getAddress());
 
     // Balance
     public readonly getBalance = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
@@ -114,7 +122,7 @@ export class BCHHandler implements Handler {
 }
 
 export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
-    const address = toCashAddress(options.address);
+    const address = toCashAddr(options.address);
     const confirmations = options.confirmations || 0;
 
     const endpoints = shuffleArray([
