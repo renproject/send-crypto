@@ -286,8 +286,11 @@
     <span class="hljs-comment">// Override the transaction nonce</span>
     nonce?: <span class="hljs-built_in">number</span>;
 
-    <span class="hljs-comment">// Whether the fee should be included or excluded from `value` (no effect on ERC20 txs)</span>
+    <span class="hljs-comment">// [ETH] Whether the fee should be included or excluded from `value`</span>
     subtractFee?: <span class="hljs-built_in">boolean</span>;  <span class="hljs-comment">// defaults to false</span>
+
+    <span class="hljs-comment">// [ERC20] Approve instead of transferring</span>
+    approve?: <span class="hljs-built_in">boolean</span>; <span class="hljs-comment">// defaults to false</span>
 }</code></pre>
 					<hr />
 				</details>
@@ -511,6 +514,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="globals.html#subscribetoconfirmations" class="tsd-kind-icon">subscribe<wbr>ToConfirmations</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#tocashaddr" class="tsd-kind-icon">to<wbr>Cash<wbr>Addr</a>
 					</li>
 					<li class=" tsd-kind-object-literal">
 						<a href="globals.html#bitcoindotcom" class="tsd-kind-icon">Bitcoin<wbr>Dot<wbr>Com</a>
