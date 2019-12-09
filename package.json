@@ -76,8 +76,6 @@
     "axios": "^0.19.0",
     "bchaddrjs": "^0.4.4",
     "bignumber.js": "^9.0.0",
-    "bitcore-lib": "^8.11.1",
-    "bitcore-lib-zcash": "^0.13.20",
     "bitgo-utxo-lib": "^1.6.0",
     "bn.js": "^5.0.0",
     "dotenv": "^8.2.0",
