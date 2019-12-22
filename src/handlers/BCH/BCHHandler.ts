@@ -11,7 +11,6 @@ import { subscribeToConfirmations } from "../../lib/confirmations";
 import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
-import { shuffleArray } from "../../lib/utils";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
@@ -98,9 +97,9 @@ export class BCHHandler implements Handler {
                 this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
             );
 
-            txHash = await retryNTimes(() => fallback(shuffleArray([
+            txHash = await retryNTimes(() => fallback([
                 () => BitcoinDotCom.broadcastTransaction(this.testnet)(built.toHex()),
-            ])), 5);
+            ]), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -125,9 +124,9 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const address = toCashAddr(options.address);
     const confirmations = options.confirmations || 0;
 
-    const endpoints = shuffleArray([
+    const endpoints = [
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
         () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(address, confirmations),
-    ]);
+    ];
     return retryNTimes(() => fallback(endpoints), 5);
 };

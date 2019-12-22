@@ -88,10 +88,10 @@ export class ZECHandler implements Handler {
                 { ...options, version: bitcoin.Transaction.ZCASH_SAPLING_VERSION, versionGroupID: parseInt("0x892F2085", 16) },
             );
 
-            txHash = await retryNTimes(() => fallback(shuffleArray([
+            txHash = await retryNTimes(() => fallback([
                 () => Insight.broadcastTransaction(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(built.toHex()),
                 () => Sochain.broadcastTransaction(this.testnet ? "ZECTEST" : "ZEC")(built.toHex()),
-            ])), 5);
+            ]), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -114,13 +114,15 @@ export class ZECHandler implements Handler {
 export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
     const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
-    const endpoints = shuffleArray([
-        () => Insight.fetchUTXOs(testnet ? `https://explorer.testnet.z.cash/api/` : `https://zcash.blockexplorer.com/api/`)(options.address, confirmations),
-        () => Sochain.fetchUTXOs(testnet ? "ZECTEST" : "ZEC")(options.address, confirmations),
-
-        // Mainnet:
-        // () => Insight.fetchUTXOs(`https://zecblockexplorer.com/addr/${address}/utxo`, confirmations),
-        // () => fetchFromZechain(`https://zechain.net/api/v1/addr/${address}/utxo`, confirmations),
-    ]);
+    const endpoints = testnet ? [
+        () => Insight.fetchUTXOs(`https://explorer.testnet.z.cash/api/`)(options.address, confirmations),
+        () => Sochain.fetchUTXOs("ZECTEST")(options.address, confirmations),
+    ] : [
+            () => Insight.fetchUTXOs(`https://explorer.z.cash/api/`)(options.address, confirmations),
+            () => Sochain.fetchUTXOs("ZEC")(options.address, confirmations),
+            () => Insight.fetchUTXOs(`https://zechain.net/api/v1/`)(options.address, confirmations),
+            () => Insight.fetchUTXOs(`https://zcash.blockexplorer.com/api/`)(options.address, confirmations),
+            () => Insight.fetchUTXOs(`https://zecblockexplorer.com/`)(options.address, confirmations),
+        ];
     return retryNTimes(() => fallback(endpoints), 5);
 };

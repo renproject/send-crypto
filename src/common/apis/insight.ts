@@ -3,25 +3,29 @@ import https from "https";
 
 import { fixValue, UTXO } from "../../lib/mercury";
 
+type FetchUTXOResult = ReadonlyArray<{
+    readonly address: string;
+    readonly txid: string;
+    readonly vout: number;
+    readonly scriptPubKey: string;
+    readonly amount: number;
+    readonly satoshis: number;
+    readonly confirmations: number;
+    readonly ts: number;
+}>;
+
 const fetchUTXOs = (insightURL: string) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
     const url = `${insightURL.replace(/\/$/, "")}/addr/${address}/utxo`
-    const response = await axios.get<ReadonlyArray<{
-        readonly address: string;
-        readonly txid: string;
-        readonly vout: number;
-        readonly scriptPubKey: string;
-        readonly amount: number;
-        readonly satoshis: number;
-        readonly confirmations: number;
-        readonly ts: number;
-    }>>(url, {
+    const response = await axios.get<FetchUTXOResult>(url, {
         // TTODO: Remove when certificate is fixed.
         httpsAgent: new https.Agent({
             rejectUnauthorized: false
         })
     });
 
-    return response.data.map(utxo => ({
+    const data: FetchUTXOResult = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
+
+    return data.map(utxo => ({
         txid: utxo.txid,
         value: utxo.satoshis || fixValue(utxo.amount, 8),
         script_hex: utxo.scriptPubKey,

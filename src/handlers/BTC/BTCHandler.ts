@@ -10,7 +10,6 @@ import { subscribeToConfirmations } from "../../lib/confirmations";
 import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
-import { shuffleArray } from "../../lib/utils";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
@@ -87,10 +86,10 @@ export class BTCHandler implements Handler {
                 this.privateKey, changeAddress, to, valueIn, utxos, options,
             );
 
-            txHash = await retryNTimes(() => fallback(shuffleArray([
+            txHash = await retryNTimes(() => fallback([
                 () => Blockstream.broadcastTransaction(this.testnet)(built.toHex()),
                 () => Sochain.broadcastTransaction(this.testnet ? "BTCTEST" : "BTC")(built.toHex()),
-            ])), 5);
+            ]), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -113,9 +112,9 @@ export class BTCHandler implements Handler {
 export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
     const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
-    const endpoints = shuffleArray([
+    const endpoints = [
         () => Blockstream.fetchUTXOs(testnet)(options.address, confirmations),
         () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(options.address, confirmations),
-    ]);
+    ];
     return retryNTimes(() => fallback(endpoints), 5);
 };
