@@ -64,6 +64,7 @@
     "doc:json": "Generate API documentation in typedoc JSON format",
     "version": "Bump package.json version, update CHANGELOG.md, tag release",
     "reset": "Delete all untracked files and reset the repo to the last commit",
+    "postinstall": "patch-package",
     "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
   },
   "engines": {
@@ -80,6 +81,9 @@
     "bn.js": "^5.0.0",
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
+    "patch-package": "^6.2.0",
+    "postinstall-postinstall": "^2.0.0",
+    "send-crypto": "^0.1.6",
     "web3": "^1.2.4",
     "web3-core": "^1.2.4",
     "web3-utils": "^1.2.4"

@@ -1,0 +1,21 @@
+diff --git a/node_modules/@truffle/hdwallet-provider/dist/index.d.ts b/node_modules/@truffle/hdwallet-provider/dist/index.d.ts
+index 897b2ac..7cc3ef7 100644
+--- a/node_modules/@truffle/hdwallet-provider/dist/index.d.ts
++++ b/node_modules/@truffle/hdwallet-provider/dist/index.d.ts
+@@ -1,6 +1,14 @@
+ import ProviderEngine from "web3-provider-engine";
+-import { JSONRPCRequestPayload, JSONRPCErrorCallback } from "ethereum-protocol";
+-import { Callback, JsonRPCResponse } from "web3/providers";
++import { JSONRPCErrorCallback, JSONRPCRequestPayload } from "ethereum-protocol";
++
++type Callback<T> = (error: Error, result: T) => void;
++interface JsonRPCResponse {
++    jsonrpc: string;
++    id: number;
++    result?: any;
++    error?: string;
++}
++
+ declare class HDWalletProvider {
+     private hdwallet?;
+     private walletHdpath;
