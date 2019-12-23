@@ -82,7 +82,6 @@
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
     "patch-package": "^6.2.0",
-    "postinstall-postinstall": "^2.0.0",
     "send-crypto": "^0.1.6",
     "web3": "^1.2.4",
     "web3-core": "^1.2.4",
