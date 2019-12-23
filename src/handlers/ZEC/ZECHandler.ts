@@ -108,7 +108,7 @@ export class ZECHandler implements Handler {
     };
 
     private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback([
-        () => Insight.fetchConfirmations(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://zcash.blockexplorer.com/api")(txHash),
+        () => Insight.fetchConfirmations(this.testnet ? "https://explorer.testnet.z.cash/api" : "https://explorer.z.cash/api")(txHash),
     ]), 5);
 }
 
