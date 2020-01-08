@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BlockstreamUTXO | send-crypto</title>
+	<title>TransactionResponse | send-crypto</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,34 +56,21 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="blockstreamutxo.html">BlockstreamUTXO</a>
+					<a href="transactionresponse.html">TransactionResponse</a>
 				</li>
 			</ul>
-			<h1>Interface BlockstreamUTXO&lt;vout&gt;</h1>
+			<h1>Interface TransactionResponse</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-type-parameters">
-				<h3>Type parameters</h3>
-				<ul class="tsd-type-parameters">
-					<li>
-						<h4>vout</h4>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">BlockstreamUTXO</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="blockstreamdetailsutxo.html" class="tsd-signature-type">BlockstreamDetailsUTXO</a>
-							</li>
-						</ul>
+						<span class="target">TransactionResponse</span>
 					</li>
 				</ul>
 			</section>
@@ -94,10 +81,8 @@
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="blockstreamutxo.html#status" class="tsd-kind-icon">status</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="blockstreamutxo.html#txid" class="tsd-kind-icon">txid</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="blockstreamutxo.html#value" class="tsd-kind-icon">value</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="blockstreamutxo.html#vout" class="tsd-kind-icon">vout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="transactionresponse.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="transactionresponse.html#data" class="tsd-kind-icon">data</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,44 +91,117 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="status" class="tsd-anchor"></a>
-					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
+					<a name="context" class="tsd-anchor"></a>
+					<h3>context</h3>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="blockchaircontext.html" class="tsd-signature-type">BlockchairContext</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockstream.ts#L7">common/apis/blockstream.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockchair.ts#L182">common/apis/blockchair.ts:182</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="txid" class="tsd-anchor"></a>
-					<h3>txid</h3>
-					<div class="tsd-signature tsd-kind-icon">txid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="data" class="tsd-anchor"></a>
+					<h3>data</h3>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockstream.ts#L15">common/apis/blockstream.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockchair.ts#L150">common/apis/blockchair.ts:150</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="value" class="tsd-anchor"></a>
-					<h3>value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockstream.ts#L16">common/apis/blockstream.ts:16</a></li>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>utxo: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>inputs<span class="tsd-signature-symbol">: </span><a href="inputoroutput.html" class="tsd-signature-type">InputOrOutput</a><span class="tsd-signature-symbol">[]</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>outputs<span class="tsd-signature-symbol">: </span><a href="inputoroutput.html" class="tsd-signature-type">InputOrOutput</a><span class="tsd-signature-symbol">[]</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>transaction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
+										<ul class="tsd-parameters">
+											<li class="tsd-parameter">
+												<h5>block_<wbr>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>cdd_<wbr>total<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>date<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee_<wbr>per_<wbr>kb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee_<wbr>per_<wbr>kb_<wbr>usd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee_<wbr>per_<wbr>kwu<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee_<wbr>per_<wbr>kwu_<wbr>usd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>fee_<wbr>usd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>has_<wbr>witness<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>hash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>input_<wbr>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>input_<wbr>total<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>input_<wbr>total_<wbr>usd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>is_<wbr>coinbase<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>lock_<wbr>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>output_<wbr>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>output_<wbr>total<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>output_<wbr>total_<wbr>usd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li class="tsd-parameter">
+												<h5>weight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="vout" class="tsd-anchor"></a>
-					<h3>vout</h3>
-					<div class="tsd-signature tsd-kind-icon">vout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">vout</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/11ca692/src/common/apis/blockstream.ts#L17">common/apis/blockstream.ts:17</a></li>
-						</ul>
-					</aside>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -159,20 +217,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-has-type-parameter tsd-is-not-exported">
-						<a href="blockstreamutxo.html" class="tsd-kind-icon">BlockstreamUTXO</a>
+					<li class="current tsd-kind-interface tsd-is-not-exported">
+						<a href="transactionresponse.html" class="tsd-kind-icon">Transaction<wbr>Response</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="blockstreamutxo.html#status" class="tsd-kind-icon">status</a>
+								<a href="transactionresponse.html#context" class="tsd-kind-icon">context</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="blockstreamutxo.html#txid" class="tsd-kind-icon">txid</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="blockstreamutxo.html#value" class="tsd-kind-icon">value</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="blockstreamutxo.html#vout" class="tsd-kind-icon">vout</a>
+								<a href="transactionresponse.html#data" class="tsd-kind-icon">data</a>
 							</li>
 						</ul>
 					</li>

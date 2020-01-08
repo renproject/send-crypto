@@ -72,11 +72,16 @@
 					<h2>Supported assets</h2>
 				</a>
 				<ul>
-					<li>BTC</li>
-					<li>ZEC (transparent txs only)</li>
-					<li>BCH</li>
-					<li>ETH</li>
-					<li>ERC20 tokens</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/btc.png" /> BTC</p>
+					</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/zec.png" /> ZEC (transparent txs only)</p>
+					</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH</p>
+					</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ETH</p>
+					</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ERC20 tokens</p>
+					</li>
 				</ul>
 				<p><br /><br /></p>
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
@@ -374,6 +379,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					<li class=" tsd-kind-enum">
 						<a href="enums/network.html" class="tsd-kind-icon">Network</a>
 					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/networks.html" class="tsd-kind-icon">Networks</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/bchhandler.html" class="tsd-kind-icon">BCHHandler</a>
 					</li>
@@ -402,7 +410,13 @@ account.registerHandler(MyCystomHandler);</code></pre>
 						<a href="interfaces/addressoptions.html" class="tsd-kind-icon">Address<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/addressresponse.html" class="tsd-kind-icon">Address<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
 						<a href="interfaces/balanceoptions.html" class="tsd-kind-icon">Balance<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/blockchaircontext.html" class="tsd-kind-icon">Blockchair<wbr>Context</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-not-exported">
 						<a href="interfaces/blockstreamdetailsutxo.html" class="tsd-kind-icon">Blockstream<wbr>DetailsUTXO</a>
@@ -415,6 +429,12 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
 						<a href="interfaces/deferhandler.html" class="tsd-kind-icon">Defer<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/inputoroutput.html" class="tsd-kind-icon">Input<wbr>OrOutput</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/transactionresponse.html" class="tsd-kind-icon">Transaction<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-not-exported">
 						<a href="interfaces/txoptions.html" class="tsd-kind-icon">Tx<wbr>Options</a>
@@ -450,7 +470,13 @@ account.registerHandler(MyCystomHandler);</code></pre>
 						<a href="globals.html#mainnetaddress" class="tsd-kind-icon">mainnet<wbr>Address</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#mainnethash" class="tsd-kind-icon">mainnet<wbr>Hash</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="globals.html#testnetaddress" class="tsd-kind-icon">testnet<wbr>Address</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#testnethash" class="tsd-kind-icon">testnet<wbr>Hash</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#ox" class="tsd-kind-icon">Ox</a>
@@ -519,12 +545,15 @@ account.registerHandler(MyCystomHandler);</code></pre>
 						<a href="globals.html#sleep" class="tsd-kind-icon">sleep</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="globals.html#sortutxos" class="tsd-kind-icon">sortUTXOs</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="globals.html#strip0x" class="tsd-kind-icon">strip0x</a>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="globals.html#subscribetoconfirmations" class="tsd-kind-icon">subscribe<wbr>ToConfirmations</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
+					<li class=" tsd-kind-function">
 						<a href="globals.html#testendpoints" class="tsd-kind-icon">test<wbr>Endpoints</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-not-exported">
@@ -537,6 +566,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 						<a href="globals.html#bitgoutxolib" class="tsd-kind-icon">BitgoUTXOLib</a>
 					</li>
 					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#blockchair" class="tsd-kind-icon">Blockchair</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
 						<a href="globals.html#blockstream" class="tsd-kind-icon">Blockstream</a>
 					</li>
 					<li class=" tsd-kind-object-literal">
@@ -547,6 +579,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					</li>
 					<li class=" tsd-kind-object-literal">
 						<a href="globals.html#sochain" class="tsd-kind-icon">Sochain</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#_apifallbacks" class="tsd-kind-icon">_api<wbr>Fallbacks</a>
 					</li>
 				</ul>
 			</nav>
