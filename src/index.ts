@@ -198,6 +198,6 @@ export default class CryptoAccount {
 }
 
 // tslint:disable: no-object-mutation
-module.exports = CryptoAccount
+// module.exports = CryptoAccount
 module.exports.CryptoAccount = CryptoAccount
 module.exports.default = CryptoAccount

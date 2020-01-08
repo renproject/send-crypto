@@ -15,7 +15,7 @@ type FetchUTXOResult = ReadonlyArray<{
 }>;
 
 const fetchUTXOs = (insightURL: string) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
-    const url = `${insightURL.replace(/\/$/, "")}/addr/${address}/utxo`
+    const url = `${insightURL.replace(/\/$/, "")}/addr/${address}/utxo`;
     const response = await axios.get<FetchUTXOResult>(url, {
         // TTODO: Remove when certificate is fixed.
         httpsAgent: new https.Agent({

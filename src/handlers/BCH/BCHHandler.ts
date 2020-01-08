@@ -5,7 +5,6 @@ import BigNumber from "bignumber.js";
 import { List } from "immutable";
 
 import { BitcoinDotCom } from "../../common/apis/bitcoinDotCom";
-import { Sochain } from "../../common/apis/sochain";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
 import { UTXO } from "../../lib/mercury";
@@ -126,7 +125,6 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
 
     const endpoints = [
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
-        () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(address, confirmations),
     ];
     return retryNTimes(() => fallback(endpoints), 5);
 };

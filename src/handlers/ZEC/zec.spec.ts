@@ -1,32 +1,27 @@
-import test, { ExecutionContext } from "ava";
+import test from "ava";
 
 import { Insight } from "../../common/apis/insight";
-import { Sochain } from "../../common/apis/sochain";
-import { UTXO } from "../../lib/mercury";
-
-const testEndpoints = async (t: ExecutionContext<unknown>, endpoints: ReadonlyArray<() => Promise<readonly UTXO[]>>) => {
-    let expectedResult = null;
-    for (const endpoint of endpoints) {
-        const result = await endpoint();
-        expectedResult = expectedResult || result;
-        t.deepEqual(expectedResult, result);
-    }
-};
+import { testEndpoints } from "../BTC/btc.spec";
 
 const testnetAddress = "tmDLRUiVjPCSbtrL6R9hTBhUdcBKYTVG7qc";
-const mainnetAddress = "t1MVg9t1KzXw6kc8ekRPiL2ot1CEivHhAZv";
-const confirmations = 0;
+const mainnetAddress = "t3QTUGG2YqpiDg8aSrj3ZN7sKTs3frrdYAt";
+const confirmations = 6;
 
-test.only("Testnet ZEC", testEndpoints, [
+test("Testnet ZEC", testEndpoints, [
     () => Insight.fetchUTXOs(`https://explorer.testnet.z.cash/api/`)(testnetAddress, confirmations),
-    // () => Sochain.fetchUTXOs("ZECTEST")(testnetAddress, confirmations),
 ]);
 
-test.only("Mainnet ZEC", testEndpoints, [
+test("Mainnet ZEC", testEndpoints, [
     () => Insight.fetchUTXOs(`https://explorer.z.cash/api/`)(mainnetAddress, confirmations),
-    // () => Insight.fetchUTXOs(`https://zecblockexplorer.com/`)(mainnetAddress, confirmations),
-    // () => Insight.fetchUTXOs(`https://zcashnetwork.info/api/`)(mainnetAddress, confirmations),
-    // () => Insight.fetchUTXOs(`https://zechain.net/api/v1/`)(mainnetAddress, confirmations),
-    // () => Insight.fetchUTXOs(`https://zcash.blockexplorer.com/api/`)(mainnetAddress, confirmations),
-    // () => Sochain.fetchUTXOs("ZEC")(mainnetAddress, confirmations),
+]);
+
+const testnetHash = "fcc25c1a1f7df38ce15211b324385d837540dc0a97c3056f7497dacabef77c3f";
+const mainnetHash = "dd428d9f859ed78ee8597f8c8e3ba990b0d4750f78b08e8f507fb279b64f1c71";
+
+test("Testnet ZEC confirmations", testEndpoints, [
+    () => Insight.fetchConfirmations("https://explorer.testnet.z.cash/api")(testnetHash),
+]);
+
+test("Mainnet ZEC confirmations", testEndpoints, [
+    () => Insight.fetchConfirmations("https://explorer.z.cash/api")(mainnetHash),
 ]);
