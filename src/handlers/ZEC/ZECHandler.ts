@@ -7,10 +7,10 @@ import { Insight } from "../../common/apis/insight";
 import { Sochain } from "../../common/apis/sochain";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
-import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
+import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }

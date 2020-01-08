@@ -5,11 +5,12 @@ import BigNumber from "bignumber.js";
 import { List } from "immutable";
 
 import { BitcoinDotCom } from "../../common/apis/bitcoinDotCom";
+import { Blockchair } from "../../common/apis/blockchair";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
-import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
+import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
@@ -28,6 +29,23 @@ const toCashAddr = (legacyAddress: string) => {
     } catch (error) {
         return legacyAddress;
     }
+}
+
+export const _apiFallbacks = {
+    fetchConfirmations: (testnet: boolean, txHash: string) => [
+        () => BitcoinDotCom.fetchConfirmations(testnet)(txHash),
+        testnet ? undefined : () => Blockchair.fetchConfirmations(Blockchair.networks.BITCOIN_CASH)(txHash),
+    ],
+
+    fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
+        () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
+        testnet ? undefined : () => Blockchair.fetchUTXOs(Blockchair.networks.BITCOIN_CASH)(address, confirmations),
+    ],
+
+    broadcastTransaction: (testnet: boolean, hex: string) => [
+        () => BitcoinDotCom.broadcastTransaction(testnet)(hex),
+        testnet ? undefined : () => Blockchair.broadcastTransaction(Blockchair.networks.BITCOIN_CASH)(hex),
+    ],
 }
 
 export class BCHHandler implements Handler {
@@ -96,9 +114,7 @@ export class BCHHandler implements Handler {
                 this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
             );
 
-            txHash = await retryNTimes(() => fallback([
-                () => BitcoinDotCom.broadcastTransaction(this.testnet)(built.toHex()),
-            ]), 5);
+            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -113,9 +129,7 @@ export class BCHHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback([
-        () => BitcoinDotCom.fetchConfirmations(this.testnet)(txHash),
-    ]), 5);
+    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 5);
     private readonly _bitgoNetwork = () => this.testnet ? bitcoin.networks.bitcoincashTestnet : bitcoin.networks.bitcoincash;
 }
 
@@ -123,8 +137,6 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const address = toCashAddr(options.address);
     const confirmations = options.confirmations || 0;
 
-    const endpoints = [
-        () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
-    ];
+    const endpoints = _apiFallbacks.fetchUTXOs(testnet, address, confirmations);
     return retryNTimes(() => fallback(endpoints), 5);
 };

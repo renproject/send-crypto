@@ -3,13 +3,14 @@ import * as bitcoin from "bitgo-utxo-lib";
 import BigNumber from "bignumber.js";
 import { List } from "immutable";
 
+import { Blockchair } from "../../common/apis/blockchair";
 import { Blockstream } from "../../common/apis/blockstream";
 import { Sochain } from "../../common/apis/sochain";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
-import { UTXO } from "../../lib/mercury";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
+import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 
 interface AddressOptions { }
@@ -20,6 +21,25 @@ interface BalanceOptions extends AddressOptions {
 interface TxOptions extends BalanceOptions {
     fee?: number;           // defaults to 10000
     subtractFee?: boolean;  // defaults to false
+}
+
+export const _apiFallbacks = {
+    fetchConfirmations: (testnet: boolean, txHash: string) => [
+        () => Blockstream.fetchConfirmations(testnet)(txHash),
+        () => Blockchair.fetchConfirmations(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(txHash),
+    ],
+
+    fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
+        () => Blockstream.fetchUTXOs(testnet)(address, confirmations),
+        () => Blockchair.fetchUTXOs(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(address, confirmations),
+        () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(address, confirmations),
+    ],
+
+    broadcastTransaction: (testnet: boolean, hex: string) => [
+        () => Blockstream.broadcastTransaction(testnet)(hex),
+        () => Blockchair.broadcastTransaction(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(hex),
+        () => Sochain.broadcastTransaction(testnet ? "BTCTEST" : "BTC")(hex),
+    ],
 }
 
 export class BTCHandler implements Handler {
@@ -86,10 +106,7 @@ export class BTCHandler implements Handler {
                 this.privateKey, changeAddress, to, valueIn, utxos, options,
             );
 
-            txHash = await retryNTimes(() => fallback([
-                () => Blockstream.broadcastTransaction(this.testnet)(built.toHex()),
-                () => Sochain.broadcastTransaction(this.testnet ? "BTCTEST" : "BTC")(built.toHex()),
-            ]), 5);
+            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 5);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -104,17 +121,12 @@ export class BTCHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback([
-        () => Blockstream.fetchConfirmations(this.testnet)(txHash),
-    ]), 5);
+    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 5);
 }
 
 export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
     const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
-    const endpoints = [
-        () => Blockstream.fetchUTXOs(testnet)(options.address, confirmations),
-        () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(options.address, confirmations),
-    ];
+    const endpoints = _apiFallbacks.fetchUTXOs(testnet, options.address, confirmations);
     return retryNTimes(() => fallback(endpoints), 5);
 };

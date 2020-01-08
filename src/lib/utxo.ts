@@ -1,13 +1,19 @@
 import BigNumber from "bignumber.js";
 
-import { BitcoinDotCom } from "../common/apis/bitcoinDotCom";
-
 export interface UTXO {
     readonly txid: string; // hex string without 0x prefix
     readonly value: number; // satoshis
-    readonly script_hex: string; // hex string without 0x prefix
+    readonly script_hex?: string; // hex string without 0x prefix
     readonly output_no: number;
     readonly confirmations: number;
+}
+
+export const sortUTXOs = (a: UTXO, b: UTXO) => {
+    // Sort greater values first
+    if (a.value !== b.value) { return b.value - a.value };
+    // Sort older UTXOs first
+    if (a.confirmations !== b.confirmations) { return a.value - b.value }
+    return a.txid <= b.txid ? -1 : 1;
 }
 
 export const fixValue = (value: number, decimals: number) => new BigNumber(value).multipliedBy(new BigNumber(10).exponentiatedBy(decimals)).decimalPlaces(0).toNumber();

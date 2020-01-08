@@ -1,7 +1,7 @@
 import axios from "axios";
 import BigNumber from "bignumber.js";
 
-import { fixValues, UTXO } from "../../lib/mercury";
+import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
 
 const fetchConfirmations = (network: string) => async (txid: string): Promise<number> => {
     const url = `https://api.blockchair.com/${network}/dashboards/transaction/${txid}`;
@@ -19,10 +19,12 @@ const fetchUTXOs = (network: string) => async (address: string, confirmations: n
     return fixValues(response.data[address].utxo.map(utxo => ({
         txid: utxo.transaction_hash,
         value: new BigNumber(utxo.value).div(100000000).toNumber(),
-        script_hex: "76a914b0c08e3b7da084d7dbe9431e9e49fb61fb3b64d788ac",
+        // script_hex: "",
         output_no: utxo.index,
         confirmations: utxo.block_id === -1 ? 0 : response.context.state - utxo.block_id + 1,
-    })).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8);
+    }))
+        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8)
+        .sort(sortUTXOs);
 };
 
 export const broadcastTransaction = (network: string) => async (txHex: string): Promise<string> => {
@@ -38,7 +40,19 @@ export const broadcastTransaction = (network: string) => async (txHex: string): 
     return response.data[0];
 };
 
+enum Networks {
+    BITCOIN = "bitcoin",
+    BITCOIN_CASH = "bitcoin-cash",
+    LITECOIN = "litecoin",
+    BITCOIN_SV = "bitcoin-sv",
+    DOGECOIN = "dogecoin",
+    DASH = "dash",
+    GROESTLCOIN = "groestlcoin",
+    BITCOIN_TESTNET = "bitcoin/testnet",
+}
+
 export const Blockchair = {
+    networks: Networks,
     fetchUTXOs,
     fetchConfirmations,
     broadcastTransaction,

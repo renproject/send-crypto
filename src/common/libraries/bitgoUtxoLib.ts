@@ -2,7 +2,7 @@ import * as bitcoin from "bitgo-utxo-lib";
 
 import BigNumber from "bignumber.js";
 
-import { UTXO } from "../../lib/mercury";
+import { UTXO } from "../../lib/utxo";
 
 const buildUTXO = async (
     network: typeof bitcoin.networks.bitcoin,
@@ -13,7 +13,7 @@ const buildUTXO = async (
 
     const value = options && options.subtractFee ? valueIn.minus(fees) : valueIn;
     if (value.lt(0)) {
-        throw new Error("Unable to include fee in value, fee exceeds value");
+        throw new Error(`Unable to include fee in value, fee exceeds value (${fees.toFixed()} > ${valueIn.toFixed()})`);
     }
 
     const tx = new bitcoin.TransactionBuilder(network);

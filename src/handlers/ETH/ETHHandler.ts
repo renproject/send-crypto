@@ -102,6 +102,9 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
                 const gasPrice = txOptions.gasPrice || await this.sharedState.web3.eth.getGasPrice();
                 const gasLimit = txOptions.gas || 21000;
                 const fee = new BigNumber(gasPrice.toString()).times(gasLimit);
+                if (fee.gt(value)) {
+                    throw new Error(`Unable to include fee in value, fee exceeds value (${fee.toFixed()} > ${value.toFixed()})`);
+                }
                 value = value.minus(fee);
             }
             const web3PromiEvent = this.sharedState.web3.eth.sendTransaction({

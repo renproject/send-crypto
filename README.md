@@ -8,11 +8,15 @@ Currently doesn't support hierarchical or single-use addresses.
 
 ## Supported assets
 
-* BTC
-* ZEC (transparent txs only)
-* BCH
-* ETH
-* ERC20 tokens
+* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/btc.png" /> BTC
+
+* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/zec.png" /> ZEC (transparent txs only)
+
+* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH
+
+* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ETH
+
+* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ERC20 tokens
 
 <br /><br />
 

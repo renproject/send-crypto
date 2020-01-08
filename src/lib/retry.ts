@@ -17,9 +17,10 @@ export const extractError = (error: any): string => {
     return String(error);
 };
 
-export const fallback = async <T>(fallbacks: Array<() => Promise<T>>): Promise<T> => {
+export const fallback = async <T>(fallbacks: Array<undefined | (() => Promise<T>)>): Promise<T> => {
     let firstError: Error | undefined;
     for (const fn of fallbacks) {
+        if (!fn) { continue; }
         try {
             return await fn();
         } catch (error) {

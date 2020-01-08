@@ -1,7 +1,7 @@
 import test from "ava";
 
 import { Insight } from "../../common/apis/insight";
-import { testEndpoints } from "../BTC/btc.spec";
+import { testEndpoints } from "../../spec/specUtils";
 
 const testnetAddress = "tmDLRUiVjPCSbtrL6R9hTBhUdcBKYTVG7qc";
 const mainnetAddress = "t3QTUGG2YqpiDg8aSrj3ZN7sKTs3frrdYAt";

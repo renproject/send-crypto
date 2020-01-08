@@ -1,7 +1,7 @@
 
 import axios from "axios";
 
-import { UTXO } from "../../lib/mercury";
+import { sortUTXOs, UTXO } from "../../lib/utxo";
 
 interface BlockstreamUTXO<vout = number> {
     readonly status: {
@@ -71,11 +71,12 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
     return response.data.map(utxo => ({
         txid: utxo.txid,
         value: utxo.value,
-        // Placeholder
-        script_hex: "76a914b0c08e3b7da084d7dbe9431e9e49fb61fb3b64d788ac",
+        // script_hex: "",
         output_no: utxo.vout,
         confirmations: utxo.status.confirmed ? 1 + parseInt(heightResponse.data, 10) - utxo.status.block_height : 0,
-    })).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations);
+    }))
+        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)
+        .sort(sortUTXOs);
 };
 
 

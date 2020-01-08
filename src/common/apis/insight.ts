@@ -1,7 +1,7 @@
 import axios from "axios";
 import https from "https";
 
-import { fixValue, UTXO } from "../../lib/mercury";
+import { fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
 
 type FetchUTXOResult = ReadonlyArray<{
     readonly address: string;
@@ -28,10 +28,12 @@ const fetchUTXOs = (insightURL: string) => async (address: string, confirmations
     return data.map(utxo => ({
         txid: utxo.txid,
         value: utxo.satoshis || fixValue(utxo.amount, 8),
-        script_hex: utxo.scriptPubKey,
+        // script_hex: utxo.scriptPubKey,
         output_no: utxo.vout,
         confirmations: utxo.confirmations,
-    })).filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations);
+    }))
+        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)
+        .sort(sortUTXOs);
 };
 
 const fetchConfirmations = (insightURL: string) => async (txid: string): Promise<number> => {
