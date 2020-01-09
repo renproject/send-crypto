@@ -197,7 +197,36 @@ export default class CryptoAccount {
     };
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS                                                                    //
+// Based on https://github.com/MikeMcl/bignumber.js/blob/master/bignumber.js  //
+////////////////////////////////////////////////////////////////////////////////
+
 // tslint:disable: no-object-mutation
-// module.exports = CryptoAccount
-module.exports.CryptoAccount = CryptoAccount
-module.exports.default = CryptoAccount
+
+// tslint:disable-next-line: no-string-literal
+(CryptoAccount as any)["default"] = (CryptoAccount as any).CryptoAccount = CryptoAccount;
+
+declare global {
+    let define: any;
+    let window: any;
+}
+if (typeof define === 'function' && define.amd) {
+    // AMD.
+    define(() => CryptoAccount);
+
+} else if (typeof module !== "undefined" && module.exports) {
+    // Node.js and other environments that support module.exports.
+    try {
+        module.exports = CryptoAccount;
+    } catch (error) {
+        // ignore error
+    }
+
+} else {
+    // Browser.
+    if (window) {
+        window.CryptoAccount = CryptoAccount;
+    }
+}
