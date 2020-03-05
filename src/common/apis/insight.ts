@@ -65,7 +65,7 @@ const fetchConfirmations = (insightURL: string) => async (txid: string): Promise
 };
 
 export const broadcastTransaction = (insightURL: string) => async (txHex: string): Promise<string> => {
-    const url = `${insightURL}/tx/send`;
+    const url = `${insightURL.replace(/\/$/, "")}/tx/send`;
     const response = await axios.post<{ error: string | null, id: null, txid: string }>(
         url,
         { rawtx: txHex },

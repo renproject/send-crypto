@@ -10,6 +10,7 @@ import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
+import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 
@@ -25,19 +26,25 @@ interface TxOptions extends BalanceOptions {
 
 export const _apiFallbacks = {
     fetchConfirmations: (testnet: boolean, txHash: string) => [
-        () => Blockstream.fetchConfirmations(testnet)(txHash),
-        () => Blockchair.fetchConfirmations(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(txHash),
+        ...shuffleArray([
+            () => Blockstream.fetchConfirmations(testnet)(txHash),
+            () => Blockchair.fetchConfirmations(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(txHash),
+        ]),
     ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
-        () => Blockstream.fetchUTXOs(testnet)(address, confirmations),
-        () => Blockchair.fetchUTXOs(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(address, confirmations),
+        ...shuffleArray([
+            () => Blockstream.fetchUTXOs(testnet)(address, confirmations),
+            () => Blockchair.fetchUTXOs(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(address, confirmations),
+        ]),
         () => Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(address, confirmations),
     ],
 
     broadcastTransaction: (testnet: boolean, hex: string) => [
-        () => Blockstream.broadcastTransaction(testnet)(hex),
-        () => Blockchair.broadcastTransaction(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(hex),
+        ...shuffleArray([
+            () => Blockstream.broadcastTransaction(testnet)(hex),
+            () => Blockchair.broadcastTransaction(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(hex),
+        ]),
         () => Sochain.broadcastTransaction(testnet ? "BTCTEST" : "BTC")(hex),
     ],
 }

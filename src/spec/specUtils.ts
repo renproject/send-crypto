@@ -6,15 +6,22 @@ export const testEndpoints = async (t: ExecutionContext<unknown>, endpoints: Rea
     let expectedResult = null;
     for (const endpoint of endpoints) {
         if (!endpoint) { continue; }
-        const result = await endpoint();
-        // try {
-        //     if (Array.isArray(result)) {
-        //         result = List(result).sortBy(x => x.txid).toArray();
-        //     }
-        // } catch (error) {
-        //     // ignore error
-        // }
-        expectedResult = expectedResult || result;
-        t.deepEqual(expectedResult, result);
+        try {
+            const result = await endpoint();
+            // try {
+            //     if (Array.isArray(result)) {
+            //         result = List(result).sortBy(x => x.txid).toArray();
+            //     }
+            // } catch (error) {
+            //     // ignore error
+            // }
+            expectedResult = expectedResult || result;
+            t.deepEqual(expectedResult, result);
+        } catch (error) {
+            if (error.message.match(/Request failed with status code 503/)) {
+                continue;
+            }
+            throw error;
+        }
     }
 };
