@@ -140,3 +140,8 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const endpoints = _apiFallbacks.fetchUTXOs(testnet, address, confirmations);
     return retryNTimes(() => fallback(endpoints), 5);
 };
+
+export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {
+    const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
+    return retryNTimes(() => fallback(endpoints), 5);
+};

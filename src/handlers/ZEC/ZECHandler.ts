@@ -155,3 +155,8 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
     return retryNTimes(() => fallback(_apiFallbacks.fetchUTXOs(testnet, options.address, confirmations)), 5);
 };
+
+export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {
+    const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
+    return retryNTimes(() => fallback(endpoints), 5);
+};
