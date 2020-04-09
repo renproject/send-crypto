@@ -17,10 +17,9 @@ const fetchUTXOs = (network: string) => async (address: string, confirmations: n
     const url = `https://api.blockchair.com/${network}/dashboards/address/${address}?limit=0,100`;
     const response = (await axios.get<AddressResponse>(url)).data;
     return fixValues(response.data[address].utxo.map(utxo => ({
-        txid: utxo.transaction_hash,
-        value: new BigNumber(utxo.value).div(100000000).toNumber(),
-        // script_hex: "",
-        output_no: utxo.index,
+        txHash: utxo.transaction_hash,
+        amount: new BigNumber(utxo.value).div(100000000).toNumber(),
+        vOut: utxo.index,
         confirmations: utxo.block_id === -1 ? 0 : response.context.state - utxo.block_id + 1,
     }))
         .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8)

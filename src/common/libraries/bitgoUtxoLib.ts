@@ -25,7 +25,7 @@ const buildUTXO = async (
     }
 
     // Only use the required utxos
-    const [usedUTXOs, sum] = utxos.reduce(([utxoAcc, total], utxo) => total.lt(value.plus(fees)) ? [[...utxoAcc, utxo], total.plus(utxo.value)] : [utxoAcc, total], [[] as UTXO[], new BigNumber(0)])
+    const [usedUTXOs, sum] = utxos.reduce(([utxoAcc, total], utxo) => total.lt(value.plus(fees)) ? [[...utxoAcc, utxo], total.plus(utxo.amount)] : [utxoAcc, total], [[] as UTXO[], new BigNumber(0)])
 
     if (sum.lt(value.plus(fees))) {
         throw new Error("Insufficient balance to broadcast transaction");
@@ -33,7 +33,7 @@ const buildUTXO = async (
 
     // Add all inputs
     usedUTXOs.map(utxo => {
-        tx.addInput(utxo.txid, utxo.output_no);
+        tx.addInput(utxo.txHash, utxo.vOut);
     });
 
     const change = sum.minus(value).minus(fees);
@@ -44,7 +44,7 @@ const buildUTXO = async (
 
     // Sign inputs
     usedUTXOs.map((utxo, i) => {
-        tx.sign(i, privateKey, "", options && options.signFlag !== undefined ? options.signFlag : null, utxo.value);
+        tx.sign(i, privateKey, "", options && options.signFlag !== undefined ? options.signFlag : null, utxo.amount);
     });
 
     return tx.build();

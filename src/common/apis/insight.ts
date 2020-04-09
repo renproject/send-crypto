@@ -26,10 +26,10 @@ const fetchUTXOs = (insightURL: string) => async (address: string, confirmations
     const data: FetchUTXOResult = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
 
     return data.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.satoshis || fixValue(utxo.amount, 8),
+        txHash: utxo.txid,
+        amount: utxo.satoshis || fixValue(utxo.amount, 8),
         // script_hex: utxo.scriptPubKey,
-        output_no: utxo.vout,
+        vOut: utxo.vout,
         confirmations: utxo.confirmations,
     }))
         .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)

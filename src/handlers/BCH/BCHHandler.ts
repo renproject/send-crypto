@@ -74,7 +74,7 @@ export class BCHHandler implements Handler {
 
     public readonly getBalanceInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
         const utxos = await getUTXOs(this.testnet, { ...options, address: options && options.address || await this.address(asset) });
-        return utxos.reduce((sum, utxo) => sum.plus(utxo.value), new BigNumber(0));
+        return utxos.reduce((sum, utxo) => sum.plus(utxo.amount), new BigNumber(0));
     };
 
     // Transfer
@@ -106,7 +106,7 @@ export class BCHHandler implements Handler {
             const fromAddress = toLegacyAddress(await this.address(asset));
             const toAddress = toLegacyAddress(to);
             const changeAddress = fromAddress;
-            const utxos = List(await getUTXOs(this.testnet, { ...options, address: fromAddress })).sortBy(utxo => utxo.value).reverse().toArray();
+            const utxos = List(await getUTXOs(this.testnet, { ...options, address: fromAddress })).sortBy(utxo => utxo.amount).reverse().toArray();
 
             const built = await BitgoUTXOLib.buildUTXO(
                 this._bitgoNetwork(),
@@ -138,7 +138,8 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const confirmations = options.confirmations || 0;
 
     const endpoints = _apiFallbacks.fetchUTXOs(testnet, address, confirmations);
-    return retryNTimes(() => fallback(endpoints), 5);
+    const utxos = await retryNTimes(() => fallback(endpoints), 5);
+    return utxos;
 };
 
 export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {

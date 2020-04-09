@@ -41,10 +41,10 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
         }>
     }>(url);
     return fixValues(response.data.utxos.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.amount,
+        txHash: utxo.txid,
+        amount: utxo.amount,
         // script_hex: utxo.scriptPubKey,
-        output_no: utxo.vout,
+        vOut: utxo.vout,
         confirmations: utxo.confirmations,
     }))
         .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8)

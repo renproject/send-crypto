@@ -2,11 +2,27 @@ import axios from "axios";
 
 import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
 
+export interface SoChainUTXO {
+    txid: string; // hex string without 0x prefix
+    value: number; // satoshis
+    script_asm: string;
+    script_hex: string; // hex string without 0x prefix
+    output_no: number;
+    confirmations: number;
+    time: number;
+}
+
 const fetchUTXOs = (network: string) => async (address: string, confirmations: number) => {
     const url = `https://sochain.com/api/v2/get_tx_unspent/${network}/${address}/${confirmations}`;
-    const response = await axios.get<{ readonly data: { readonly txs: readonly UTXO[] } }>(url);
+    const response = await axios.get<{ readonly data: { readonly txs: readonly SoChainUTXO[] } }>(url);
 
-    return fixValues(response.data.data.txs, 8)
+    return fixValues(response.data.data.txs.map(utxo => ({
+        txHash: utxo.txid,
+        amount: utxo.value,
+        scriptPubKey: utxo.script_hex,
+        vOut: utxo.output_no,
+        confirmations: utxo.confirmations,
+    })), 8)
         .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)
         .sort(sortUTXOs);
 };

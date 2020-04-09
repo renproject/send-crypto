@@ -69,10 +69,9 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
     const heightResponse = await axios.get<string>(`${apiUrl}/blocks/tip/height`);
 
     return response.data.map(utxo => ({
-        txid: utxo.txid,
-        value: utxo.value,
-        // script_hex: "",
-        output_no: utxo.vout,
+        txHash: utxo.txid,
+        amount: utxo.value,
+        vOut: utxo.vout,
         confirmations: utxo.status.confirmed ? 1 + parseInt(heightResponse.data, 10) - utxo.status.block_height : 0,
     }))
         .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)
