@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.2.0](https://github.com/renproject/send-crypto/compare/v0.1.14...v0.2.0) (2020-04-09)
 
+The UTXO type has been changed from
+
+```ts
+interface SoChainUTXO {
+    txid: string;
+    value: number;
+    output_no: number;
+    confirmations: number;
+    script_hex?: string;
+}
+```
+
+to
+
+```ts
+interface UTXO {
+    txHash: string;
+    vOut: number;
+    amount: number;
+    confirmations: number;
+    scriptPubKey?: string;
+}
+```
+
 ### [0.1.14](https://github.com/renproject/send-crypto/compare/v0.1.13...v0.1.14) (2020-04-02)
 
 ### [0.1.13](https://github.com/renproject/send-crypto/compare/v0.1.12...v0.1.13) (2020-04-02)
