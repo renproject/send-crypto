@@ -55,6 +55,10 @@
           "process.exit"
         ]
       }
+    ],
+    "array-type": [
+      true,
+      "array-simple"
     ]
     /* end tslint-immutable rules */
   }

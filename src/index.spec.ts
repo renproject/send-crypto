@@ -30,7 +30,8 @@ const s = (asset: string | { type: "ERC20", name: string, address?: string }) =>
         const txP = account.send(address, amount, asset, { subtractFee: true });
 
         console.log(`[${s(asset)}] Waiting for transaction hash...`);
-        await new Promise((resolve, reject) => txP.on("transactionHash", hash => { console.log(`[${s(asset)}] Got transaction hash: ${hash}`); resolve(hash); }).catch(reject))
+        const txHash = await new Promise<string>((resolve, reject) => txP.on("transactionHash", hash => { console.log(`[${s(asset)}] Got transaction hash: ${hash}`); resolve(hash); }).catch(reject))
+        t.not(txHash, undefined, "Tx hash shouldn't be undefined");
 
         if (!WAIT_FOR_CONFIRMATIONS && (asset === "BTC" || asset === "ZEC" || asset === "BCH")) {
             await sleep(10 * 1000);
@@ -58,8 +59,8 @@ const s = (asset: string | { type: "ERC20", name: string, address?: string }) =>
         t.is(0, 0);
     }
 
-    test("send BTC", sendToken, "BTC", 8, "testnet");
-    test("send ZEC", sendToken, "ZEC", 8, "testnet");
+    test.only("send BTC", sendToken, "BTC", 8, "testnet");
+    test.only("send ZEC", sendToken, "ZEC", 8, "testnet");
     test("send BCH", sendToken, "BCH", 8, "testnet");
     test.serial("send ETH", sendToken, "ETH", 18, "kovan");
     test.serial("send REN", sendToken, { type: "ERC20", name: "REN", address: "0x2cd647668494c1b15743ab283a0f980d90a87394" }, 18, "kovan");

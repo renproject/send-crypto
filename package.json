@@ -33,7 +33,7 @@
     "fix:tslint": "tslint --fix --project .",
     "test": "run-s build test:*",
     "test:lint": "tslint --project .",
-    "test:unit": "nyc --silent ava --verbose",
+    "test:unit": "nyc --silent ava -T 100s --verbose",
     "lint": "yarn test:lint",
     "lint:strict": "yarn lint && prettier \"src/**/*.ts\" --list-different --tab-width 4",
     "watch": "yarn clean && yarn build:main -- -w",
@@ -46,7 +46,7 @@
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
-    "version": "standard-version -r minor",
+    "version": "standard-version",
     "#reset": "git clean -dfx && git reset --hard && npm i",
     "reset": "yarn",
     "clean": "trash build test",
@@ -71,20 +71,20 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    "@truffle/hdwallet-provider": "^1.0.28",
+    "@truffle/hdwallet-provider": "^1.0.34",
     "@types/bchaddrjs": "^0.4.0",
     "@types/web3-provider-engine": "^14.0.0",
-    "axios": "^0.19.0",
-    "bchaddrjs": "^0.4.4",
+    "axios": "^0.19.2",
+    "bchaddrjs": "^0.4.8",
     "bignumber.js": "^9.0.0",
-    "bitgo-utxo-lib": "^1.7.0",
-    "bn.js": "^5.0.0",
+    "bitgo-utxo-lib": "^1.8.0",
+    "bn.js": "^5.1.1",
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
-    "patch-package": "^6.2.0",
-    "web3": "^1.2.4",
-    "web3-core": "^1.2.4",
-    "web3-utils": "^1.2.4"
+    "patch-package": "^6.2.2",
+    "web3": "^1.2.6",
+    "web3-core": "^1.2.6",
+    "web3-utils": "^1.2.6"
   },
   "resolutions": {
     "sha3": "^2.0.0",
@@ -93,30 +93,27 @@
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
     "@bitjson/typedoc": "^0.15.0-0",
-    "@istanbuljs/nyc-config-typescript": "^0.1.3",
-    "ava": "2.4.0",
-    "codecov": "^3.6.1",
-    "cz-conventional-changelog": "^3.0.2",
-    "gh-pages": "^2.1.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "ava": "3.6.0",
+    "codecov": "^3.6.5",
+    "cz-conventional-changelog": "^3.1.0",
+    "gh-pages": "^2.2.0",
     "npm-run-all": "^4.1.5",
     "npmignore": "^0.2.0",
-    "nyc": "^14.1.1",
-    "open-cli": "^5.0.0",
-    "prettier": "^1.19.1",
-    "standard-version": "^7.0.1",
+    "nyc": "^15.0.1",
+    "open-cli": "^6.0.1",
+    "prettier": "^2.0.4",
+    "standard-version": "^7.1.0",
     "trash-cli": "^3.0.0",
-    "tslint": "^5.20.1",
+    "tslint": "^6.1.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-immutable": "^6.0.1",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.3"
   },
   "ava": {
     "failFast": true,
     "files": [
       "build/main/**/*.spec.js"
-    ],
-    "sources": [
-      "build/main/**/*.js"
     ]
   },
   "config": {

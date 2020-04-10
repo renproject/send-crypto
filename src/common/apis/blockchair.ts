@@ -28,7 +28,7 @@ const fetchUTXOs = (network: string) => async (address: string, confirmations: n
 
 export const broadcastTransaction = (network: string) => async (txHex: string): Promise<string> => {
     const url = `https://api.blockchair.com/${network}/push/transaction`;
-    const response = await axios.post<string[]>(
+    const response = await axios.post<{ data: { transaction_hash: string } }>(
         url,
         { data: txHex },
         { timeout: 5000 }
@@ -36,7 +36,7 @@ export const broadcastTransaction = (network: string) => async (txHex: string): 
     if ((response.data as any).error) {
         throw new Error((response.data as any).error);
     }
-    return response.data[0];
+    return response.data.data.transaction_hash;
 };
 
 enum Networks {
