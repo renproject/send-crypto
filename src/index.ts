@@ -9,6 +9,8 @@ import { PromiEvent } from "./lib/promiEvent";
 import { strip0x } from "./lib/utils";
 import { Asset, DeferHandler, Handler, HandlerClass, Value } from "./types/types";
 
+export { UTXO } from "./lib/utxo";
+
 interface ConstructorOptions {
     network?: string;
     defaultAsset?: Asset;
@@ -208,25 +210,19 @@ export default class CryptoAccount {
 // tslint:disable-next-line: no-string-literal
 (CryptoAccount as any)["default"] = (CryptoAccount as any).CryptoAccount = CryptoAccount;
 
-declare global {
-    let define: any;
-    let window: any;
-}
-if (typeof define === 'function' && define.amd) {
-    // AMD.
-    define(() => CryptoAccount);
+// AMD
+try {
+    // @ts-ignore
+    if (typeof define === "function" && define.amd) { define(() => CryptoAccount); }
+} catch (error) { /* ignore */ }
 
-} else if (typeof module !== "undefined" && module.exports) {
-    // Node.js and other environments that support module.exports.
-    try {
-        module.exports = CryptoAccount;
-    } catch (error) {
-        // ignore error
-    }
+// Node.js and other environments that support module.exports.
+try { // @ts-ignore
+    if (typeof module !== "undefined" && module.exports) { module.exports = CryptoAccount; }
+} catch (error) { /* ignore */ }
 
-} else {
-    // Browser.
-    if (window) {
-        window.CryptoAccount = CryptoAccount;
-    }
-}
+// Browser.
+try {
+    // @ts-ignore
+    if (typeof window !== "undefined" && window) { (window as any).CryptoAccount = CryptoAccount; }
+} catch (error) { /* ignore */ }

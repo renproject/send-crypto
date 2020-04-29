@@ -82,9 +82,9 @@
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
     "patch-package": "^6.2.2",
-    "web3": "^1.2.6",
-    "web3-core": "^1.2.6",
-    "web3-utils": "^1.2.6"
+    "web3": "^1.2.7",
+    "web3-core": "^1.2.7",
+    "web3-utils": "^1.2.7"
   },
   "resolutions": {
     "sha3": "^2.0.0",
@@ -94,7 +94,7 @@
     "@bitjson/npm-scripts-info": "^1.0.0",
     "@bitjson/typedoc": "^0.15.0-0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "ava": "3.6.0",
+    "ava": "3.8.1",
     "codecov": "^3.6.5",
     "cz-conventional-changelog": "^3.1.0",
     "gh-pages": "^2.2.0",
@@ -102,10 +102,10 @@
     "npmignore": "^0.2.0",
     "nyc": "^15.0.1",
     "open-cli": "^6.0.1",
-    "prettier": "^2.0.4",
+    "prettier": "^2.0.5",
     "standard-version": "^7.1.0",
     "trash-cli": "^3.0.0",
-    "tslint": "^6.1.1",
+    "tslint": "^6.1.2",
     "tslint-config-prettier": "^1.18.0",
     "tslint-immutable": "^6.0.1",
     "typescript": "^3.8.3"
