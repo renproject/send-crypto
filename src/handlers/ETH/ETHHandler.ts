@@ -1,4 +1,3 @@
-// import HDWalletProvider from "@truffle/hdwallet-provider";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig } from "web3-core";
