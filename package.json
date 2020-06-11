@@ -51,7 +51,8 @@
     "reset": "yarn",
     "clean": "trash build test",
     "npmignore": "npmignore",
-    "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish"
+    "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish",
+    "postinstall": "patch-package"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
