@@ -51,8 +51,7 @@
     "reset": "yarn",
     "clean": "trash build test",
     "npmignore": "npmignore",
-    "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish",
-    "postinstall": "patch-package"
+    "prepare-release": "run-s npmignore reset cov:check doc:html version doc:publish"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
@@ -76,13 +75,11 @@
     "axios": "^0.19.2",
     "bchaddrjs": "^0.4.8",
     "bignumber.js": "^9.0.0",
-    "bitgo-utxo-lib": "^1.8.0",
+    "bitgo-utxo-lib": "https://github.com/ren-forks/bitgo-utxo-lib#7939387dda1199956fcb9d720a9493ce12cf013e",
     "blake2b-wasm": "^2.1.0",
     "bn.js": "^5.1.2",
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
-    "patch-package": "^6.2.2",
-    "postinstall-postinstall": "^2.1.0",
     "web3": "^1.2.9",
     "web3-core": "^1.2.9",
     "web3-utils": "^1.2.9"
