@@ -79,14 +79,14 @@
     "bn.js": "^5.1.2",
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
     "web3": "^1.2.9",
     "web3-core": "^1.2.9",
     "web3-utils": "^1.2.9"
   },
   "resolutions": {
-    "sha3": "^2.0.0",
-    "scrypt": "https://github.com/ren-forks/node-scrypt",
-    "blake2b-wasm": "https://github.com/ren-forks/blake2b-wasm#b84050d61548c75c5cc615f02a32a258b051879e"
+    "sha3": "^2.0.0"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
