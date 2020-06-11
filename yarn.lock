@@ -989,7 +989,7 @@ bitcoin-ops@^1.3.0:
   optionalDependencies:
     secp256k1 "^3.5.2"
 
-blake2b-wasm@^2.1.0, "blake2b-wasm@https://github.com/ren-forks/blake2b-wasm#af30a83f77029b53d71650164b305a64c18d1957":
+"blake2b-wasm@https://github.com/ren-forks/blake2b-wasm#af30a83f77029b53d71650164b305a64c18d1957":
   version "2.1.0"
   resolved "https://github.com/ren-forks/blake2b-wasm#af30a83f77029b53d71650164b305a64c18d1957"
   dependencies:

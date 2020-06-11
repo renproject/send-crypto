@@ -76,7 +76,6 @@
     "bchaddrjs": "^0.4.8",
     "bignumber.js": "^9.0.0",
     "bitgo-utxo-lib": "https://github.com/ren-forks/bitgo-utxo-lib#7939387dda1199956fcb9d720a9493ce12cf013e",
-    "blake2b-wasm": "^2.1.0",
     "bn.js": "^5.1.2",
     "dotenv": "^8.2.0",
     "immutable": "^4.0.0-rc.12",
