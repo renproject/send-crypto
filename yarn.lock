@@ -995,6 +995,13 @@ bitgo-utxo-lib@^1.8.0:
   optionalDependencies:
     secp256k1 "^3.5.2"
 
+blake2b-wasm@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/blake2b-wasm/-/blake2b-wasm-2.1.0.tgz#aa90ed687b8a92e1c01d1643db86bcf21caa2ab7"
+  integrity sha512-8zKXt9nk4cUCBU2jaUcSYcPA+UESwWOmb9Gsi8J35BifVb+tjVmbDhZbvmVmZEk6xZN1y35RNW6VqOwb0mkqsg==
+  dependencies:
+    nanoassert "^1.0.0"
+
 "blake2b-wasm@https://github.com/BitGo/blake2b-wasm#193cdb71656c1a6c7f89b05d0327bb9b758d071b":
   version "2.0.0"
   resolved "https://github.com/BitGo/blake2b-wasm#193cdb71656c1a6c7f89b05d0327bb9b758d071b"
