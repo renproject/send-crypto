@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
+import { DEFAULT_TIMEOUT } from "./timeout";
 
 export interface SoChainUTXO {
     txid: string; // hex string without 0x prefix
@@ -14,7 +15,7 @@ export interface SoChainUTXO {
 
 const fetchUTXOs = (network: string) => async (address: string, confirmations: number) => {
     const url = `https://sochain.com/api/v2/get_tx_unspent/${network}/${address}/${confirmations}`;
-    const response = await axios.get<{ readonly data: { readonly txs: readonly SoChainUTXO[] } }>(url);
+    const response = await axios.get<{ readonly data: { readonly txs: readonly SoChainUTXO[] } }>(url, { timeout: DEFAULT_TIMEOUT });
 
     return fixValues(response.data.data.txs.map(utxo => ({
         txHash: utxo.txid,
@@ -29,12 +30,12 @@ const fetchUTXOs = (network: string) => async (address: string, confirmations: n
 
 const broadcastTransaction = (network: string) => async (txHex: string): Promise<string> => {
     const response = await axios.post<{
-        readonly status: "success";
-        readonly data: {
-            readonly network: string;
-            readonly txid: string; // Hex without 0x
+        status: "success",
+        data: {
+            network: string,
+            txid: string, // Hex without 0x
         }
-    }>(`https://chain.so/send_tx/${network}`, { tx_hex: txHex });
+    }>(`https://chain.so/send_tx/${network}`, { tx_hex: txHex }, { timeout: DEFAULT_TIMEOUT });
     return response.data.data.txid;
 };
 

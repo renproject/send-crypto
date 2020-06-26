@@ -2,11 +2,12 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 
 import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
+import { DEFAULT_TIMEOUT } from "./timeout";
 
 const fetchConfirmations = (network: string) => async (txid: string): Promise<number> => {
     const url = `https://api.blockchair.com/${network}/dashboards/transaction/${txid}`;
 
-    const response = (await axios.get<TransactionResponse>(`${url}`)).data;
+    const response = (await axios.get<TransactionResponse>(`${url}`, { timeout: DEFAULT_TIMEOUT })).data;
 
     const txBlock = response.data[txid].transaction.block_id;
 
@@ -15,7 +16,7 @@ const fetchConfirmations = (network: string) => async (txid: string): Promise<nu
 
 const fetchUTXOs = (network: string) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
     const url = `https://api.blockchair.com/${network}/dashboards/address/${address}?limit=0,100`;
-    const response = (await axios.get<AddressResponse>(url)).data;
+    const response = (await axios.get<AddressResponse>(url, { timeout: DEFAULT_TIMEOUT })).data;
     return fixValues(response.data[address].utxo.map(utxo => ({
         txHash: utxo.transaction_hash,
         amount: new BigNumber(utxo.value).div(100000000).toNumber(),
@@ -31,7 +32,7 @@ export const broadcastTransaction = (network: string) => async (txHex: string): 
     const response = await axios.post<{ data: { transaction_hash: string } }>(
         url,
         { data: txHex },
-        { timeout: 5000 }
+        { timeout: DEFAULT_TIMEOUT }
     );
     if ((response.data as any).error) {
         throw new Error((response.data as any).error);

@@ -2,19 +2,20 @@
 import axios from "axios";
 
 import { sortUTXOs, UTXO } from "../../lib/utxo";
+import { DEFAULT_TIMEOUT } from "./timeout";
 
 interface BlockstreamUTXO<vout = number> {
-    readonly status: {
-        readonly confirmed: false,
+    status: {
+        confirmed: false,
     } | {
-        readonly confirmed: true,
-        readonly block_height: number,
-        readonly block_hash: string,
-        readonly block_time: number,
+        confirmed: true,
+        block_height: number,
+        block_hash: string,
+        block_time: number,
     };
-    readonly txid: string;
-    readonly value: number;
-    readonly vout: vout;
+    txid: string;
+    value: number;
+    vout: vout;
 };
 
 interface BlockstreamDetailsUTXO extends BlockstreamUTXO<Array<{
@@ -43,9 +44,9 @@ interface BlockstreamDetailsUTXO extends BlockstreamUTXO<Array<{
 const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<number> => {
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
-    const response = await axios.get<BlockstreamDetailsUTXO>(`${apiUrl}/tx/${txid}`);
+    const response = await axios.get<BlockstreamDetailsUTXO>(`${apiUrl}/tx/${txid}`, { timeout: DEFAULT_TIMEOUT });
 
-    const heightResponse = () => axios.get<string>(`${apiUrl}/blocks/tip/height`);
+    const heightResponse = () => axios.get<string>(`${apiUrl}/blocks/tip/height`, { timeout: DEFAULT_TIMEOUT });
 
     const utxo = response.data;
     return utxo.status.confirmed ? 1 + parseInt((await heightResponse()).data, 10) - utxo.status.block_height : 0;
@@ -55,18 +56,18 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
 
     const response = await axios.get<ReadonlyArray<{
-        readonly status: {
-            readonly confirmed: boolean,
-            readonly block_height: number,
-            readonly block_hash: string,
-            readonly block_time: number,
+        status: {
+            confirmed: boolean,
+            block_height: number,
+            block_hash: string,
+            block_time: number,
         };
-        readonly txid: string;
-        readonly value: number;
-        readonly vout: number;
-    }>>(`${apiUrl}/address/${address}/utxo`);
+        txid: string,
+        value: number,
+        vout: number,
+    }>>(`${apiUrl}/address/${address}/utxo`, { timeout: DEFAULT_TIMEOUT });
 
-    const heightResponse = await axios.get<string>(`${apiUrl}/blocks/tip/height`);
+    const heightResponse = await axios.get<string>(`${apiUrl}/blocks/tip/height`, { timeout: DEFAULT_TIMEOUT });
 
     return response.data.map(utxo => ({
         txHash: utxo.txid,
@@ -80,7 +81,7 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
 
 
 const broadcastTransaction = (testnet: boolean) => async (txHex: string): Promise<string> => {
-    const response = await axios.post<string>(`https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`, txHex);
+    const response = await axios.post<string>(`https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`, txHex, { timeout: DEFAULT_TIMEOUT });
     return response.data;
 };
 
