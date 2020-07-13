@@ -1,14 +1,81 @@
 import axios from "axios";
 
-import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
+import { fixUTXO, fixUTXOs, fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
 import { DEFAULT_TIMEOUT } from "./timeout";
+
+export interface ScriptSig {
+    hex: string;
+    asm: string;
+}
+
+export interface Vin {
+    txid: string; // "4f72fce028ff1e99459393232e8bf8a430815ec5cea8700676c101b02be3649c",
+    vout: number; // 1,
+    sequence: number; // 4294967295,
+    n: number; // 0,
+    scriptSig: ScriptSig;
+    value: number; // 7223963,
+    legacyAddress: string; // "1D4NXvNvjucShZeyLsDzYz1ky2W8gYKQH7",
+    cashAddress: string; // "bitcoincash:qzzyfwmnz3dlld7svwzn53xzr6ycz5kwavpd9uqf4l"
+}
+
+export interface ScriptPubKey {
+    hex: string; // "76a91427bad06158841621ed33eb91efdb1cc4af4996cb88ac",
+    asm: string; // "OP_DUP OP_HASH160 27bad06158841621ed33eb91efdb1cc4af4996cb OP_EQUALVERIFY OP_CHECKSIG",
+    addresses: string[]; // ["14d59YbC2D9W9y5kozabCDhxkY3eDQq7B3"],
+    type: string; // "pubkeyhash",
+    cashAddrs: string[]; // ["bitcoincash:qqnm45rptzzpvg0dx04erm7mrnz27jvkevaf3ys3c5"]
+}
+
+export interface Vout {
+    value: string; // "0.04159505",
+    n: number; // 0,
+    scriptPubKey: ScriptPubKey;
+    spentTxId: string; // "9fa7bc86ad4729cbd5c182a8cd5cfc5eb457608fe430ce673f33ca52bfb1a187",
+    spentIndex: number; // 1,
+    spentHeight: number; // 617875
+}
+
+export interface QueryTransaction {
+    vin: Vin[];
+    vout: Vout[];
+    txid: string; // "03e29b07bb98b1e964296289dadb2fb034cb52e178cc306d20cc9ddc951d2a31",
+    version: number; // 1,
+    locktime: number; // 0,
+    blockhash: string; // "0000000000000000011c71094699e3ba47c43da76d775cf5eb5fbea1787fafb5",
+    blockheight: number; // 616200,
+    confirmations: number; // 27433,
+    time: number; // 1578054427,
+    blocktime: number; // 1578054427,
+    firstSeenTime: number; // 1578054360,
+    valueOut: number; // 0.07213963,
+    size: number; // 226,
+    valueIn: number; // 0.07223963,
+    fees: number; // 0.0001
+}
 
 const endpoint = (testnet: boolean) => testnet ? "https://trest.bitcoin.com/v2/" : "https://rest.bitcoin.com/v2/";
 
-const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<number> => {
-    const url = `${endpoint(testnet).replace(/\/$/, "")}/transaction/details/${txid}`;
+const fetchUTXO = (testnet: boolean) => async (txHash: string, vOut: number): Promise<UTXO> => {
+    const url = `${endpoint(testnet).replace(/\/$/, "")}/transaction/details/${txHash}`;
 
-    const response = await axios.get<{
+    const response = await axios.get<QueryTransaction>(`${url}`, { timeout: DEFAULT_TIMEOUT });
+
+    const utxo = response.data;
+
+    return fixUTXO({
+        txHash,
+        amount: parseFloat(utxo.vout[vOut].value),
+        // script_hex: utxo.scriptPubKey,
+        vOut,
+        confirmations: utxo.confirmations,
+    }, 8);
+};
+
+const fetchConfirmations = (testnet: boolean) => async (txHash: string): Promise<number> => {
+    const url = `${endpoint(testnet).replace(/\/$/, "")}/transaction/details/${txHash}`;
+
+    const tx = (await axios.get<{
         txid: string, // 'cacec549d9f1f67e9835889a2ce3fc0d593bd78d63f63f45e4c28a59e004667d',
         version: number, // 4,
         locktime: number, // 0,
@@ -22,9 +89,9 @@ const fetchConfirmations = (testnet: boolean) => async (txid: string): Promise<n
         size: number, // 211,
         valueIn: number, // 225.45789926,
         fees: number, // 0.0001,
-    }>(`${url}`, { timeout: DEFAULT_TIMEOUT });
+    }>(`${url}`, { timeout: DEFAULT_TIMEOUT })).data;
 
-    return response.data.confirmations;
+    return tx.confirmations;
 };
 
 const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
@@ -41,7 +108,7 @@ const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: 
             ts: number,
         }>
     }>(url, { timeout: DEFAULT_TIMEOUT });
-    return fixValues(response.data.utxos.map(utxo => ({
+    return fixUTXOs(response.data.utxos.map(utxo => ({
         txHash: utxo.txid,
         amount: utxo.amount,
         // script_hex: utxo.scriptPubKey,
@@ -66,6 +133,7 @@ export const broadcastTransaction = (testnet: boolean) => async (txHex: string):
 };
 
 export const BitcoinDotCom = {
+    fetchUTXO,
     fetchUTXOs,
     fetchConfirmations,
     broadcastTransaction,

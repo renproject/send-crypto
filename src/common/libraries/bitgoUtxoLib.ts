@@ -7,7 +7,10 @@ import { UTXO } from "../../lib/utxo";
 const buildUTXO = async (
     network: typeof bitcoin.networks.bitcoin,
     privateKey: any, changeAddress: string, toAddress: string, valueIn: BigNumber, utxos: UTXO[],
-    options?: { subtractFee?: boolean, fee?: number, signFlag?: number, version?: number, versionGroupID?: number }
+    options?: {
+        subtractFee?: boolean, fee?: number, signFlag?: number,
+        version?: number, versionGroupID?: number, expiryHeight?: number, lockTime?: number,
+    }
 ): Promise<{ toHex: () => string }> => {
     const fees = new BigNumber(options && options.fee !== undefined ? options.fee : 10000);
 
@@ -21,7 +24,13 @@ const buildUTXO = async (
         tx.setVersion(options.version);
     }
     if (options && options.versionGroupID) {
-        tx.setVersionGroupId(options.versionGroupID);
+        tx.setVersionGroupId(0xf5b9230b);
+    }
+    if (options && options.expiryHeight) {
+        tx.setExpiryHeight(options.expiryHeight);
+    }
+    if (options && options.lockTime) {
+        tx.setLockTime(options.lockTime);
     }
 
     // Only use the required utxos

@@ -1,29 +1,76 @@
 import axios from "axios";
-import BigNumber from "bignumber.js";
 
-import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
+import { sortUTXOs, UTXO } from "../../lib/utxo";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
-const fetchConfirmations = (network: string) => async (txid: string): Promise<number> => {
-    const url = `https://api.blockchair.com/${network}/dashboards/transaction/${txid}`;
+const fetchUTXO = (network: string) => async (txHash: string, vOut: number): Promise<UTXO> => {
+    const url = `https://api.blockchair.com/${network}/dashboards/transaction/${txHash}`;
 
     const response = (await axios.get<TransactionResponse>(`${url}`, { timeout: DEFAULT_TIMEOUT })).data;
 
-    const txBlock = response.data[txid].transaction.block_id;
+    if (!response.data[txHash]) {
+        throw new Error(`Transaction not found.`);
+    }
 
-    return txBlock === -1 ? 0 : response.context.state - txBlock + 1;
+    const tx = response.data[txHash];
+    const txBlock = tx.transaction.block_id;
+
+    let latestBlock = response.context.state;
+    if (latestBlock === 0) {
+        const statsUrl = `https://api.blockchair.com/${network}/stats`;
+        const statsResponse = (await axios.get(statsUrl)).data;
+        latestBlock = statsResponse.data.blocks - 1;
+    }
+
+    const confirmations = txBlock === -1 ? 0 : Math.max(latestBlock - txBlock + 1, 0);
+
+    return {
+        txHash,
+        vOut,
+        amount: tx.outputs[vOut].value,
+        confirmations,
+    };
+};
+
+const fetchConfirmations = (network: string) => async (txHash: string): Promise<number> => {
+    const url = `https://api.blockchair.com/${network}/dashboards/transaction/${txHash}`;
+
+    const response = (await axios.get<TransactionResponse>(`${url}`, { timeout: DEFAULT_TIMEOUT })).data;
+
+    if (!response.data[txHash]) {
+        throw new Error(`Transaction not found.`);
+    }
+
+    const txBlock = response.data[txHash].transaction.block_id;
+
+    let latestBlock = response.context.state;
+    if (latestBlock === 0) {
+        const statsUrl = `https://api.blockchair.com/${network}/stats`;
+        const statsResponse = (await axios.get(statsUrl)).data;
+        latestBlock = statsResponse.data.blocks - 1;
+    }
+
+    return txBlock === -1 ? 0 : Math.max(latestBlock - txBlock + 1, 0);
 };
 
 const fetchUTXOs = (network: string) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
     const url = `https://api.blockchair.com/${network}/dashboards/address/${address}?limit=0,100`;
     const response = (await axios.get<AddressResponse>(url, { timeout: DEFAULT_TIMEOUT })).data;
-    return fixValues(response.data[address].utxo.map(utxo => ({
+
+    let latestBlock = response.context.state;
+    if (latestBlock === 0) {
+        const statsUrl = `https://api.blockchair.com/${network}/stats`;
+        const statsResponse = (await axios.get(statsUrl)).data;
+        latestBlock = statsResponse.data.blocks - 1;
+    }
+
+    return response.data[address].utxo.map(utxo => ({
         txHash: utxo.transaction_hash,
-        amount: new BigNumber(utxo.value).div(100000000).toNumber(),
+        amount: utxo.value,
         vOut: utxo.index,
-        confirmations: utxo.block_id === -1 ? 0 : response.context.state - utxo.block_id + 1,
+        confirmations: utxo.block_id === -1 ? 0 : latestBlock - utxo.block_id + 1,
     }))
-        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8)
+        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations)
         .sort(sortUTXOs);
 };
 
@@ -53,6 +100,7 @@ enum Networks {
 
 export const Blockchair = {
     networks: Networks,
+    fetchUTXO,
     fetchUTXOs,
     fetchConfirmations,
     broadcastTransaction,

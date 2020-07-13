@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { fixValues, sortUTXOs, UTXO } from "../../lib/utxo";
+import { fixUTXOs, sortUTXOs, UTXO } from "../../lib/utxo";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
 export interface SoChainUTXO {
@@ -17,10 +17,10 @@ const fetchUTXOs = (network: string) => async (address: string, confirmations: n
     const url = `https://sochain.com/api/v2/get_tx_unspent/${network}/${address}/${confirmations}`;
     const response = await axios.get<{ readonly data: { readonly txs: readonly SoChainUTXO[] } }>(url, { timeout: DEFAULT_TIMEOUT });
 
-    return fixValues(response.data.data.txs.map(utxo => ({
+    return fixUTXOs(response.data.data.txs.map(utxo => ({
         txHash: utxo.txid,
         amount: utxo.value,
-        scriptPubKey: utxo.script_hex,
+        // scriptPubKey: utxo.script_hex,
         vOut: utxo.output_no,
         confirmations: utxo.confirmations,
     })), 8)

@@ -1,7 +1,7 @@
 import axios from "axios";
 import https from "https";
 
-import { fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
+import { fixUTXO, fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
 type FetchUTXOResult = ReadonlyArray<{
@@ -38,32 +38,78 @@ const fetchUTXOs = (insightURL: string) => async (address: string, confirmations
         .sort(sortUTXOs);
 };
 
-const fetchConfirmations = (insightURL: string) => async (txid: string): Promise<number> => {
-    const url = `${insightURL.replace(/\/$/, "")}/tx/${txid}`;
+export interface ScriptSig {
+    hex: string;
+    asm: string;
+}
 
-    const response = await axios.get<{
-        txid: string, // 'cacec549d9f1f67e9835889a2ce3fc0d593bd78d63f63f45e4c28a59e004667d',
-        version: number, // 4,
-        locktime: number, // 0,
-        vin: any, // [[Object]],
-        vout: any, // [[Object]],
-        vjoinsplit: any[], // [],
-        blockheight: number, // -1,
-        confirmations: number, // 0,
-        time: number, // 1574895240,
-        valueOut: number, // 225.45779926,
-        size: number, // 211,
-        valueIn: number, // 225.45789926,
-        fees: number, // 0.0001,
-        fOverwintered: boolean, // true,
-        nVersionGroupId: number, // 2301567109,
-        nExpiryHeight: number, // 0,
-        valueBalance: number, // 0,
-        spendDescs: any[], // [],
-        outputDescs: any[], // []
-    }>(url, { timeout: DEFAULT_TIMEOUT });
+export interface Vin {
+    txid: string;
+    vout: number;
+    sequence: number;
+    n: number;
+    scriptSig: ScriptSig;
+    addr: string;
+    valueSat: number;
+    value: number;
+    doubleSpentTxID?: any;
+}
 
+export interface ScriptPubKey {
+    hex: string; // "76a914ea06cb7aaf2b21e97ea9f43736731ee6a33366db88ac",
+    asm: string; // "OP_DUP OP_HASH160 ea06cb7aaf2b21e97ea9f43736731ee6a33366db OP_EQUALVERIFY OP_CHECKSIG",
+    addresses: string[]; // ["tmX3mbB2iAtGftpyp4BTmryma2REmuw8h8G"]
+    type: string; // "pubkeyhash"
+}
+
+export interface Vout {
+    value: string; // "0.00020000",
+    n: number; // 0,
+    scriptPubKey: ScriptPubKey;
+    spentTxId: string; // "265760587a0631d613f13949a45bef1ec4c5fc38912081f4b58b4df51799ffb5",
+    spentIndex: number; // 0,
+    spentHeight: number; // 756027
+}
+
+export interface TxResponse {
+    txid: string; // "fcc25c1a1f7df38ce15211b324385d837540dc0a97c3056f7497dacabef77c3f",
+    version: number; // 4,
+    locktime: number; // 0,
+    vin: Vin[];
+    vout: Vout[];
+    vjoinsplit: any[]; // [],
+    blockhash: string; // "0029b9051d06402b546532c1d0288684368fce5cc42c0b3e5aa032a35b74014b",
+    blockheight: number; // 735468,
+    confirmations: number; // 259430,
+    time: number; // 1577073296,
+    blocktime: number; // 1577073296,
+    valueOut: number; // 0.0002,
+    size: number; // 211,
+    valueIn: number; // 0.0003,
+    fees: number; // 0.0001,
+    fOverwintered: boolean; // true,
+    nVersionGroupId: number; // 2301567109,
+    nExpiryHeight: number; // 0,
+    valueBalance: number; // 0,
+    spendDescs: any[]; // [],
+    outputDescs: any[]; // []
+}
+
+const fetchConfirmations = (insightURL: string) => async (txHash: string): Promise<number> => {
+    const url = `${insightURL.replace(/\/$/, "")}/tx/${txHash}`;
+    const response = await axios.get<TxResponse>(url, { timeout: DEFAULT_TIMEOUT });
     return response.data.confirmations;
+};
+
+const fetchUTXO = (insightURL: string) => async (txHash: string, vOut: number): Promise<UTXO> => {
+    const url = `${insightURL.replace(/\/$/, "")}/tx/${txHash}`;
+    const tx = (await axios.get<TxResponse>(url, { timeout: DEFAULT_TIMEOUT })).data;
+    return fixUTXO({
+        txHash,
+        amount: parseFloat(tx.vout[vOut].value),
+        vOut,
+        confirmations: tx.confirmations,
+    }, 8);
 };
 
 export const broadcastTransaction = (insightURL: string) => async (txHex: string): Promise<string> => {
@@ -80,6 +126,7 @@ export const broadcastTransaction = (insightURL: string) => async (txHex: string
 };
 
 export const Insight = {
+    fetchUTXO,
     fetchUTXOs,
     fetchConfirmations,
     broadcastTransaction,

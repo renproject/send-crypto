@@ -25,3 +25,11 @@ test("Testnet ZEC confirmations", testEndpoints, [
 test("Mainnet ZEC confirmations", testEndpoints, [
     () => Insight.fetchConfirmations("https://explorer.z.cash/api")(mainnetHash),
 ]);
+
+test("Testnet ZEC UTXO", testEndpoints, [
+    () => Insight.fetchUTXO("https://explorer.testnet.z.cash/api")(testnetHash, 0),
+]);
+
+test("Mainnet ZEC UTXO", testEndpoints, [
+    () => Insight.fetchUTXO("https://explorer.z.cash/api")(mainnetHash, 0),
+]);

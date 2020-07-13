@@ -17,3 +17,6 @@ const mainnetHash = "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd5
 
 test("Testnet BTC confirmations", testEndpoints, _apiFallbacks.fetchConfirmations(true, testnetHash));
 test("Mainnet BTC confirmations", testEndpoints, _apiFallbacks.fetchConfirmations(false, mainnetHash));
+
+test("Testnet BTC UTXO", testEndpoints, _apiFallbacks.fetchUTXO(true, testnetHash, 0));
+test("Mainnet BTC UTXO", testEndpoints, _apiFallbacks.fetchUTXO(false, mainnetHash, 0));

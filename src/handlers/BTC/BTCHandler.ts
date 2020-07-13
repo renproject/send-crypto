@@ -32,6 +32,13 @@ export const _apiFallbacks = {
         ]),
     ],
 
+    fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
+        ...shuffleArray([
+            () => Blockstream.fetchUTXO(testnet)(txHash, vOut),
+            () => Blockchair.fetchUTXO(testnet ? Blockchair.networks.BITCOIN_TESTNET : Blockchair.networks.BITCOIN)(txHash, vOut),
+        ]),
+    ],
+
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
         ...shuffleArray([
             () => Blockstream.fetchUTXOs(testnet)(address, confirmations),

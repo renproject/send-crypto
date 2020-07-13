@@ -42,6 +42,16 @@ export const _apiFallbacks = {
             () => Insight.fetchConfirmations(InsightEndpoints.ZecBlockExplorer)(txHash),
         ],
 
+    fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => testnet ?
+        [
+            () => Insight.fetchUTXO(InsightEndpoints.TestnetZCash)(txHash, vOut),
+        ] : [
+            () => Insight.fetchUTXO(InsightEndpoints.ZCash)(txHash, vOut),
+            () => Insight.fetchUTXO(InsightEndpoints.ZecChain)(txHash, vOut),
+            () => Insight.fetchUTXO(InsightEndpoints.BlockExplorer)(txHash, vOut),
+            () => Insight.fetchUTXO(InsightEndpoints.ZecBlockExplorer)(txHash, vOut),
+        ],
+
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => testnet ? [
         () => Insight.fetchUTXOs(InsightEndpoints.TestnetZCash)(address, confirmations),
         () => Sochain.fetchUTXOs("ZECTEST")(address, confirmations),
@@ -127,10 +137,15 @@ export class ZECHandler implements Handler {
             const changeAddress = fromAddress;
             const utxos = List(await getUTXOs(this.testnet, { ...options, address: fromAddress })).sortBy(utxo => utxo.amount).reverse().toArray();
 
+            if (this.testnet) {
+                // tslint:disable-next-line: no-object-mutation
+                bitcoin.networks.zcashTest.consensusBranchId["4"] = 0xf5b9230b;
+            }
+
             const built = await BitgoUTXOLib.buildUTXO(
                 this.testnet ? bitcoin.networks.zcashTest : bitcoin.networks.zcash,
                 this.privateKey, changeAddress, to, valueIn, utxos,
-                { ...options, version: bitcoin.Transaction.ZCASH_SAPLING_VERSION, versionGroupID: parseInt("0x892F2085", 16) },
+                { ...options, version: 4, versionGroupID: this.testnet ? 0xf5b9230b : 0x892F2085 },
             );
 
             txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 5);

@@ -4,7 +4,8 @@ import { ExecutionContext } from "ava";
 
 export const testEndpoints = async (t: ExecutionContext<unknown>, endpoints: ReadonlyArray<undefined | (() => Promise<any>)>) => {
     let expectedResult = null;
-    for (const endpoint of endpoints) {
+    for (let i = 0; i < endpoints.length; i++) {
+        const endpoint = endpoints[i];
         if (!endpoint) { continue; }
         try {
             const result = await endpoint();
@@ -16,7 +17,7 @@ export const testEndpoints = async (t: ExecutionContext<unknown>, endpoints: Rea
             //     // ignore error
             // }
             expectedResult = expectedResult || result;
-            t.deepEqual(expectedResult, result);
+            t.deepEqual(result, expectedResult, `Comparison failed for endpoint #${i}`);
         } catch (error) {
             if (error.message.match(/Request failed with status code 503/)) {
                 continue;

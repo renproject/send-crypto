@@ -33,7 +33,7 @@
     "fix:tslint": "tslint --fix --project .",
     "test": "run-s build test:*",
     "test:lint": "tslint --project .",
-    "test:unit": "nyc --silent ava -T 100s --verbose",
+    "test:unit": "(. ./.env); nyc --silent ava -T 100s --verbose",
     "lint": "yarn test:lint",
     "lint:strict": "yarn lint && prettier \"src/**/*.ts\" --list-different --tab-width 4",
     "watch": "yarn clean && yarn build:main -- -w",

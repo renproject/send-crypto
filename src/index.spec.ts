@@ -59,8 +59,8 @@ const s = (asset: string | { type: "ERC20", name: string, address?: string }) =>
         t.is(0, 0);
     }
 
-    test.only("send BTC", sendToken, "BTC", 8, "testnet");
-    test.only("send ZEC", sendToken, "ZEC", 8, "testnet");
+    test("send BTC", sendToken, "BTC", 8, "testnet");
+    test("send ZEC", sendToken, "ZEC", 8, "testnet");
     test("send BCH", sendToken, "BCH", 8, "testnet");
     test.serial("send ETH", sendToken, "ETH", 18, "kovan");
     test.serial("send REN", sendToken, { type: "ERC20", name: "REN", address: "0x2cd647668494c1b15743ab283a0f980d90a87394" }, 18, "kovan");

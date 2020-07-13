@@ -37,6 +37,11 @@ export const _apiFallbacks = {
         testnet ? undefined : () => Blockchair.fetchConfirmations(Blockchair.networks.BITCOIN_CASH)(txHash),
     ],
 
+    fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
+        () => BitcoinDotCom.fetchUTXO(testnet)(txHash, vOut),
+        testnet ? undefined : () => Blockchair.fetchUTXO(Blockchair.networks.BITCOIN_CASH)(txHash, vOut),
+    ],
+
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
         testnet ? undefined : () => Blockchair.fetchUTXOs(Blockchair.networks.BITCOIN_CASH)(address, confirmations),
