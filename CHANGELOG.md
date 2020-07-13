@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.12](https://github.com/renproject/send-crypto/compare/v0.2.11...v0.2.12) (2020-07-13)
+
+
+### Features
+
+* add fetchUTXO ([e543cd2](https://github.com/renproject/send-crypto/commit/e543cd23bb5dbd89b60fbe084d469b46c2bc9b10))
+
 ### [0.2.11](https://github.com/renproject/send-crypto/compare/v0.2.10...v0.2.11) (2020-06-26)
 
 ### [0.2.10](https://github.com/renproject/send-crypto/compare/v0.2.9...v0.2.10) (2020-06-11)
