@@ -119,7 +119,7 @@ export class BCHHandler implements Handler {
                 this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
             );
 
-            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 5);
+            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 3);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -134,7 +134,7 @@ export class BCHHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 5);
+    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 2);
     private readonly _bitgoNetwork = () => this.testnet ? bitcoin.networks.bitcoincashTestnet : bitcoin.networks.bitcoincash;
 }
 
@@ -143,11 +143,16 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     const confirmations = options.confirmations || 0;
 
     const endpoints = _apiFallbacks.fetchUTXOs(testnet, address, confirmations);
-    const utxos = await retryNTimes(() => fallback(endpoints), 5);
+    const utxos = await retryNTimes(() => fallback(endpoints), 2);
     return utxos;
 };
 
 export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {
     const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
-    return retryNTimes(() => fallback(endpoints), 5);
+    return retryNTimes(() => fallback(endpoints), 2);
+};
+
+export const getUTXO = async (testnet: boolean, txHash: string, vOut: number): Promise<UTXO> => {
+    const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
+    return retryNTimes(() => fallback(endpoints), 2);
 };

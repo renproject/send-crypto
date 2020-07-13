@@ -120,7 +120,7 @@ export class BTCHandler implements Handler {
                 this.privateKey, changeAddress, to, valueIn, utxos, options,
             );
 
-            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 5);
+            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 3);
 
             promiEvent.emit('transactionHash', txHash);
             promiEvent.resolve(txHash);
@@ -135,18 +135,22 @@ export class BTCHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 5);
+    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 2);
 }
 
 export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
     const confirmations = options && options.confirmations !== undefined ? options.confirmations : 0;
 
     const endpoints = _apiFallbacks.fetchUTXOs(testnet, options.address, confirmations);
-    return retryNTimes(() => fallback(endpoints), 5);
+    return retryNTimes(() => fallback(endpoints), 2);
 };
 
 export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {
     const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
-    return retryNTimes(() => fallback(endpoints), 5);
+    return retryNTimes(() => fallback(endpoints), 2);
 };
 
+export const getUTXO = async (testnet: boolean, txHash: string, vOut: number): Promise<UTXO> => {
+    const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
+    return retryNTimes(() => fallback(endpoints), 2);
+};
