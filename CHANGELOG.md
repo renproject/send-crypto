@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.15](https://github.com/renproject/send-crypto/compare/v0.2.14...v0.2.15) (2020-09-09)
+
+
+### Bug Fixes
+
+* remove bn.js imports ([71fa3f2](https://github.com/renproject/send-crypto/commit/71fa3f2d8a1a570ac76ce6889c21235209a3447c))
+
 ### [0.2.14](https://github.com/renproject/send-crypto/compare/v0.2.13...v0.2.14) (2020-07-13)
 
 ### [0.2.13](https://github.com/renproject/send-crypto/compare/v0.2.12...v0.2.13) (2020-07-13)
