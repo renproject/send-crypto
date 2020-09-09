@@ -29,6 +29,7 @@ interface BlockstreamTX
             value: number; // e.g. 1034439
         }>
     > {
+    version: number;
     locktime: number;
     vin: Array<{
         txid: string;
@@ -135,6 +136,39 @@ const fetchUTXOs = (testnet: boolean) => async (
         )
         .sort(sortUTXOs);
 };
+
+// const fetchSpentTXs = (testnet: boolean) => async (
+//     address: string,
+//     confirmations: number
+// ): Promise<readonly UTXO[]> => {
+//     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+
+//     const response = await axios.get<ReadonlyArray<BlockstreamUTXO>>(
+//         `${apiUrl}/address/${address}/txs`,
+//         { timeout: DEFAULT_TIMEOUT }
+//     );
+
+//     const heightResponse = await axios.get<string>(
+//         `${apiUrl}/blocks/tip/height`,
+//         { timeout: DEFAULT_TIMEOUT }
+//     );
+
+//     return response.data
+//         .map((utxo) => ({
+//             txHash: utxo.txid,
+//             amount: utxo.value,
+//             vOut: utxo.vout,
+//             confirmations: utxo.status.confirmed
+//                 ? 1 +
+//                   parseInt(heightResponse.data, 10) -
+//                   utxo.status.block_height
+//                 : 0,
+//         }))
+//         .filter(
+//             (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
+//         )
+//         .sort(sortUTXOs);
+// };
 
 const broadcastTransaction = (testnet: boolean) => async (
     txHex: string

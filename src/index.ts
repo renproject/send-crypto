@@ -333,6 +333,7 @@ export default class CryptoAccount {
 try {
     // @ts-ignore
     if (typeof define === "function" && define.amd) {
+        // @ts-ignore
         define(() => CryptoAccount);
     }
 } catch (error) {
@@ -353,6 +354,7 @@ try {
 try {
     // @ts-ignore
     if (typeof window !== "undefined" && window) {
+        // @ts-ignore
         (window as any).CryptoAccount = CryptoAccount;
     }
 } catch (error) {

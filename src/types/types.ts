@@ -1,10 +1,9 @@
 import BigNumber from "bignumber.js";
-import BN from "bn.js";
 
 import { PromiEvent } from "../lib/promiEvent";
 
 export type Asset = string | object;
-export type Value = string | number | BigNumber | BN;
+export type Value = string | number | BigNumber | { toString: () => string };
 
 export interface DeferHandler<Options = {}> {
     readonly address: (asset: Asset, options?: any & {}) => Promise<string>;
@@ -42,13 +41,11 @@ export abstract class Handler<
     TxOptions = {}
 > {
     constructor(
-        privateKey: string,
-        network: string,
-        constructorOptions?: ConstructorOptions,
-        sharedState?: any
-    ) {
-        /* */
-    }
+        _privateKey: string,
+        _network: string,
+        _constructorOptions?: ConstructorOptions,
+        _sharedState?: any
+    ) {} // tslint:disable-line: no-empty
 
     // Returns whether or not this can handle the asset
     public handlesAsset!: (asset: Asset) => boolean;
