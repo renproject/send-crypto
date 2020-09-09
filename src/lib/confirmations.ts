@@ -1,7 +1,11 @@
 import { PromiEvent } from "./promiEvent";
 import { sleep } from "./retry";
 
-export const subscribeToConfirmations = <T>(promiEvent: PromiEvent<T>, cancelled: () => boolean, getConfirmations: () => Promise<number>) => {
+export const subscribeToConfirmations = <T>(
+    promiEvent: PromiEvent<T>,
+    cancelled: () => boolean,
+    getConfirmations: () => Promise<number>
+) => {
     let mutex;
     const watchForConfirmations = async () => {
         const lock = Symbol();
@@ -26,7 +30,7 @@ export const subscribeToConfirmations = <T>(promiEvent: PromiEvent<T>, cancelled
     };
 
     let watchingConfirmations = 0;
-    promiEvent.on("newListener", eventName => {
+    promiEvent.on("newListener", (eventName) => {
         if (eventName === "confirmation") {
             watchingConfirmations++;
             if (watchingConfirmations === 1) {
@@ -35,9 +39,9 @@ export const subscribeToConfirmations = <T>(promiEvent: PromiEvent<T>, cancelled
         }
     });
 
-    promiEvent.on("removeListener", eventName => {
+    promiEvent.on("removeListener", (eventName) => {
         if (eventName === "confirmation") {
             watchingConfirmations--;
         }
     });
-}
+};

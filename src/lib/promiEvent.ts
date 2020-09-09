@@ -28,7 +28,7 @@ import { EventEmitter } from "events";
 import { TransactionReceipt } from "web3-core";
 
 class InternalPromiEvent<T> {
-    public readonly [Symbol.toStringTag]: 'Promise';
+    public readonly [Symbol.toStringTag]: "Promise";
     public readonly promise: Promise<T>;
     // @ts-ignore no initializer because of proxyHandler
     public resolve: (value?: T) => void;
@@ -37,9 +37,9 @@ class InternalPromiEvent<T> {
     public readonly eventEmitter: EventEmitter;
 
     // @ts-ignore no initializer because of proxyHandler
-    public readonly emit: EventEmitter['emit'];
+    public readonly emit: EventEmitter["emit"];
     // @ts-ignore no initializer because of proxyHandler
-    public readonly removeListener: EventEmitter['removeListener'];
+    public readonly removeListener: EventEmitter["removeListener"];
     // @ts-ignore no initializer because of proxyHandler
     public readonly on: (
         event: string,
@@ -51,11 +51,11 @@ class InternalPromiEvent<T> {
         callback: (...values: readonly any[]) => void | Promise<void>
     ) => this;
     // @ts-ignore no initializer because of proxyHandler
-    public readonly then: Promise<T>['then'];
+    public readonly then: Promise<T>["then"];
     // @ts-ignore no initializer because of proxyHandler
-    public readonly catch: Promise<T>['catch'];
+    public readonly catch: Promise<T>["catch"];
     // @ts-ignore no initializer because of proxyHandler
-    public readonly finally: Promise<T>['finally'];
+    public readonly finally: Promise<T>["finally"];
     // @ts-ignore no initializer because of proxyHandler
     public readonly listeners: EventEmitter["listeners"];
     // @ts-ignore no initializer because of proxyHandler
@@ -74,7 +74,7 @@ class InternalPromiEvent<T> {
         this.eventEmitter = new EventEmitter();
 
         return new Proxy(this, {
-            get: this.proxyHandler
+            get: this.proxyHandler,
         });
     }
 
@@ -82,15 +82,15 @@ class InternalPromiEvent<T> {
      * Proxy handler to call the promise or eventEmitter methods
      */
     public proxyHandler(target: PromiEvent<T>, name: string) {
-        if (name === 'resolve' || name === 'reject') {
+        if (name === "resolve" || name === "reject") {
             return target[name];
         }
 
-        if (name === 'then') {
+        if (name === "then") {
             return target.promise.then.bind(target.promise);
         }
 
-        if (name === 'catch') {
+        if (name === "catch") {
             return target.promise.catch.bind(target.promise);
         }
 
@@ -133,19 +133,19 @@ export const forwardEvents = <T, Y>(
     // dest.on("removeListener", forwardEmitterRemoveListener);
 
     // Until the above is fixed, we manually forward each event name:
-    src.on('transactionHash', (eventReceipt: string) => {
-        dest.emit('transactionHash', eventReceipt);
+    src.on("transactionHash", (eventReceipt: string) => {
+        dest.emit("transactionHash", eventReceipt);
     });
-    src.on('receipt', (eventReceipt: TransactionReceipt) => {
-        dest.emit('receipt', eventReceipt);
+    src.on("receipt", (eventReceipt: TransactionReceipt) => {
+        dest.emit("receipt", eventReceipt);
     });
     src.on(
-        'confirmation',
+        "confirmation",
         (confNumber: number, eventReceipt: TransactionReceipt) => {
-            dest.emit('confirmation', confNumber, eventReceipt);
+            dest.emit("confirmation", confNumber, eventReceipt);
         }
     );
-    src.on('error', (error: Error) => {
-        dest.emit('error', error);
+    src.on("error", (error: Error) => {
+        dest.emit("error", error);
     });
 };

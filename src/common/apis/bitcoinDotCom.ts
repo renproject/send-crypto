@@ -54,76 +54,112 @@ export interface QueryTransaction {
     fees: number; // 0.0001
 }
 
-const endpoint = (testnet: boolean) => testnet ? "https://trest.bitcoin.com/v2/" : "https://rest.bitcoin.com/v2/";
+const endpoint = (testnet: boolean) =>
+    testnet ? "https://trest.bitcoin.com/v2/" : "https://rest.bitcoin.com/v2/";
 
-const fetchUTXO = (testnet: boolean) => async (txHash: string, vOut: number): Promise<UTXO> => {
-    const url = `${endpoint(testnet).replace(/\/$/, "")}/transaction/details/${txHash}`;
+const fetchUTXO = (testnet: boolean) => async (
+    txHash: string,
+    vOut: number
+): Promise<UTXO> => {
+    const url = `${endpoint(testnet).replace(
+        /\/$/,
+        ""
+    )}/transaction/details/${txHash}`;
 
-    const response = await axios.get<QueryTransaction>(`${url}`, { timeout: DEFAULT_TIMEOUT });
+    const response = await axios.get<QueryTransaction>(`${url}`, {
+        timeout: DEFAULT_TIMEOUT,
+    });
 
     const utxo = response.data;
 
-    return fixUTXO({
-        txHash,
-        amount: parseFloat(utxo.vout[vOut].value),
-        // script_hex: utxo.scriptPubKey,
-        vOut,
-        confirmations: utxo.confirmations,
-    }, 8);
+    return fixUTXO(
+        {
+            txHash,
+            amount: parseFloat(utxo.vout[vOut].value),
+            // script_hex: utxo.scriptPubKey,
+            vOut,
+            confirmations: utxo.confirmations,
+        },
+        8
+    );
 };
 
-const fetchConfirmations = (testnet: boolean) => async (txHash: string): Promise<number> => {
-    const url = `${endpoint(testnet).replace(/\/$/, "")}/transaction/details/${txHash}`;
+const fetchConfirmations = (testnet: boolean) => async (
+    txHash: string
+): Promise<number> => {
+    const url = `${endpoint(testnet).replace(
+        /\/$/,
+        ""
+    )}/transaction/details/${txHash}`;
 
-    const tx = (await axios.get<{
-        txid: string, // 'cacec549d9f1f67e9835889a2ce3fc0d593bd78d63f63f45e4c28a59e004667d',
-        version: number, // 4,
-        locktime: number, // 0,
-        vin: any, // [[Object]],
-        vout: any, // [[Object]],
-        blockhash: string, // -1,
-        blockheight: number, // -1,
-        confirmations: number, // 0,
-        time: number, // 1574895240,
-        valueOut: number, // 225.45779926,
-        size: number, // 211,
-        valueIn: number, // 225.45789926,
-        fees: number, // 0.0001,
-    }>(`${url}`, { timeout: DEFAULT_TIMEOUT })).data;
+    const tx = (
+        await axios.get<{
+            txid: string; // 'cacec549d9f1f67e9835889a2ce3fc0d593bd78d63f63f45e4c28a59e004667d',
+            version: number; // 4,
+            locktime: number; // 0,
+            vin: any; // [[Object]],
+            vout: any; // [[Object]],
+            blockhash: string; // -1,
+            blockheight: number; // -1,
+            confirmations: number; // 0,
+            time: number; // 1574895240,
+            valueOut: number; // 225.45779926,
+            size: number; // 211,
+            valueIn: number; // 225.45789926,
+            fees: number; // 0.0001,
+        }>(`${url}`, { timeout: DEFAULT_TIMEOUT })
+    ).data;
 
     return tx.confirmations;
 };
 
-const fetchUTXOs = (testnet: boolean) => async (address: string, confirmations: number): Promise<readonly UTXO[]> => {
-    const url = `${endpoint(testnet).replace(/\/$/, "")}/address/utxo/${address}`;
+const fetchUTXOs = (testnet: boolean) => async (
+    address: string,
+    confirmations: number
+): Promise<readonly UTXO[]> => {
+    const url = `${endpoint(testnet).replace(
+        /\/$/,
+        ""
+    )}/address/utxo/${address}`;
     const response = await axios.get<{
         utxos: ReadonlyArray<{
-            address: string,
-            txid: string,
-            vout: number,
-            scriptPubKey: string,
-            amount: number,
-            satoshis: number,
-            confirmations: number,
-            ts: number,
-        }>
+            address: string;
+            txid: string;
+            vout: number;
+            scriptPubKey: string;
+            amount: number;
+            satoshis: number;
+            confirmations: number;
+            ts: number;
+        }>;
     }>(url, { timeout: DEFAULT_TIMEOUT });
-    return fixUTXOs(response.data.utxos.map(utxo => ({
-        txHash: utxo.txid,
-        amount: utxo.amount,
-        // script_hex: utxo.scriptPubKey,
-        vOut: utxo.vout,
-        confirmations: utxo.confirmations,
-    }))
-        .filter(utxo => confirmations === 0 || utxo.confirmations >= confirmations), 8)
-        .sort(sortUTXOs);
+    return fixUTXOs(
+        response.data.utxos
+            .map((utxo) => ({
+                txHash: utxo.txid,
+                amount: utxo.amount,
+                // script_hex: utxo.scriptPubKey,
+                vOut: utxo.vout,
+                confirmations: utxo.confirmations,
+            }))
+            .filter(
+                (utxo) =>
+                    confirmations === 0 || utxo.confirmations >= confirmations
+            ),
+        8
+    ).sort(sortUTXOs);
 };
 
-export const broadcastTransaction = (testnet: boolean) => async (txHex: string): Promise<string> => {
-    const url = `${endpoint(testnet).replace(/\/$/, "")}/rawtransactions/sendRawTransaction`;
+export const broadcastTransaction = (testnet: boolean) => async (
+    txHex: string
+): Promise<string> => {
+    const url = `${endpoint(testnet).replace(
+        /\/$/,
+        ""
+    )}/rawtransactions/sendRawTransaction`;
     const response = await axios.post<string[]>(
         url,
-        { "hexes": [txHex] },
+        { hexes: [txHex] },
         { timeout: DEFAULT_TIMEOUT }
     );
     if ((response.data as any).error) {

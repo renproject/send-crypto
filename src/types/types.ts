@@ -7,19 +7,16 @@ export type Asset = string | object;
 export type Value = string | number | BigNumber | BN;
 
 export interface DeferHandler<Options = {}> {
-    readonly address: (
-        asset: Asset,
-        options?: any & {},
-    ) => Promise<string>;
+    readonly address: (asset: Asset, options?: any & {}) => Promise<string>;
 
     // Balance
     readonly getBalance: (
         asset: Asset,
-        options?: any & { readonly address?: string },
+        options?: any & { readonly address?: string }
     ) => Promise<BigNumber>;
     readonly getBalanceInSats: (
         asset: Asset,
-        options?: any & { readonly address?: string },
+        options?: any & { readonly address?: string }
     ) => Promise<BigNumber>;
 
     // Transfer
@@ -27,13 +24,13 @@ export interface DeferHandler<Options = {}> {
         to: string,
         value: BigNumber,
         asset: Asset,
-        options?: Options,
+        options?: Options
     ) => PromiEvent<string>;
     readonly sendSats: (
         to: string,
         value: BigNumber,
         asset: Asset,
-        options?: Options,
+        options?: Options
     ) => PromiEvent<string>;
 }
 
@@ -42,32 +39,59 @@ export abstract class Handler<
     ConstructorOptions = {},
     AddressOptions = {},
     BalanceOptions extends { address?: string } = { address?: string },
-    TxOptions = {},
-    > {
-    constructor(privateKey: string, network: string, constructorOptions?: ConstructorOptions, sharedState?: any) { /* */ }
+    TxOptions = {}
+> {
+    constructor(
+        privateKey: string,
+        network: string,
+        constructorOptions?: ConstructorOptions,
+        sharedState?: any
+    ) {
+        /* */
+    }
 
     // Returns whether or not this can handle the asset
     public handlesAsset!: (asset: Asset) => boolean;
 
     // Returns the address of the account
-    public address?: (asset: Asset, options: AddressOptions, deferHandler: DeferHandler) => Promise<string>;
+    public address?: (
+        asset: Asset,
+        options: AddressOptions,
+        deferHandler: DeferHandler
+    ) => Promise<string>;
 
     // Returns the balance of the account
-    public getBalance?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
-        => Promise<BigNumber>;
-    public getBalanceInSats?: (asset: Asset, options: BalanceOptions, deferHandler: DeferHandler)
-        => Promise<BigNumber>;
+    public getBalance?: (
+        asset: Asset,
+        options: BalanceOptions,
+        deferHandler: DeferHandler
+    ) => Promise<BigNumber>;
+    public getBalanceInSats?: (
+        asset: Asset,
+        options: BalanceOptions,
+        deferHandler: DeferHandler
+    ) => Promise<BigNumber>;
 
     // Transfers the asset to the provided address
-    public send?: (to: string, value: BigNumber, asset: Asset, options: TxOptions, deferHandler: DeferHandler)
-        => PromiEvent<string>;
-    public sendSats?: (to: string, value: BigNumber, asset: Asset, options: TxOptions, deferHandler: DeferHandler)
-        => PromiEvent<string>;
+    public send?: (
+        to: string,
+        value: BigNumber,
+        asset: Asset,
+        options: TxOptions,
+        deferHandler: DeferHandler
+    ) => PromiEvent<string>;
+    public sendSats?: (
+        to: string,
+        value: BigNumber,
+        asset: Asset,
+        options: TxOptions,
+        deferHandler: DeferHandler
+    ) => PromiEvent<string>;
 }
 
 export type HandlerClass = new <Options extends {}>(
     privateKey: string,
     network: string,
     constructorOptions?: Options,
-    sharedState?: any,
+    sharedState?: any
 ) => Handler;

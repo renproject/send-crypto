@@ -4,13 +4,18 @@ import { TransactionConfig } from "web3-core";
 
 import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { Asset, Handler } from "../../types/types";
-import { getEndpoint, getNetwork, getTransactionConfig, getWeb3 } from "./ethUtils";
+import {
+    getEndpoint,
+    getNetwork,
+    getTransactionConfig,
+    getWeb3,
+} from "./ethUtils";
 
 interface ConstructorOptions {
     infuraKey?: string;
     ethereumNode?: string;
 }
-interface AddressOptions { }
+interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
     address?: string;
 
@@ -19,10 +24,12 @@ interface BalanceOptions extends AddressOptions {
     confirmations?: number; // defaults to 0
 }
 interface TxOptions extends TransactionConfig {
-    subtractFee?: boolean;  // defaults to false
+    subtractFee?: boolean; // defaults to false
 }
 
-export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
+export class ETHHandler
+    implements
+        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
     private readonly privateKey: string;
     private readonly network: string;
 
@@ -34,10 +41,22 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
         web3: Web3;
     };
 
-    constructor(privateKey: string, network: string, options?: ConstructorOptions, sharedState?: any) {
+    constructor(
+        privateKey: string,
+        network: string,
+        options?: ConstructorOptions,
+        sharedState?: any
+    ) {
         this.network = getNetwork(network);
         this.privateKey = privateKey;
-        const [web3, address] = getWeb3(this.privateKey, getEndpoint(this.network, options && options.ethereumNode, options && options.infuraKey));
+        const [web3, address] = getWeb3(
+            this.privateKey,
+            getEndpoint(
+                this.network,
+                options && options.ethereumNode,
+                options && options.infuraKey
+            )
+        );
         this.unlockedAddress = address;
         sharedState.web3 = web3;
         this.sharedState = sharedState;
@@ -45,26 +64,43 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        typeof asset === "string" && ["ETH", "ETHER", "ETHEREUM"].indexOf(asset.toUpperCase()) !== -1;
+        typeof asset === "string" &&
+        ["ETH", "ETHER", "ETHEREUM"].indexOf(asset.toUpperCase()) !== -1;
 
-    public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
-        this.unlockedAddress;
+    public readonly address = async (
+        asset: Asset,
+        options?: AddressOptions
+    ): Promise<string> => this.unlockedAddress;
     // (await this.sharedState.web3.eth.getAccounts())[0];
 
     // Balance
-    public readonly getBalance = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
+    public readonly getBalance = async (
+        asset: Asset,
+        options?: BalanceOptions
+    ): Promise<BigNumber> =>
         (await this.getBalanceInSats(asset, options)).dividedBy(
             new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
-    public readonly getBalanceInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
+    public readonly getBalanceInSats = async (
+        asset: Asset,
+        options?: BalanceOptions
+    ): Promise<BigNumber> => {
         let atBlock;
         if (options && options.confirmations && options.confirmations > 0) {
-            const currentBlock = new BigNumber(await this.sharedState.web3.eth.getBlockNumber());
-            atBlock = currentBlock.minus(options.confirmations).plus(1).toNumber();
+            const currentBlock = new BigNumber(
+                await this.sharedState.web3.eth.getBlockNumber()
+            );
+            atBlock = currentBlock
+                .minus(options.confirmations)
+                .plus(1)
+                .toNumber();
         }
-        const address = options && options.address || await this.address(asset);
-        return new BigNumber(await this.sharedState.web3.eth.getBalance(address, atBlock as any));
+        const address =
+            (options && options.address) || (await this.address(asset));
+        return new BigNumber(
+            await this.sharedState.web3.eth.getBalance(address, atBlock as any)
+        );
     };
 
     // Transfer
@@ -87,7 +123,6 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
         asset: Asset,
         optionsIn?: TxOptions
     ): PromiEvent<string> => {
-
         const promiEvent = newPromiEvent<string>();
 
         (async () => {
@@ -98,24 +133,30 @@ export class ETHHandler implements Handler<ConstructorOptions, AddressOptions, B
             const txOptions = getTransactionConfig(options);
 
             if (options.subtractFee) {
-                const gasPrice = txOptions.gasPrice || await this.sharedState.web3.eth.getGasPrice();
+                const gasPrice =
+                    txOptions.gasPrice ||
+                    (await this.sharedState.web3.eth.getGasPrice());
                 const gasLimit = txOptions.gas || 21000;
                 const fee = new BigNumber(gasPrice.toString()).times(gasLimit);
                 if (fee.gt(value)) {
-                    throw new Error(`Unable to include fee in value, fee exceeds value (${fee.toFixed()} > ${value.toFixed()})`);
+                    throw new Error(
+                        `Unable to include fee in value, fee exceeds value (${fee.toFixed()} > ${value.toFixed()})`
+                    );
                 }
                 value = value.minus(fee);
             }
-            const web3PromiEvent = this.sharedState.web3.eth.sendTransaction({
+            const web3PromiEvent = (this.sharedState.web3.eth.sendTransaction({
                 from: await this.address(asset),
                 gas: 21000,
                 ...txOptions,
                 to,
                 value: value.toFixed(),
-            }) as unknown as PromiEvent<string>;
+            }) as unknown) as PromiEvent<string>;
             forwardEvents(web3PromiEvent, promiEvent);
             web3PromiEvent.then(promiEvent.resolve);
-        })().catch((error) => { promiEvent.reject(error) });
+        })().catch((error) => {
+            promiEvent.reject(error);
+        });
 
         return promiEvent;
     };

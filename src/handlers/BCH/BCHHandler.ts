@@ -13,14 +13,14 @@ import { fallback, retryNTimes } from "../../lib/retry";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 
-interface AddressOptions { }
+interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
     address?: string;
     confirmations?: number; // defaults to 0
 }
 interface TxOptions extends BalanceOptions {
-    fee?: number;           // defaults to 10000
-    subtractFee?: boolean;  // defaults to false
+    fee?: number; // defaults to 10000
+    subtractFee?: boolean; // defaults to false
 }
 
 const toCashAddr = (legacyAddress: string) => {
@@ -29,57 +29,100 @@ const toCashAddr = (legacyAddress: string) => {
     } catch (error) {
         return legacyAddress;
     }
-}
+};
 
 export const _apiFallbacks = {
     fetchConfirmations: (testnet: boolean, txHash: string) => [
         () => BitcoinDotCom.fetchConfirmations(testnet)(txHash),
-        testnet ? undefined : () => Blockchair.fetchConfirmations(Blockchair.networks.BITCOIN_CASH)(txHash),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchair.fetchConfirmations(
+                      Blockchair.networks.BITCOIN_CASH
+                  )(txHash),
     ],
 
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
         () => BitcoinDotCom.fetchUTXO(testnet)(txHash, vOut),
-        testnet ? undefined : () => Blockchair.fetchUTXO(Blockchair.networks.BITCOIN_CASH)(txHash, vOut),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchair.fetchUTXO(Blockchair.networks.BITCOIN_CASH)(
+                      txHash,
+                      vOut
+                  ),
     ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
-        testnet ? undefined : () => Blockchair.fetchUTXOs(Blockchair.networks.BITCOIN_CASH)(address, confirmations),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchair.fetchUTXOs(Blockchair.networks.BITCOIN_CASH)(
+                      address,
+                      confirmations
+                  ),
     ],
 
     broadcastTransaction: (testnet: boolean, hex: string) => [
         () => BitcoinDotCom.broadcastTransaction(testnet)(hex),
-        testnet ? undefined : () => Blockchair.broadcastTransaction(Blockchair.networks.BITCOIN_CASH)(hex),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchair.broadcastTransaction(
+                      Blockchair.networks.BITCOIN_CASH
+                  )(hex),
     ],
-}
+};
 
 export class BCHHandler implements Handler {
-    private readonly privateKey: { getAddress: () => string; };
+    private readonly privateKey: { getAddress: () => string };
     private readonly testnet: boolean;
 
     private readonly decimals = 8;
 
     constructor(privateKey: string, network: string) {
         this.testnet = network !== "mainnet";
-        this.privateKey = BitgoUTXOLib.loadPrivateKey(this._bitgoNetwork(), privateKey);
+        this.privateKey = BitgoUTXOLib.loadPrivateKey(
+            this._bitgoNetwork(),
+            privateKey
+        );
     }
 
     // Returns whether or not this can handle the asset
     public readonly handlesAsset = (asset: Asset): boolean =>
-        typeof asset === "string" && ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(asset.toUpperCase()) !== -1;
+        typeof asset === "string" &&
+        ["BCH", "BITCOIN CASH", "BCASH", "BITCOINCASH", "BITCOIN-CASH"].indexOf(
+            asset.toUpperCase()
+        ) !== -1;
 
-    public readonly address = async (asset: Asset, options?: AddressOptions): Promise<string> =>
-        toCashAddr(this.privateKey.getAddress());
+    public readonly address = async (
+        asset: Asset,
+        options?: AddressOptions
+    ): Promise<string> => toCashAddr(this.privateKey.getAddress());
 
     // Balance
-    public readonly getBalance = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> =>
+    public readonly getBalance = async (
+        asset: Asset,
+        options?: BalanceOptions
+    ): Promise<BigNumber> =>
         (await this.getBalanceInSats(asset, options)).dividedBy(
             new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
-    public readonly getBalanceInSats = async (asset: Asset, options?: BalanceOptions): Promise<BigNumber> => {
-        const utxos = await getUTXOs(this.testnet, { ...options, address: options && options.address || await this.address(asset) });
-        return utxos.reduce((sum, utxo) => sum.plus(utxo.amount), new BigNumber(0));
+    public readonly getBalanceInSats = async (
+        asset: Asset,
+        options?: BalanceOptions
+    ): Promise<BigNumber> => {
+        const utxos = await getUTXOs(this.testnet, {
+            ...options,
+            address:
+                (options && options.address) || (await this.address(asset)),
+        });
+        return utxos.reduce(
+            (sum, utxo) => sum.plus(utxo.amount),
+            new BigNumber(0)
+        );
     };
 
     // Transfer
@@ -111,34 +154,77 @@ export class BCHHandler implements Handler {
             const fromAddress = toLegacyAddress(await this.address(asset));
             const toAddress = toLegacyAddress(to);
             const changeAddress = fromAddress;
-            const utxos = List(await getUTXOs(this.testnet, { ...options, address: fromAddress })).sortBy(utxo => utxo.amount).reverse().toArray();
+            const utxos = List(
+                await getUTXOs(this.testnet, {
+                    ...options,
+                    address: fromAddress,
+                })
+            )
+                .sortBy((utxo) => utxo.amount)
+                .reverse()
+                .toArray();
 
             const built = await BitgoUTXOLib.buildUTXO(
                 this._bitgoNetwork(),
-                // tslint:disable-next-line: no-bitwise
-                this.privateKey, changeAddress, toAddress, valueIn, utxos, { ...options, signFlag: bitcoin.Transaction.SIGHASH_SINGLE | bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143 },
+                this.privateKey,
+                changeAddress,
+                toAddress,
+                valueIn,
+                utxos,
+                {
+                    ...options,
+                    signFlag:
+                        // tslint:disable-next-line: no-bitwise
+                        bitcoin.Transaction.SIGHASH_SINGLE |
+                        bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143,
+                }
             );
 
-            txHash = await retryNTimes(() => fallback(_apiFallbacks.broadcastTransaction(this.testnet, built.toHex())), 3);
+            txHash = await retryNTimes(
+                () =>
+                    fallback(
+                        _apiFallbacks.broadcastTransaction(
+                            this.testnet,
+                            built.toHex()
+                        )
+                    ),
+                3
+            );
 
-            promiEvent.emit('transactionHash', txHash);
+            promiEvent.emit("transactionHash", txHash);
             promiEvent.resolve(txHash);
-        })().catch((error) => { errored = true; promiEvent.reject(error) });
+        })().catch((error) => {
+            errored = true;
+            promiEvent.reject(error);
+        });
 
         subscribeToConfirmations(
             promiEvent,
             () => errored,
-            async () => txHash ? this._getConfirmations(txHash) : 0,
-        )
+            async () => (txHash ? this._getConfirmations(txHash) : 0)
+        );
 
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) => retryNTimes(() => fallback(_apiFallbacks.fetchConfirmations(this.testnet, txHash)), 2);
-    private readonly _bitgoNetwork = () => this.testnet ? bitcoin.networks.bitcoincashTestnet : bitcoin.networks.bitcoincash;
+    private readonly _getConfirmations = (txHash: string) =>
+        retryNTimes(
+            () =>
+                fallback(
+                    _apiFallbacks.fetchConfirmations(this.testnet, txHash)
+                ),
+            2
+        );
+    private readonly _bitgoNetwork = () =>
+        this.testnet
+            ? bitcoin.networks.bitcoincashTestnet
+            : bitcoin.networks.bitcoincash;
 }
 
-export const getUTXOs = async (testnet: boolean, options: { address: string, confirmations?: number }): Promise<readonly UTXO[]> => {
+export const getUTXOs = async (
+    testnet: boolean,
+    options: { address: string; confirmations?: number }
+): Promise<readonly UTXO[]> => {
     const address = toCashAddr(options.address);
     const confirmations = options.confirmations || 0;
 
@@ -147,12 +233,19 @@ export const getUTXOs = async (testnet: boolean, options: { address: string, con
     return utxos;
 };
 
-export const getConfirmations = async (testnet: boolean, txHash: string): Promise<number> => {
+export const getConfirmations = async (
+    testnet: boolean,
+    txHash: string
+): Promise<number> => {
     const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
     return retryNTimes(() => fallback(endpoints), 2);
 };
 
-export const getUTXO = async (testnet: boolean, txHash: string, vOut: number): Promise<UTXO> => {
+export const getUTXO = async (
+    testnet: boolean,
+    txHash: string,
+    vOut: number
+): Promise<UTXO> => {
     const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
     return retryNTimes(() => fallback(endpoints), 2);
 };
