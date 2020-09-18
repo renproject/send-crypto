@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Vin | send-crypto</title>
+	<title>SoChainTX | send-crypto</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="vin.html">Vin</a>
+					<a href="sochaintx.html">SoChainTX</a>
 				</li>
 			</ul>
-			<h1>Interface Vin</h1>
+			<h1>Interface SoChainTX</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Vin</span>
+						<span class="target">SoChainTX</span>
 					</li>
 				</ul>
 			</section>
@@ -81,17 +81,17 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#addr" class="tsd-kind-icon">addr</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#cashaddress" class="tsd-kind-icon">cash<wbr>Address</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#doublespenttxid" class="tsd-kind-icon">double<wbr>Spent<wbr>TxID</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#legacyaddress" class="tsd-kind-icon">legacy<wbr>Address</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#n" class="tsd-kind-icon">n</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#scriptsig" class="tsd-kind-icon">script<wbr>Sig</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#sequence" class="tsd-kind-icon">sequence</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#txid" class="tsd-kind-icon">txid</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#value" class="tsd-kind-icon">value</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#valuesat" class="tsd-kind-icon">value<wbr>Sat</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vin.html#vout" class="tsd-kind-icon">vout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#blockhash" class="tsd-kind-icon">blockhash</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#confirmations" class="tsd-kind-icon">confirmations</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#inputs" class="tsd-kind-icon">inputs</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#locktime" class="tsd-kind-icon">locktime</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#network" class="tsd-kind-icon">network</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#outputs" class="tsd-kind-icon">outputs</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#size" class="tsd-kind-icon">size</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#time" class="tsd-kind-icon">time</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#tx_hex" class="tsd-kind-icon">tx_<wbr>hex</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#txid" class="tsd-kind-icon">txid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sochaintx.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,75 +100,92 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="addr" class="tsd-anchor"></a>
-					<h3>addr</h3>
-					<div class="tsd-signature tsd-kind-icon">addr<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="blockhash" class="tsd-anchor"></a>
+					<h3>blockhash</h3>
+					<div class="tsd-signature tsd-kind-icon">blockhash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L61">common/apis/insight.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L19">common/apis/sochain.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="cashaddress" class="tsd-anchor"></a>
-					<h3>cash<wbr>Address</h3>
-					<div class="tsd-signature tsd-kind-icon">cash<wbr>Address<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="confirmations" class="tsd-anchor"></a>
+					<h3>confirmations</h3>
+					<div class="tsd-signature tsd-kind-icon">confirmations<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L19">common/apis/bitcoinDotCom.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L20">common/apis/sochain.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="doublespenttxid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> double<wbr>Spent<wbr>TxID</h3>
-					<div class="tsd-signature tsd-kind-icon">double<wbr>Spent<wbr>TxID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<a name="inputs" class="tsd-anchor"></a>
+					<h3>inputs</h3>
+					<div class="tsd-signature tsd-kind-icon">inputs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L64">common/apis/insight.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L22">common/apis/sochain.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="legacyaddress" class="tsd-anchor"></a>
-					<h3>legacy<wbr>Address</h3>
-					<div class="tsd-signature tsd-kind-icon">legacy<wbr>Address<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="locktime" class="tsd-anchor"></a>
+					<h3>locktime</h3>
+					<div class="tsd-signature tsd-kind-icon">locktime<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L18">common/apis/bitcoinDotCom.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L44">common/apis/sochain.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="n" class="tsd-anchor"></a>
-					<h3>n</h3>
-					<div class="tsd-signature tsd-kind-icon">n<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="network" class="tsd-anchor"></a>
+					<h3>network</h3>
+					<div class="tsd-signature tsd-kind-icon">network<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L15">common/apis/bitcoinDotCom.ts:15</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L59">common/apis/insight.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L17">common/apis/sochain.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="scriptsig" class="tsd-anchor"></a>
-					<h3>script<wbr>Sig</h3>
-					<div class="tsd-signature tsd-kind-icon">script<wbr>Sig<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ScriptSig</span></div>
+					<a name="outputs" class="tsd-anchor"></a>
+					<h3>outputs</h3>
+					<div class="tsd-signature tsd-kind-icon">outputs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L16">common/apis/bitcoinDotCom.ts:16</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L60">common/apis/insight.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L34">common/apis/sochain.ts:34</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="sequence" class="tsd-anchor"></a>
-					<h3>sequence</h3>
-					<div class="tsd-signature tsd-kind-icon">sequence<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="size" class="tsd-anchor"></a>
+					<h3>size</h3>
+					<div class="tsd-signature tsd-kind-icon">size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L14">common/apis/bitcoinDotCom.ts:14</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L58">common/apis/insight.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L42">common/apis/sochain.ts:42</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="time" class="tsd-anchor"></a>
+					<h3>time</h3>
+					<div class="tsd-signature tsd-kind-icon">time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L21">common/apis/sochain.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="tx_hex" class="tsd-anchor"></a>
+					<h3>tx_<wbr>hex</h3>
+					<div class="tsd-signature tsd-kind-icon">tx_<wbr>hex<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L41">common/apis/sochain.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -178,40 +195,17 @@
 					<div class="tsd-signature tsd-kind-icon">txid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L12">common/apis/bitcoinDotCom.ts:12</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L56">common/apis/insight.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L18">common/apis/sochain.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="value" class="tsd-anchor"></a>
-					<h3>value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="version" class="tsd-anchor"></a>
+					<h3>version</h3>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L17">common/apis/bitcoinDotCom.ts:17</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L63">common/apis/insight.ts:63</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="valuesat" class="tsd-anchor"></a>
-					<h3>value<wbr>Sat</h3>
-					<div class="tsd-signature tsd-kind-icon">value<wbr>Sat<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L62">common/apis/insight.ts:62</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="vout" class="tsd-anchor"></a>
-					<h3>vout</h3>
-					<div class="tsd-signature tsd-kind-icon">vout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/bitcoinDotCom.ts#L13">common/apis/bitcoinDotCom.ts:13</a></li>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/insight.ts#L57">common/apis/insight.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/34cb062/src/common/apis/sochain.ts#L43">common/apis/sochain.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -230,40 +224,40 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="vin.html" class="tsd-kind-icon">Vin</a>
+						<a href="sochaintx.html" class="tsd-kind-icon">So<wbr>ChainTX</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#addr" class="tsd-kind-icon">addr</a>
+								<a href="sochaintx.html#blockhash" class="tsd-kind-icon">blockhash</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#cashaddress" class="tsd-kind-icon">cash<wbr>Address</a>
+								<a href="sochaintx.html#confirmations" class="tsd-kind-icon">confirmations</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#doublespenttxid" class="tsd-kind-icon">double<wbr>Spent<wbr>TxID</a>
+								<a href="sochaintx.html#inputs" class="tsd-kind-icon">inputs</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#legacyaddress" class="tsd-kind-icon">legacy<wbr>Address</a>
+								<a href="sochaintx.html#locktime" class="tsd-kind-icon">locktime</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#n" class="tsd-kind-icon">n</a>
+								<a href="sochaintx.html#network" class="tsd-kind-icon">network</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#scriptsig" class="tsd-kind-icon">script<wbr>Sig</a>
+								<a href="sochaintx.html#outputs" class="tsd-kind-icon">outputs</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#sequence" class="tsd-kind-icon">sequence</a>
+								<a href="sochaintx.html#size" class="tsd-kind-icon">size</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#txid" class="tsd-kind-icon">txid</a>
+								<a href="sochaintx.html#time" class="tsd-kind-icon">time</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#value" class="tsd-kind-icon">value</a>
+								<a href="sochaintx.html#tx_hex" class="tsd-kind-icon">tx_<wbr>hex</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#valuesat" class="tsd-kind-icon">value<wbr>Sat</a>
+								<a href="sochaintx.html#txid" class="tsd-kind-icon">txid</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vin.html#vout" class="tsd-kind-icon">vout</a>
+								<a href="sochaintx.html#version" class="tsd-kind-icon">version</a>
 							</li>
 						</ul>
 					</li>
