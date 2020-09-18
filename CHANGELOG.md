@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.16](https://github.com/renproject/send-crypto/compare/v0.2.15...v0.2.16) (2020-09-18)
+
+
+### Features
+
+* added initial doge api support, updated dependencies ([34cb062](https://github.com/renproject/send-crypto/commit/34cb062a6601f0baf371d9cbb92efd574fd7c2f0))
+
 ### [0.2.15](https://github.com/renproject/send-crypto/compare/v0.2.14...v0.2.15) (2020-09-09)
 
 
