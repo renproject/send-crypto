@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.17](https://github.com/renproject/send-crypto/compare/v0.2.16...v0.2.17) (2020-09-25)
+
+
+### Features
+
+* added fetchTXs endpoints ([7582026](https://github.com/renproject/send-crypto/commit/75820269260fc5646a5318a179e8b70067907671))
+
 ### [0.2.16](https://github.com/renproject/send-crypto/compare/v0.2.15...v0.2.16) (2020-09-18)
 
 
