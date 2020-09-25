@@ -222,7 +222,7 @@ export class ZECHandler implements Handler {
                 ? options.confirmations
                 : 0;
 
-        const endpoints = _apiFallbacks.fetchUTXOs(
+        const endpoints = _apiFallbacks.fetchTransactions(
             testnet,
             options.address,
             confirmations

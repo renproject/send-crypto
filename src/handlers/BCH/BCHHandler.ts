@@ -121,7 +121,7 @@ export class BCHHandler implements Handler {
                 ? options.confirmations
                 : 0;
 
-        const endpoints = _apiFallbacks.fetchUTXOs(
+        const endpoints = _apiFallbacks.fetchTransactions(
             testnet,
             address,
             confirmations
