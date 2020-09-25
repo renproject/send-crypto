@@ -22,13 +22,13 @@ test(
 test(
     "BTCHandler: Testnet BTC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(true, testnetAddress)
+    _apiFallbacks.fetchTXs(true, testnetAddress)
 );
 
 test(
     "BTCHandler: Mainnet BTC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(false, mainnetAddress)
+    _apiFallbacks.fetchTXs(false, mainnetAddress)
 );
 
 // Test confirmations endpoint /////////////////////////////////////////////////

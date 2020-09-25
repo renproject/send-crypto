@@ -54,7 +54,7 @@ export const _apiFallbacks = {
                   ),
     ],
 
-    fetchTransactions: (
+    fetchTXs: (
         testnet: boolean,
         address: string,
         confirmations: number = 0
@@ -121,7 +121,7 @@ export class BCHHandler implements Handler {
                 ? options.confirmations
                 : 0;
 
-        const endpoints = _apiFallbacks.fetchTransactions(
+        const endpoints = _apiFallbacks.fetchTXs(
             testnet,
             address,
             confirmations

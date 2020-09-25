@@ -37,6 +37,28 @@ export const _apiFallbacks = {
         ),
     ],
 
+    fetchTXs: (
+        testnet: boolean,
+        address: string,
+        confirmations: number = 0
+    ) => [
+        () =>
+            Sochain.fetchTXs(testnet ? "DOGETEST" : "DOGE")(
+                address,
+                confirmations
+            ),
+        ...shuffleArray(
+            onlyMainnet(
+                () =>
+                    Blockchair.fetchTXs(Blockchair.networks.DOGECOIN)(
+                        address,
+                        confirmations
+                    ),
+                testnet
+            )
+        ),
+    ],
+
     broadcastTransaction: (testnet: boolean, hex: string) => [
         () => Sochain.broadcastTransaction(testnet ? "DOGETEST" : "DOGE")(hex),
         ...shuffleArray(
@@ -51,28 +73,47 @@ export const _apiFallbacks = {
     ],
 };
 
-export const getUTXOs = async (
-    testnet: boolean,
-    options: { address: string; confirmations?: number }
-): Promise<readonly UTXO[]> => {
-    const confirmations =
-        options && options.confirmations !== undefined
-            ? options.confirmations
-            : 0;
+class DogeHandler {
+    static getUTXOs = async (
+        testnet: boolean,
+        options: { address: string; confirmations?: number }
+    ): Promise<readonly UTXO[]> => {
+        const confirmations =
+            options && options.confirmations !== undefined
+                ? options.confirmations
+                : 0;
 
-    const endpoints = _apiFallbacks.fetchUTXOs(
-        testnet,
-        options.address,
-        confirmations
-    );
-    return retryNTimes(() => fallback(endpoints), 2);
-};
+        const endpoints = _apiFallbacks.fetchUTXOs(
+            testnet,
+            options.address,
+            confirmations
+        );
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
 
-export const getUTXO = async (
-    testnet: boolean,
-    txHash: string,
-    vOut: number
-): Promise<UTXO> => {
-    const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
-    return retryNTimes(() => fallback(endpoints), 2);
-};
+    static getUTXO = async (
+        testnet: boolean,
+        txHash: string,
+        vOut: number
+    ): Promise<UTXO> => {
+        const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
+
+    static getTransactions = async (
+        testnet: boolean,
+        options: { address: string; confirmations?: number }
+    ): Promise<readonly UTXO[]> => {
+        const confirmations =
+            options && options.confirmations !== undefined
+                ? options.confirmations
+                : 0;
+
+        const endpoints = _apiFallbacks.fetchTXs(
+            testnet,
+            options.address,
+            confirmations
+        );
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
+}

@@ -4,49 +4,43 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.2.19](https://github.com/renproject/send-crypto/compare/v0.2.18...v0.2.19) (2020-09-25)
 
-
 ### Bug Fixes
 
-* fixed fetchTransactions calling fetchUTXos instead ([e09da7e](https://github.com/renproject/send-crypto/commit/e09da7e0af6435bea07581244ac6e90d51128095))
+-   fixed fetchTXs calling fetchUTXos instead ([e09da7e](https://github.com/renproject/send-crypto/commit/e09da7e0af6435bea07581244ac6e90d51128095))
 
 ### [0.2.18](https://github.com/renproject/send-crypto/compare/v0.2.17...v0.2.18) (2020-09-25)
 
 ### [0.2.17](https://github.com/renproject/send-crypto/compare/v0.2.16...v0.2.17) (2020-09-25)
 
-
 ### Features
 
-* added fetchTXs endpoints ([7582026](https://github.com/renproject/send-crypto/commit/75820269260fc5646a5318a179e8b70067907671))
+-   added fetchTXs endpoints ([7582026](https://github.com/renproject/send-crypto/commit/75820269260fc5646a5318a179e8b70067907671))
 
 ### [0.2.16](https://github.com/renproject/send-crypto/compare/v0.2.15...v0.2.16) (2020-09-18)
 
-
 ### Features
 
-* added initial doge api support, updated dependencies ([34cb062](https://github.com/renproject/send-crypto/commit/34cb062a6601f0baf371d9cbb92efd574fd7c2f0))
+-   added initial doge api support, updated dependencies ([34cb062](https://github.com/renproject/send-crypto/commit/34cb062a6601f0baf371d9cbb92efd574fd7c2f0))
 
 ### [0.2.15](https://github.com/renproject/send-crypto/compare/v0.2.14...v0.2.15) (2020-09-09)
 
-
 ### Bug Fixes
 
-* remove bn.js imports ([71fa3f2](https://github.com/renproject/send-crypto/commit/71fa3f2d8a1a570ac76ce6889c21235209a3447c))
+-   remove bn.js imports ([71fa3f2](https://github.com/renproject/send-crypto/commit/71fa3f2d8a1a570ac76ce6889c21235209a3447c))
 
 ### [0.2.14](https://github.com/renproject/send-crypto/compare/v0.2.13...v0.2.14) (2020-07-13)
 
 ### [0.2.13](https://github.com/renproject/send-crypto/compare/v0.2.12...v0.2.13) (2020-07-13)
 
-
 ### Features
 
-* added getUTXO to wrap around fetchUTXO ([e146c94](https://github.com/renproject/send-crypto/commit/e146c94400a71308c34b0bdc4cd9dfcac9ca9930))
+-   added getUTXO to wrap around fetchUTXO ([e146c94](https://github.com/renproject/send-crypto/commit/e146c94400a71308c34b0bdc4cd9dfcac9ca9930))
 
 ### [0.2.12](https://github.com/renproject/send-crypto/compare/v0.2.11...v0.2.12) (2020-07-13)
 
-
 ### Features
 
-* add fetchUTXO ([e543cd2](https://github.com/renproject/send-crypto/commit/e543cd23bb5dbd89b60fbe084d469b46c2bc9b10))
+-   add fetchUTXO ([e543cd2](https://github.com/renproject/send-crypto/commit/e543cd23bb5dbd89b60fbe084d469b46c2bc9b10))
 
 ### [0.2.11](https://github.com/renproject/send-crypto/compare/v0.2.10...v0.2.11) (2020-06-26)
 
@@ -118,20 +112,20 @@ interface UTXO {
 
 ### [0.1.4](https://github.com/renproject/send-crypto/compare/v0.1.3...v0.1.4) (2019-12-05)
 
-* Added `approve` option for ERC20s
+-   Added `approve` option for ERC20s
 
 ### [0.1.3](https://github.com/renproject/send-crypto/compare/v0.1.2...v0.1.3) (2019-12-03)
 
-* Randomized API fallback order
+-   Randomized API fallback order
 
 ### [0.1.2](https://github.com/renproject/send-crypto/compare/v0.1.1...v0.1.2) (2019-12-03)
 
-* Renamed `balanceOf` to `getBalance`
-* Exposed getUTXOs in BTC, ZEC and BCH handlers
+-   Renamed `balanceOf` to `getBalance`
+-   Exposed getUTXOs in BTC, ZEC and BCH handlers
 
 ### [0.1.1](https://github.com/renproject/send-crypto/compare/v0.1.0...v0.1.1) (2019-12-02)
 
-* Allowed importing without `.default`
+-   Allowed importing without `.default`
 
 ### 0.1.0 (2019-12-02)
 

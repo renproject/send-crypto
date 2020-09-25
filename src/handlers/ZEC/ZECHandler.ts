@@ -102,11 +102,7 @@ export const _apiFallbacks = {
                       ),
               ],
 
-    fetchTransactions: (
-        testnet: boolean,
-        address: string,
-        confirmations: number = 0
-    ) =>
+    fetchTXs: (testnet: boolean, address: string, confirmations: number = 0) =>
         testnet
             ? [
                   ...shuffleArray(() =>
@@ -222,7 +218,7 @@ export class ZECHandler implements Handler {
                 ? options.confirmations
                 : 0;
 
-        const endpoints = _apiFallbacks.fetchTransactions(
+        const endpoints = _apiFallbacks.fetchTXs(
             testnet,
             options.address,
             confirmations

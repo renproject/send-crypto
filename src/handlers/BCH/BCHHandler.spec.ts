@@ -22,13 +22,13 @@ test(
 test(
     "BCHHandler: Testnet BCH TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(true, testnetAddress)
+    _apiFallbacks.fetchTXs(true, testnetAddress)
 );
 
 test(
     "BCHHandler: Mainnet BCH TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(false, mainnetAddress)
+    _apiFallbacks.fetchTXs(false, mainnetAddress)
 );
 
 // Test confirmations endpoint /////////////////////////////////////////////////

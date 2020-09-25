@@ -24,14 +24,14 @@ test(
 test(
     "ZECHandler: Testnet ZEC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(true, testnetAddress),
+    _apiFallbacks.fetchTXs(true, testnetAddress),
     /(zechain.net)|(zcash.blockexplorer.com)/ // ignore errors
 );
 
 test(
     "ZECHandler: Mainnet ZEC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTransactions(false, mainnetAddress),
+    _apiFallbacks.fetchTXs(false, mainnetAddress),
     /(zechain.net)|(zcash.blockexplorer.com)/ // ignore errors
 );
 
