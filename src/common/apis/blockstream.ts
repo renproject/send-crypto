@@ -45,11 +45,14 @@ interface BlockstreamTX
     fee: number;
 }
 
+const getAPIUrl = (testnet: boolean) =>
+    `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+
 const fetchUTXO = (testnet: boolean) => async (
     txHash: string,
     vOut: number
 ): Promise<UTXO> => {
-    const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+    const apiUrl = getAPIUrl(testnet);
 
     const utxo = (
         await axios.get<BlockstreamTX>(`${apiUrl}/tx/${txHash}`, {
@@ -78,37 +81,11 @@ const fetchUTXO = (testnet: boolean) => async (
     };
 };
 
-const fetchConfirmations = (testnet: boolean) => async (
-    txHash: string
-): Promise<number> => {
-    const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
-
-    const utxo = (
-        await axios.get<BlockstreamTX>(`${apiUrl}/tx/${txHash}`, {
-            timeout: DEFAULT_TIMEOUT,
-        })
-    ).data;
-
-    const heightResponse = () =>
-        axios.get<string>(`${apiUrl}/blocks/tip/height`, {
-            timeout: DEFAULT_TIMEOUT,
-        });
-
-    return utxo.status.confirmed
-        ? Math.max(
-              1 +
-                  parseInt((await heightResponse()).data, 10) -
-                  utxo.status.block_height,
-              0
-          )
-        : 0;
-};
-
 const fetchUTXOs = (testnet: boolean) => async (
     address: string,
     confirmations: number
 ): Promise<readonly UTXO[]> => {
-    const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+    const apiUrl = getAPIUrl(testnet);
 
     const response = await axios.get<ReadonlyArray<BlockstreamUTXO>>(
         `${apiUrl}/address/${address}/utxo`,
@@ -137,53 +114,63 @@ const fetchUTXOs = (testnet: boolean) => async (
         .sort(sortUTXOs);
 };
 
-// const fetchSpentTXs = (testnet: boolean) => async (
-//     address: string,
-//     confirmations: number
-// ): Promise<readonly UTXO[]> => {
-//     const apiUrl = `https://blockstream.info/${testnet ? "testnet/" : ""}api`;
+const fetchTXs = (testnet: boolean) => async (
+    address: string,
+    confirmations: number = 0,
+    limit: number = 0
+): Promise<readonly UTXO[]> => {
+    const apiUrl = getAPIUrl(testnet);
 
-//     const response = await axios.get<ReadonlyArray<BlockstreamUTXO>>(
-//         `${apiUrl}/address/${address}/txs`,
-//         { timeout: DEFAULT_TIMEOUT }
-//     );
+    const response = await axios.get<ReadonlyArray<BlockstreamTX>>(
+        `${apiUrl}/address/${address}/txs`,
+        { timeout: DEFAULT_TIMEOUT }
+    );
 
-//     const heightResponse = await axios.get<string>(
-//         `${apiUrl}/blocks/tip/height`,
-//         { timeout: DEFAULT_TIMEOUT }
-//     );
+    const heightResponse = await axios.get<string>(
+        `${apiUrl}/blocks/tip/height`,
+        { timeout: DEFAULT_TIMEOUT }
+    );
 
-//     return response.data
-//         .map((utxo) => ({
-//             txHash: utxo.txid,
-//             amount: utxo.value,
-//             vOut: utxo.vout,
-//             confirmations: utxo.status.confirmed
-//                 ? 1 +
-//                   parseInt(heightResponse.data, 10) -
-//                   utxo.status.block_height
-//                 : 0,
-//         }))
-//         .filter(
-//             (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
-//         )
-//         .sort(sortUTXOs);
-// };
+    const received: UTXO[] = [];
+
+    for (const tx of response.data) {
+        for (let i = 0; i < tx.vout.length; i++) {
+            const vout = tx.vout[i];
+            if (vout.scriptpubkey_address === address) {
+                received.push({
+                    txHash: tx.txid,
+                    amount: vout.value,
+                    vOut: i,
+                    confirmations: tx.status.confirmed
+                        ? 1 +
+                          parseInt(heightResponse.data, 10) -
+                          tx.status.block_height
+                        : 0,
+                });
+            }
+        }
+    }
+
+    return received
+        .filter(
+            (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
+        )
+        .sort(sortUTXOs);
+};
 
 const broadcastTransaction = (testnet: boolean) => async (
     txHex: string
 ): Promise<string> => {
-    const response = await axios.post<string>(
-        `https://blockstream.info/${testnet ? "testnet/" : ""}api/tx`,
-        txHex,
-        { timeout: DEFAULT_TIMEOUT }
-    );
+    const apiUrl = getAPIUrl(testnet);
+    const response = await axios.post<string>(`${apiUrl}/tx`, txHex, {
+        timeout: DEFAULT_TIMEOUT,
+    });
     return response.data;
 };
 
 export const Blockstream = {
     fetchUTXO,
     fetchUTXOs,
-    fetchConfirmations,
     broadcastTransaction,
+    fetchTXs,
 };

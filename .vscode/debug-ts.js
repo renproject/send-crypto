@@ -7,9 +7,6 @@ const jsFile = TS2JS(tsFile);
 
 replaceCLIArg(tsFile, jsFile);
 
-// Ava debugger
-require('ava/profile');
-
 /**
  * get ts file path from CLI args
  *

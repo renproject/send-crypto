@@ -50,7 +50,10 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         console.log(
             `[${s(asset)}] Sending ${amount} ${s(asset)} to ${address}...`
         );
-        const txP = account.send(address, amount, asset, { subtractFee: true });
+        const txP = account.send(address, amount, asset, {
+            subtractFee: true,
+            fee: 243,
+        });
 
         console.log(`[${s(asset)}] Waiting for transaction hash...`);
         const txHash = await new Promise<string>((resolve, reject) =>
@@ -106,8 +109,8 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
     };
 
     test("send BTC", sendToken, "BTC", 8, "testnet");
-    test("send ZEC", sendToken, "ZEC", 8, "testnet");
-    test("send BCH", sendToken, "BCH", 8, "testnet");
+    test.skip("send ZEC", sendToken, "ZEC", 8, "testnet");
+    test.skip("send BCH", sendToken, "BCH", 8, "testnet");
     test.serial("send ETH", sendToken, "ETH", 18, "kovan");
     test.serial(
         "send REN",

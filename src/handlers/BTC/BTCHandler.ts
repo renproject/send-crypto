@@ -25,40 +25,28 @@ interface TxOptions extends BalanceOptions {
 }
 
 export const _apiFallbacks = {
-    fetchConfirmations: (testnet: boolean, txHash: string) => [
-        ...shuffleArray([
-            () => Blockstream.fetchConfirmations(testnet)(txHash),
-            () =>
-                Blockchair.fetchConfirmations(
-                    testnet
-                        ? Blockchair.networks.BITCOIN_TESTNET
-                        : Blockchair.networks.BITCOIN
-                )(txHash),
-        ]),
-    ],
-
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
-        ...shuffleArray([
+        ...shuffleArray(
             () => Blockstream.fetchUTXO(testnet)(txHash, vOut),
             () =>
                 Blockchair.fetchUTXO(
                     testnet
                         ? Blockchair.networks.BITCOIN_TESTNET
                         : Blockchair.networks.BITCOIN
-                )(txHash, vOut),
-        ]),
+                )(txHash, vOut)
+        ),
     ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
-        ...shuffleArray([
+        ...shuffleArray(
             () => Blockstream.fetchUTXOs(testnet)(address, confirmations),
             () =>
                 Blockchair.fetchUTXOs(
                     testnet
                         ? Blockchair.networks.BITCOIN_TESTNET
                         : Blockchair.networks.BITCOIN
-                )(address, confirmations),
-        ]),
+                )(address, confirmations)
+        ),
         () =>
             Sochain.fetchUTXOs(testnet ? "BTCTEST" : "BTC")(
                 address,
@@ -66,18 +54,37 @@ export const _apiFallbacks = {
             ),
     ],
 
-    fetchTransactions: (testnet: boolean, address: string) => [],
+    fetchTransactions: (
+        testnet: boolean,
+        address: string,
+        confirmations: number = 0
+    ) => [
+        ...shuffleArray(
+            () => Blockstream.fetchTXs(testnet)(address),
+            () =>
+                Blockchair.fetchTXs(
+                    testnet
+                        ? Blockchair.networks.BITCOIN_TESTNET
+                        : Blockchair.networks.BITCOIN
+                )(address, confirmations),
+            () =>
+                Sochain.fetchTXs(testnet ? "BTCTEST" : "BTC")(
+                    address,
+                    confirmations
+                )
+        ),
+    ],
 
     broadcastTransaction: (testnet: boolean, hex: string) => [
-        ...shuffleArray([
+        ...shuffleArray(
             () => Blockstream.broadcastTransaction(testnet)(hex),
             () =>
                 Blockchair.broadcastTransaction(
                     testnet
                         ? Blockchair.networks.BITCOIN_TESTNET
                         : Blockchair.networks.BITCOIN
-                )(hex),
-        ]),
+                )(hex)
+        ),
         () => Sochain.broadcastTransaction(testnet ? "BTCTEST" : "BTC")(hex),
     ],
 };
@@ -207,12 +214,15 @@ export class BTCHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) =>
+    private readonly _getConfirmations = (txHash: string): Promise<number> =>
         retryNTimes(
-            () =>
-                fallback(
-                    _apiFallbacks.fetchConfirmations(this.testnet, txHash)
-                ),
+            async () =>
+                (
+                    await fallback(
+                        // Fetch confirmations for first output of transaction.
+                        _apiFallbacks.fetchUTXO(this.testnet, txHash, 0)
+                    )
+                ).confirmations,
             2
         );
 }
@@ -231,14 +241,6 @@ export const getUTXOs = async (
         options.address,
         confirmations
     );
-    return retryNTimes(() => fallback(endpoints), 2);
-};
-
-export const getConfirmations = async (
-    testnet: boolean,
-    txHash: string
-): Promise<number> => {
-    const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
     return retryNTimes(() => fallback(endpoints), 2);
 };
 

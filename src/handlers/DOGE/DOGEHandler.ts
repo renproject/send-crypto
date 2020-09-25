@@ -1,23 +1,22 @@
 import { Blockchair } from "../../common/apis/blockchair";
 import { Sochain } from "../../common/apis/sochain";
-import { fallback, retryNTimes } from "../../lib/retry";
+import { fallback, onlyMainnet, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 
 export const _apiFallbacks = {
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
         () => Sochain.fetchUTXO(testnet ? "DOGETEST" : "DOGE")(txHash, vOut),
-        ...shuffleArray([
-            ...(testnet
-                ? []
-                : [
-                      () =>
-                          Blockchair.fetchUTXO(Blockchair.networks.DOGECOIN)(
-                              txHash,
-                              vOut
-                          ),
-                  ]),
-        ]),
+        ...shuffleArray(
+            onlyMainnet(
+                () =>
+                    Blockchair.fetchUTXO(Blockchair.networks.DOGECOIN)(
+                        txHash,
+                        vOut
+                    ),
+                true
+            )
+        ),
     ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
@@ -27,29 +26,27 @@ export const _apiFallbacks = {
                 confirmations
             ),
         ...shuffleArray(
-            testnet
-                ? []
-                : [
-                      () =>
-                          Blockchair.fetchUTXOs(Blockchair.networks.DOGECOIN)(
-                              address,
-                              confirmations
-                          ),
-                  ]
+            onlyMainnet(
+                () =>
+                    Blockchair.fetchUTXOs(Blockchair.networks.DOGECOIN)(
+                        address,
+                        confirmations
+                    ),
+                testnet
+            )
         ),
     ],
 
     broadcastTransaction: (testnet: boolean, hex: string) => [
         () => Sochain.broadcastTransaction(testnet ? "DOGETEST" : "DOGE")(hex),
         ...shuffleArray(
-            testnet
-                ? []
-                : [
-                      () =>
-                          Blockchair.broadcastTransaction(
-                              Blockchair.networks.DOGECOIN
-                          )(hex),
-                  ]
+            onlyMainnet(
+                () =>
+                    Blockchair.broadcastTransaction(
+                        Blockchair.networks.DOGECOIN
+                    )(hex),
+                testnet
+            )
         ),
     ],
 };

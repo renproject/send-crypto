@@ -24,52 +24,34 @@ interface TxOptions extends BalanceOptions {
 }
 
 enum InsightEndpoints {
+    // Testnet
     TestnetZCash = "https://explorer.testnet.z.cash/api/",
+    // Mainnet
     ZCash = "https://explorer.z.cash/api/",
+    ZecBlockExplorer = "https://zecblockexplorer.com/api/",
     ZecChain = "https://zechain.net/api/v1/",
     BlockExplorer = "https://zcash.blockexplorer.com/api/",
-    ZecBlockExplorer = "https://zecblockexplorer.com/api/",
 }
 
 export const _apiFallbacks = {
-    fetchConfirmations: (testnet: boolean, txHash: string) =>
-        testnet
-            ? [
-                  () =>
-                      Insight.fetchConfirmations(InsightEndpoints.TestnetZCash)(
-                          txHash
-                      ),
-              ]
-            : [
-                  () =>
-                      Insight.fetchConfirmations(InsightEndpoints.ZCash)(
-                          txHash
-                      ),
-                  () =>
-                      Insight.fetchConfirmations(InsightEndpoints.ZecChain)(
-                          txHash
-                      ),
-                  () =>
-                      Insight.fetchConfirmations(
-                          InsightEndpoints.BlockExplorer
-                      )(txHash),
-                  () =>
-                      Insight.fetchConfirmations(
-                          InsightEndpoints.ZecBlockExplorer
-                      )(txHash),
-              ],
-
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) =>
         testnet
-            ? [
-                  () =>
-                      Insight.fetchUTXO(InsightEndpoints.TestnetZCash)(
-                          txHash,
-                          vOut
-                      ),
-              ]
+            ? shuffleArray(() =>
+                  Insight.fetchUTXO(InsightEndpoints.TestnetZCash)(txHash, vOut)
+              )
             : [
-                  () => Insight.fetchUTXO(InsightEndpoints.ZCash)(txHash, vOut),
+                  ...shuffleArray(
+                      () =>
+                          Insight.fetchUTXO(InsightEndpoints.ZCash)(
+                              txHash,
+                              vOut
+                          ),
+                      () =>
+                          Insight.fetchUTXO(InsightEndpoints.ZecBlockExplorer)(
+                              txHash,
+                              vOut
+                          )
+                  ),
                   () =>
                       Insight.fetchUTXO(InsightEndpoints.ZecChain)(
                           txHash,
@@ -80,57 +62,110 @@ export const _apiFallbacks = {
                           txHash,
                           vOut
                       ),
-                  () =>
-                      Insight.fetchUTXO(InsightEndpoints.ZecBlockExplorer)(
-                          txHash,
-                          vOut
-                      ),
               ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) =>
         testnet
             ? [
-                  () =>
+                  ...shuffleArray(() =>
                       Insight.fetchUTXOs(InsightEndpoints.TestnetZCash)(
                           address,
                           confirmations
-                      ),
+                      )
+                  ),
                   () => Sochain.fetchUTXOs("ZECTEST")(address, confirmations),
               ]
             : [
-                  ...shuffleArray([
+                  ...shuffleArray(
                       () =>
                           Insight.fetchUTXOs(InsightEndpoints.ZCash)(
                               address,
                               confirmations
                           ),
-                      () =>
-                          Insight.fetchUTXOs(InsightEndpoints.ZecChain)(
-                              address,
-                              confirmations
-                          ),
-                      // () => Insight.fetchUTXOs(InsightEndpoints.BlockExplorer)(address, confirmations),
+
                       () =>
                           Insight.fetchUTXOs(InsightEndpoints.ZecBlockExplorer)(
                               address,
                               confirmations
-                          ),
-                  ]),
+                          )
+                  ),
                   () => Sochain.fetchUTXOs("ZEC")(address, confirmations),
+                  () =>
+                      Insight.fetchUTXOs(InsightEndpoints.ZecChain)(
+                          address,
+                          confirmations
+                      ),
+                  () =>
+                      Insight.fetchUTXOs(InsightEndpoints.BlockExplorer)(
+                          address,
+                          confirmations
+                      ),
+              ],
+
+    fetchTransactions: (
+        testnet: boolean,
+        address: string,
+        confirmations: number = 0
+    ) =>
+        testnet
+            ? [
+                  ...shuffleArray(() =>
+                      Insight.fetchTXs(InsightEndpoints.TestnetZCash)(
+                          address,
+                          confirmations
+                      )
+                  ),
+                  () => Sochain.fetchTXs("ZECTEST")(address, confirmations),
+              ]
+            : [
+                  ...shuffleArray(
+                      () =>
+                          Insight.fetchTXs(InsightEndpoints.ZCash)(
+                              address,
+                              confirmations
+                          ),
+
+                      () =>
+                          Insight.fetchTXs(InsightEndpoints.ZecBlockExplorer)(
+                              address,
+                              confirmations
+                          )
+                  ),
+                  () => Sochain.fetchTXs("ZEC")(address, confirmations),
+                  () =>
+                      Insight.fetchTXs(InsightEndpoints.ZecChain)(
+                          address,
+                          confirmations
+                      ),
+                  () =>
+                      Insight.fetchTXs(InsightEndpoints.BlockExplorer)(
+                          address,
+                          confirmations
+                      ),
               ],
 
     broadcastTransaction: (testnet: boolean, hex: string) =>
         testnet
             ? [
-                  () =>
+                  ...shuffleArray(() =>
                       Insight.broadcastTransaction(
                           InsightEndpoints.TestnetZCash
-                      )(hex),
+                      )(hex)
+                  ),
                   () => Sochain.broadcastTransaction("ZECTEST")(hex),
               ]
             : [
-                  () =>
-                      Insight.broadcastTransaction(InsightEndpoints.ZCash)(hex),
+                  ...shuffleArray(
+                      () =>
+                          Insight.broadcastTransaction(InsightEndpoints.ZCash)(
+                              hex
+                          ),
+                      () =>
+                          Insight.broadcastTransaction(
+                              InsightEndpoints.ZecBlockExplorer
+                          )(hex),
+                      () => Sochain.broadcastTransaction("ZEC")(hex)
+                  ),
                   () =>
                       Insight.broadcastTransaction(InsightEndpoints.ZecChain)(
                           hex
@@ -139,11 +174,6 @@ export const _apiFallbacks = {
                       Insight.broadcastTransaction(
                           InsightEndpoints.BlockExplorer
                       )(hex),
-                  () =>
-                      Insight.broadcastTransaction(
-                          InsightEndpoints.ZecBlockExplorer
-                      )(hex),
-                  () => Sochain.broadcastTransaction("ZEC")(hex),
               ],
 };
 
@@ -281,12 +311,15 @@ export class ZECHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) =>
+    private readonly _getConfirmations = (txHash: string): Promise<number> =>
         retryNTimes(
-            () =>
-                fallback(
-                    _apiFallbacks.fetchConfirmations(this.testnet, txHash)
-                ),
+            async () =>
+                (
+                    await fallback(
+                        // Fetch confirmations for first output of transaction.
+                        _apiFallbacks.fetchUTXO(this.testnet, txHash, 0)
+                    )
+                ).confirmations,
             2
         );
 }
@@ -310,14 +343,6 @@ export const getUTXOs = async (
             ),
         2
     );
-};
-
-export const getConfirmations = async (
-    testnet: boolean,
-    txHash: string
-): Promise<number> => {
-    const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
-    return retryNTimes(() => fallback(endpoints), 2);
 };
 
 export const getUTXO = async (

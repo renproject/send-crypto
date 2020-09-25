@@ -26,15 +26,16 @@ interface ConstructorOptions {
 export default class CryptoAccount {
     public static readonly newPrivateKey = () => {
         // @ts-ignore
-        if (typeof window !== "undefined") {
+        try {
             // @ts-ignore
             const array = new Uint32Array(32);
             // @ts-ignore
             window.crypto.getRandomBytes(array);
             return new Buffer(array).toString("hex");
-        } else {
-            return require("crypto").randomBytes(32).toString("hex");
+        } catch (error) {
+            // Ignore window error.
         }
+        return require("crypto").randomBytes(32).toString("hex");
     };
 
     private readonly handlers: Array<{

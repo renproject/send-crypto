@@ -32,16 +32,6 @@ const toCashAddr = (legacyAddress: string) => {
 };
 
 export const _apiFallbacks = {
-    fetchConfirmations: (testnet: boolean, txHash: string) => [
-        () => BitcoinDotCom.fetchConfirmations(testnet)(txHash),
-        testnet
-            ? undefined
-            : () =>
-                  Blockchair.fetchConfirmations(
-                      Blockchair.networks.BITCOIN_CASH
-                  )(txHash),
-    ],
-
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
         () => BitcoinDotCom.fetchUTXO(testnet)(txHash, vOut),
         testnet
@@ -59,6 +49,21 @@ export const _apiFallbacks = {
             ? undefined
             : () =>
                   Blockchair.fetchUTXOs(Blockchair.networks.BITCOIN_CASH)(
+                      address,
+                      confirmations
+                  ),
+    ],
+
+    fetchTransactions: (
+        testnet: boolean,
+        address: string,
+        confirmations: number = 0
+    ) => [
+        () => BitcoinDotCom.fetchTXs(testnet)(address, confirmations),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchair.fetchTXs(Blockchair.networks.BITCOIN_CASH)(
                       address,
                       confirmations
                   ),
@@ -207,14 +212,18 @@ export class BCHHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string) =>
+    private readonly _getConfirmations = (txHash: string): Promise<number> =>
         retryNTimes(
-            () =>
-                fallback(
-                    _apiFallbacks.fetchConfirmations(this.testnet, txHash)
-                ),
+            async () =>
+                (
+                    await fallback(
+                        // Fetch confirmations for first output of transaction.
+                        _apiFallbacks.fetchUTXO(this.testnet, txHash, 0)
+                    )
+                ).confirmations,
             2
         );
+
     private readonly _bitgoNetwork = () =>
         this.testnet
             ? bitcoin.networks.bitcoincashTestnet
@@ -231,14 +240,6 @@ export const getUTXOs = async (
     const endpoints = _apiFallbacks.fetchUTXOs(testnet, address, confirmations);
     const utxos = await retryNTimes(() => fallback(endpoints), 2);
     return utxos;
-};
-
-export const getConfirmations = async (
-    testnet: boolean,
-    txHash: string
-): Promise<number> => {
-    const endpoints = _apiFallbacks.fetchConfirmations(testnet, txHash);
-    return retryNTimes(() => fallback(endpoints), 2);
 };
 
 export const getUTXO = async (

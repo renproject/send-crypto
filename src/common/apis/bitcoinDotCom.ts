@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { fixUTXO, fixUTXOs, fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
+import { FetchTXsResult } from "./insight";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
 export interface ScriptSig {
@@ -84,34 +85,18 @@ const fetchUTXO = (testnet: boolean) => async (
     );
 };
 
-const fetchConfirmations = (testnet: boolean) => async (
-    txHash: string
-): Promise<number> => {
-    const url = `${endpoint(testnet).replace(
-        /\/$/,
-        ""
-    )}/transaction/details/${txHash}`;
-
-    const tx = (
-        await axios.get<{
-            txid: string; // 'cacec549d9f1f67e9835889a2ce3fc0d593bd78d63f63f45e4c28a59e004667d',
-            version: number; // 4,
-            locktime: number; // 0,
-            vin: any; // [[Object]],
-            vout: any; // [[Object]],
-            blockhash: string; // -1,
-            blockheight: number; // -1,
-            confirmations: number; // 0,
-            time: number; // 1574895240,
-            valueOut: number; // 225.45779926,
-            size: number; // 211,
-            valueIn: number; // 225.45789926,
-            fees: number; // 0.0001,
-        }>(`${url}`, { timeout: DEFAULT_TIMEOUT })
-    ).data;
-
-    return tx.confirmations;
-};
+interface FetchUTXOs {
+    utxos: ReadonlyArray<{
+        address: string;
+        txid: string;
+        vout: number;
+        scriptPubKey: string;
+        amount: number;
+        satoshis: number;
+        confirmations: number;
+        ts: number;
+    }>;
+}
 
 const fetchUTXOs = (testnet: boolean) => async (
     address: string,
@@ -121,18 +106,9 @@ const fetchUTXOs = (testnet: boolean) => async (
         /\/$/,
         ""
     )}/address/utxo/${address}`;
-    const response = await axios.get<{
-        utxos: ReadonlyArray<{
-            address: string;
-            txid: string;
-            vout: number;
-            scriptPubKey: string;
-            amount: number;
-            satoshis: number;
-            confirmations: number;
-            ts: number;
-        }>;
-    }>(url, { timeout: DEFAULT_TIMEOUT });
+    const response = await axios.get<FetchUTXOs>(url, {
+        timeout: DEFAULT_TIMEOUT,
+    });
     return fixUTXOs(
         response.data.utxos
             .map((utxo) => ({
@@ -148,6 +124,41 @@ const fetchUTXOs = (testnet: boolean) => async (
             ),
         8
     ).sort(sortUTXOs);
+};
+
+const fetchTXs = (testnet: boolean) => async (
+    address: string,
+    confirmations: number
+): Promise<readonly UTXO[]> => {
+    const url = `${endpoint(testnet).replace(
+        /\/$/,
+        ""
+    )}/address/transactions/${address}`;
+    const { data } = await axios.get<FetchTXsResult>(url, {
+        timeout: DEFAULT_TIMEOUT,
+    });
+
+    const received: UTXO[] = [];
+
+    for (const tx of data.txs) {
+        for (let i = 0; i < tx.vout.length; i++) {
+            const vout = tx.vout[i];
+            if (vout.scriptPubKey.addresses.indexOf(address) >= 0) {
+                received.push({
+                    txHash: tx.txid,
+                    amount: fixValue(parseFloat(vout.value), 8),
+                    vOut: i,
+                    confirmations: tx.confirmations,
+                });
+            }
+        }
+    }
+
+    return received
+        .filter(
+            (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
+        )
+        .sort(sortUTXOs);
 };
 
 export const broadcastTransaction = (testnet: boolean) => async (
@@ -171,6 +182,6 @@ export const broadcastTransaction = (testnet: boolean) => async (
 export const BitcoinDotCom = {
     fetchUTXO,
     fetchUTXOs,
-    fetchConfirmations,
+    fetchTXs,
     broadcastTransaction,
 };

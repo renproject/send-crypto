@@ -4,17 +4,6 @@ import https from "https";
 import { fixUTXO, fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
-type FetchUTXOResult = ReadonlyArray<{
-    address: string;
-    txid: string;
-    vout: number;
-    scriptPubKey: string;
-    amount: number;
-    satoshis: number;
-    confirmations: number;
-    ts: number;
-}>;
-
 const fetchUTXOs = (insightURL: string) => async (
     address: string,
     confirmations: number
@@ -45,6 +34,87 @@ const fetchUTXOs = (insightURL: string) => async (
             (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
         )
         .sort(sortUTXOs);
+};
+
+const fetchTXs = (insightURL: string) => async (
+    address: string,
+    confirmations: number
+): Promise<readonly UTXO[]> => {
+    const url = `${insightURL.replace(/\/$/, "")}/txs/?address=${address}`;
+    const response = await axios.get<FetchTXsResult>(url, {
+        // TODO: Remove when certificate is fixed.
+        httpsAgent: new https.Agent({
+            rejectUnauthorized: false,
+        }),
+        timeout: DEFAULT_TIMEOUT,
+    });
+
+    const data: FetchTXsResult =
+        typeof response.data === "string"
+            ? JSON.parse(response.data)
+            : response.data;
+
+    const received: UTXO[] = [];
+
+    for (const tx of data.txs) {
+        for (let i = 0; i < tx.vout.length; i++) {
+            const vout = tx.vout[i];
+            if (vout.scriptPubKey.addresses.indexOf(address) >= 0) {
+                received.push({
+                    txHash: tx.txid,
+                    amount: fixValue(parseFloat(vout.value), 8),
+                    vOut: i,
+                    confirmations: tx.confirmations,
+                });
+            }
+        }
+    }
+
+    return received
+        .filter(
+            (utxo) => confirmations === 0 || utxo.confirmations >= confirmations
+        )
+        .sort(sortUTXOs);
+};
+
+const fetchUTXO = (insightURL: string) => async (
+    txHash: string,
+    vOut: number
+): Promise<UTXO> => {
+    const url = `${insightURL.replace(/\/$/, "")}/tx/${txHash}`;
+    const tx = (await axios.get<TxResponse>(url, { timeout: DEFAULT_TIMEOUT }))
+        .data;
+    return fixUTXO(
+        {
+            txHash,
+            amount: parseFloat(tx.vout[vOut].value),
+            vOut,
+            confirmations: tx.confirmations,
+        },
+        8
+    );
+};
+
+export const broadcastTransaction = (insightURL: string) => async (
+    txHex: string
+): Promise<string> => {
+    const url = `${insightURL.replace(/\/$/, "")}/tx/send`;
+    const response = await axios.post<{
+        error: string | null;
+        id: null;
+        txid: string;
+    }>(url, { rawtx: txHex }, { timeout: DEFAULT_TIMEOUT });
+    if (response.data.error) {
+        throw new Error(response.data.error);
+    }
+    return response.data.txid;
+};
+
+export const Insight = {
+    fetchUTXO,
+    fetchUTXOs,
+    fetchTXs,
+    broadcastTransaction,
 };
 
 export interface ScriptSig {
@@ -104,52 +174,18 @@ export interface TxResponse {
     outputDescs: any[]; // []
 }
 
-const fetchConfirmations = (insightURL: string) => async (
-    txHash: string
-): Promise<number> => {
-    const url = `${insightURL.replace(/\/$/, "")}/tx/${txHash}`;
-    const response = await axios.get<TxResponse>(url, {
-        timeout: DEFAULT_TIMEOUT,
-    });
-    return response.data.confirmations;
-};
+export interface FetchTXsResult {
+    pagesTotal: number;
+    txs: TxResponse[];
+}
 
-const fetchUTXO = (insightURL: string) => async (
-    txHash: string,
-    vOut: number
-): Promise<UTXO> => {
-    const url = `${insightURL.replace(/\/$/, "")}/tx/${txHash}`;
-    const tx = (await axios.get<TxResponse>(url, { timeout: DEFAULT_TIMEOUT }))
-        .data;
-    return fixUTXO(
-        {
-            txHash,
-            amount: parseFloat(tx.vout[vOut].value),
-            vOut,
-            confirmations: tx.confirmations,
-        },
-        8
-    );
-};
-
-export const broadcastTransaction = (insightURL: string) => async (
-    txHex: string
-): Promise<string> => {
-    const url = `${insightURL.replace(/\/$/, "")}/tx/send`;
-    const response = await axios.post<{
-        error: string | null;
-        id: null;
-        txid: string;
-    }>(url, { rawtx: txHex }, { timeout: DEFAULT_TIMEOUT });
-    if (response.data.error) {
-        throw new Error(response.data.error);
-    }
-    return response.data.txid;
-};
-
-export const Insight = {
-    fetchUTXO,
-    fetchUTXOs,
-    fetchConfirmations,
-    broadcastTransaction,
-};
+type FetchUTXOResult = ReadonlyArray<{
+    address: string;
+    txid: string;
+    vout: number;
+    scriptPubKey: string;
+    amount: number;
+    satoshis: number;
+    confirmations: number;
+    ts: number;
+}>;
