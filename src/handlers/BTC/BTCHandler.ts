@@ -95,6 +95,49 @@ export class BTCHandler implements Handler {
 
     private readonly decimals = 8;
 
+    static getUTXOs = async (
+        testnet: boolean,
+        options: { address: string; confirmations?: number }
+    ): Promise<readonly UTXO[]> => {
+        const confirmations =
+            options && options.confirmations !== undefined
+                ? options.confirmations
+                : 0;
+
+        const endpoints = _apiFallbacks.fetchUTXOs(
+            testnet,
+            options.address,
+            confirmations
+        );
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
+
+    static getUTXO = async (
+        testnet: boolean,
+        txHash: string,
+        vOut: number
+    ): Promise<UTXO> => {
+        const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
+
+    static getTransactions = async (
+        testnet: boolean,
+        options: { address: string; confirmations?: number }
+    ): Promise<readonly UTXO[]> => {
+        const confirmations =
+            options && options.confirmations !== undefined
+                ? options.confirmations
+                : 0;
+
+        const endpoints = _apiFallbacks.fetchUTXOs(
+            testnet,
+            options.address,
+            confirmations
+        );
+        return retryNTimes(() => fallback(endpoints), 2);
+    };
+
     constructor(privateKey: string, network: string) {
         this.testnet = network !== "mainnet";
         this.privateKey = BitgoUTXOLib.loadPrivateKey(
@@ -126,7 +169,7 @@ export class BTCHandler implements Handler {
         asset: Asset,
         options?: BalanceOptions
     ): Promise<BigNumber> => {
-        const utxos = await getUTXOs(this.testnet, {
+        const utxos = await BTCHandler.getUTXOs(this.testnet, {
             ...options,
             address:
                 (options && options.address) || (await this.address(asset)),
@@ -166,7 +209,7 @@ export class BTCHandler implements Handler {
             const fromAddress = await this.address(asset);
             const changeAddress = fromAddress;
             const utxos = List(
-                await getUTXOs(this.testnet, {
+                await BTCHandler.getUTXOs(this.testnet, {
                     ...options,
                     address: fromAddress,
                 })
@@ -226,46 +269,3 @@ export class BTCHandler implements Handler {
             2
         );
 }
-
-export const getUTXOs = async (
-    testnet: boolean,
-    options: { address: string; confirmations?: number }
-): Promise<readonly UTXO[]> => {
-    const confirmations =
-        options && options.confirmations !== undefined
-            ? options.confirmations
-            : 0;
-
-    const endpoints = _apiFallbacks.fetchUTXOs(
-        testnet,
-        options.address,
-        confirmations
-    );
-    return retryNTimes(() => fallback(endpoints), 2);
-};
-
-export const getUTXO = async (
-    testnet: boolean,
-    txHash: string,
-    vOut: number
-): Promise<UTXO> => {
-    const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
-    return retryNTimes(() => fallback(endpoints), 2);
-};
-
-export const getTransactions = async (
-    testnet: boolean,
-    options: { address: string; confirmations?: number }
-): Promise<readonly UTXO[]> => {
-    const confirmations =
-        options && options.confirmations !== undefined
-            ? options.confirmations
-            : 0;
-
-    const endpoints = _apiFallbacks.fetchUTXOs(
-        testnet,
-        options.address,
-        confirmations
-    );
-    return retryNTimes(() => fallback(endpoints), 2);
-};
