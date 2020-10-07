@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.20](https://github.com/renproject/send-crypto/compare/v0.2.19...v0.2.20) (2020-10-07)
+
+
+### Features
+
+* added doge getTransactions ([d2d8a09](https://github.com/renproject/send-crypto/commit/d2d8a09627f3e035f9fd92b29f28bf2d7815f7e2))
+* export doge handler ([932c107](https://github.com/renproject/send-crypto/commit/932c10710ba754a70f654711d65b1df4fc53650b))
+
 ### [0.2.19](https://github.com/renproject/send-crypto/compare/v0.2.18...v0.2.19) (2020-09-25)
 
 ### Bug Fixes
