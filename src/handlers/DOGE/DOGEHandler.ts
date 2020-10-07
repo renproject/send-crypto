@@ -73,7 +73,7 @@ export const _apiFallbacks = {
     ],
 };
 
-class DogeHandler {
+export class DOGEHandler {
     static getUTXOs = async (
         testnet: boolean,
         options: { address: string; confirmations?: number }
