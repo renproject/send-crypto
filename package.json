@@ -85,11 +85,13 @@
     "resolutions": {
         "sha3": "^2.0.0"
     },
+    "peerDependencies": {
+        "@types/node": ">=10"
+    },
     "devDependencies": {
         "@bitjson/npm-scripts-info": "^1.0.0",
         "@bitjson/typedoc": "^0.15.0-0",
         "@istanbuljs/nyc-config-typescript": "^1.0.1",
-        "@types/node": "^14.11.2",
         "ava": "3.12.1",
         "codecov": "^3.7.2",
         "cz-conventional-changelog": "^3.3.0",
