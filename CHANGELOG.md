@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.23](https://github.com/renproject/send-crypto/compare/v0.2.22...v0.2.23) (2020-11-10)
+
+
+### Features
+
+* **FIL:** default to testnet for unrecognized network ([19401fa](https://github.com/renproject/send-crypto/commit/19401fad0329eccb6be2c156dda6628e63fd6995))
+
 ### [0.2.22](https://github.com/renproject/send-crypto/compare/v0.2.21...v0.2.22) (2020-11-10)
 
 
