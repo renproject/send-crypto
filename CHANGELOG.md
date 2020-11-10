@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.22](https://github.com/renproject/send-crypto/compare/v0.2.21...v0.2.22) (2020-11-10)
+
+
+### Features
+
+* added FIL support ([83d56b5](https://github.com/renproject/send-crypto/commit/83d56b5a55267ca41655c0ceea6664da1a8b51ae))
+
 ### [0.2.21](https://github.com/renproject/send-crypto/compare/v0.2.20...v0.2.21) (2020-10-30)
 
 ### [0.2.20](https://github.com/renproject/send-crypto/compare/v0.2.19...v0.2.20) (2020-10-07)
