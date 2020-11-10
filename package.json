@@ -31,7 +31,7 @@
         "fix": "run-s fix:*",
         "fix:prettier": "prettier \"src/**/*.ts\" --write --tab-width 4",
         "fix:tslint": "tslint --fix --project .",
-        "test": "run-s build test:*",
+        "test": "run-s build:main test:*",
         "test:lint": "tslint --project .",
         "test:unit": "(. ./.env); nyc --silent ava -T 100s --verbose",
         "lint": "yarn test:lint",
@@ -70,8 +70,13 @@
         "node": ">=8.9"
     },
     "dependencies": {
+        "@glif/filecoin-message": "^1.0.0-beta.5",
+        "@glif/filecoin-number": "^1.0.0-beta.5",
+        "@glif/filecoin-rpc-client": "^1.0.0-beta.5",
+        "@glif/filecoin-wallet-provider": "^1.0.0-beta.5",
         "@types/bchaddrjs": "^0.4.0",
         "@types/web3-provider-engine": "^14.0.0",
+        "@zondax/filecoin-signing-tools": "^0.12.0",
         "axios": "^0.19.0",
         "bchaddrjs": "^0.4.9",
         "bignumber.js": "^9.0.0",

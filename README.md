@@ -8,15 +8,17 @@ Currently doesn't support hierarchical or single-use addresses.
 
 ## Supported assets
 
-* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/btc.png" /> BTC
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/btc.png" /> BTC
 
-* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/zec.png" /> ZEC (transparent txs only)
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/zec.png" /> ZEC (transparent txs only)
 
-* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH
 
-* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ETH
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/fil.png" /> FIL
 
-* <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ERC20 tokens
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ETH
+
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ERC20 tokens
 
 <br /><br />
 
@@ -24,6 +26,8 @@ Currently doesn't support hierarchical or single-use addresses.
 
 ```sh
 npm install --save send-crypto
+# or
+yarn add send-crypto
 ```
 
 Replace "BTC" with any supported asset:
@@ -44,12 +48,13 @@ console.log(await account.getBalance("BTC"));
 // > 0.01
 
 /* Send 0.01 BTC */
-const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
+const txHash = await account
+    .send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
     .on("transactionHash", console.log)
     // > "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"
     .on("confirmation", console.log);
-    // > 1
-    // > 2 ...
+// > 1
+// > 2 ...
 ```
 
 **UNITS**: `getBalance` and `send` can be replaced with `getBalanceInSats` and `sendSats` respectively to use the blockchain's smallest units (satoshis for BTC, wei for ETH, etc.).
@@ -67,6 +72,7 @@ const txHash = await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "B
 <summary>Load private key from a .env file</summary>
 
 `.env`:
+
 ```sh
 PRIVATE_KEY="1234512341"
 ```
@@ -78,6 +84,7 @@ require("dotenv").config();
 const CryptoAccount = require("send-crypto");
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 ```
+
 <hr />
 </details>
 
@@ -94,7 +101,6 @@ const account = new CryptoAccount(privateKey);
 <hr />
 </details>
 
-
 ## BTC, ZEC, BCH
 
 <details>
@@ -108,6 +114,7 @@ const account = new CryptoAccount(process.env.PRIVATE_KEY);
 // Send BTC
 await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC");
 ```
+
 <hr />
 </details>
 
@@ -122,6 +129,7 @@ const account = new CryptoAccount(process.env.PRIVATE_KEY);
 // Send ZEC
 await account.send("t3Vz22vK5z2LcKEdg16Yv4FFneEL1zg9ojd", 0.01, "ZEC");
 ```
+
 <hr />
 </details>
 
@@ -136,8 +144,13 @@ const CryptoAccount = require("send-crypto");
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 
 // Send BCH
-await account.send("bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy", 0.01, "BCH");
+await account.send(
+    "bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy",
+    0.01,
+    "BCH"
+);
 ```
+
 <hr />
 </details>
 
@@ -149,27 +162,35 @@ You can replace `"BTC"` with `"ZEC"` or `"BCH"` in the following examples:
 
 ```ts
 const balance = await account.getBalance("BTC");
-await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balance, "BTC", { subtractFee: true });
+await account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balance, "BTC", {
+    subtractFee: true,
+});
 
 // Or using sats as the unit
 const balanceInSats = await account.getBalanceInSats("BTC");
-await account.sendSats("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", balanceInSats, "BTC", { subtractFee: true });
+await account.sendSats(
+    "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    balanceInSats,
+    "BTC",
+    { subtractFee: true }
+);
 ```
+
 <hr />
 </details>
-
 
 <details>
 <hr />
 <summary>Wait for 6 confirmations</summary>
 
 ```ts
-await new Promise((resolve, reject) => 
+await new Promise((resolve, reject) =>
     account.send("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 0.01, "BTC")
         .on("confirmation", confirmations => { if (confirmations >= 6) { resolve(); } })
         .catch(reject);
 );
 ```
+
 <hr />
 </details>
 
@@ -178,7 +199,9 @@ await new Promise((resolve, reject) =>
 <summary>Send testnet funds</summary>
 
 ```ts
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "testnet" });
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, {
+    network: "testnet",
+});
 await testnetAccount.send("12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX", 0.01, "BTC");
 ```
 
@@ -215,6 +238,7 @@ The `send` and `sendSats` options are:
     subtractFee?: boolean;  // defaults to false
 }
 ```
+
 <hr />
 </details>
 
@@ -231,6 +255,7 @@ const account = new CryptoAccount(process.env.PRIVATE_KEY);
 // Send ETH
 await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 0.01, "ETH");
 ```
+
 <hr />
 </details>
 
@@ -244,20 +269,19 @@ You can transfer arbitrary ERC20 tokens by providing the token's address:
 const CryptoAccount = require("send-crypto");
 const account = new CryptoAccount(process.env.PRIVATE_KEY);
 
-await account.send(
-    "0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234,
-    { type: "ERC20", address: "0x408e41876cccdc0f92210600ef50372656052a38" },
-);
+await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, {
+    type: "ERC20",
+    address: "0x408e41876cccdc0f92210600ef50372656052a38",
+});
 ```
 
 A few well known ERC20 tokens can be referenced by name:
 
 ```ts
-await account.send(
-    "0x05a56e2d52c817161883f50c441c3228cfe54d9f",
-    1.234,
-    { type: "ERC20", name: "DAI" },
-);
+await account.send("0x05a56e2d52c817161883f50c441c3228cfe54d9f", 1.234, {
+    type: "ERC20",
+    name: "DAI",
+});
 ```
 
 See the [ERC20s.ts](./src/handlers/ERC20/ERC20s.ts) to see the tokens than can be referenced by name.
@@ -271,16 +295,23 @@ See the [ERC20s.ts](./src/handlers/ERC20/ERC20s.ts) to see the tokens than can b
 
 The supported testnets are `mainnet`, `ropsten`, `kovan`, `rinkeby` and `goerli`.
 
-
 ```ts
 // Use "testnet" BTC, BCH & ZEC; use "ropsten" ETH.
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "testnet" });
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "ropsten" });
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, {
+    network: "testnet",
+});
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, {
+    network: "ropsten",
+});
 ```
+
 ```ts
 // Use "testnet" BTC, BCH & ZEC; use "kovan" ETH.
-const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, { network: "kovan" });
+const testnetAccount = new CryptoAccount(process.env.PRIVATE_KEY, {
+    network: "kovan",
+});
 ```
+
 <hr />
 </details>
 
@@ -320,9 +351,9 @@ The `send` and `sendSats` options are:
     approve?: boolean; // defaults to false
 }
 ```
+
 <hr />
 </details>
-
 
 <br /><br /><br /><br /><br /><br />
 
@@ -345,28 +376,55 @@ export abstract class Handler<
     ConstructorOptions = {},
     AddressOptions = {},
     BalanceOptions extends { address?: string } = { address?: string },
-    TxOptions = {},
+    TxOptions = {}
 > {
     // sharedState allows multiple handlers access common state.
-    constructor(privateKey: string, network: string, constructorOptions?: ConstructorOptions, sharedState?: any) { /* */ }
+    constructor(
+        privateKey: string,
+        network: string,
+        constructorOptions?: ConstructorOptions,
+        sharedState?: any
+    ) {
+        /* */
+    }
 
     // Returns whether or not this can handle the asset
     public handlesAsset!: (asset: Asset) => boolean;
 
     // Returns the address of the account
-    public address?: (asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler) => Promise<string>;
+    public address?: (
+        asset: Asset,
+        options?: AddressOptions,
+        deferHandler?: DeferHandler
+    ) => Promise<string>;
 
     // Returns the balance of the account
-    public getBalance?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
-        => Promise<BigNumber>;
-    public getBalanceInSats?: (asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler)
-        => Promise<BigNumber>;
+    public getBalance?: (
+        asset: Asset,
+        options?: BalanceOptions,
+        deferHandler?: DeferHandler
+    ) => Promise<BigNumber>;
+    public getBalanceInSats?: (
+        asset: Asset,
+        options?: BalanceOptions,
+        deferHandler?: DeferHandler
+    ) => Promise<BigNumber>;
 
     // Transfers the asset to the provided address
-    public send?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
-        => PromiEvent<string>;
-    public sendSats?: (to: string, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler)
-        => PromiEvent<string>;
+    public send?: (
+        to: string,
+        value: BigNumber,
+        asset: Asset,
+        options?: TxOptions,
+        deferHandler?: DeferHandler
+    ) => PromiEvent<string>;
+    public sendSats?: (
+        to: string,
+        value: BigNumber,
+        asset: Asset,
+        options?: TxOptions,
+        deferHandler?: DeferHandler
+    ) => PromiEvent<string>;
 }
 ```
 
@@ -388,20 +446,25 @@ class ENSResolver {
 
     handlesAsset = (asset: Asset) => asset === "ETH";
 
-    resolveENSName = (to: string): Promise<string> => { /* ... */ }
+    resolveENSName = (to: string): Promise<string> => {
+        /* ... */
+    };
 
     send = async (
-        to: string, value: BigNumber, asset: Asset, deferHandler: Handler,
+        to: string,
+        value: BigNumber,
+        asset: Asset,
+        deferHandler: Handler
     ): PromiEvent<string> => {
         return deferHandler.send(await resolveENSName(to), value, asset);
-    }
+    };
 }
 ```
 
 See the following handlers as references:
 
-* [BTC Handler](./src/handlers/BTC/BTCHandler.ts) (ZEC and BCH handlers are similar)
-* [ETH Handler](./src/handlers/ETH/ETHHandler.ts)
-* [ERC20 Handler](./src/handlers/ERC20/ERC20Handler.ts)
+-   [BTC Handler](./src/handlers/BTC/BTCHandler.ts) (ZEC and BCH handlers are similar)
+-   [ETH Handler](./src/handlers/ETH/ETHHandler.ts)
+-   [ERC20 Handler](./src/handlers/ERC20/ERC20Handler.ts)
 <hr />
 </details>

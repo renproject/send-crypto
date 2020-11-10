@@ -4,6 +4,7 @@ import { BCHHandler } from "./handlers/BCH/BCHHandler";
 import { BTCHandler } from "./handlers/BTC/BTCHandler";
 import { ERC20Handler } from "./handlers/ERC20/ERC20Handler";
 import { ETHHandler } from "./handlers/ETH/ETHHandler";
+import { FILHandler } from "./handlers/FIL/FILHandler";
 import { ZECHandler } from "./handlers/ZEC/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
 import { strip0x } from "./lib/utils";
@@ -49,7 +50,10 @@ export default class CryptoAccount {
 
     private sharedState: any;
 
-    constructor(privateKey: string | Buffer, options?: ConstructorOptions) {
+    constructor(
+        privateKey: string | Buffer,
+        options?: ConstructorOptions & { [key: string]: any }
+    ) {
         this.privateKey = strip0x(
             Buffer.isBuffer(privateKey)
                 ? privateKey.toString("hex")
@@ -62,7 +66,8 @@ export default class CryptoAccount {
         this.registerHandler(ZECHandler, 10);
         this.registerHandler(BCHHandler, 20);
         this.registerHandler(ETHHandler, 30);
-        this.registerHandler(ERC20Handler, 40);
+        this.registerHandler(FILHandler, 40);
+        this.registerHandler(ERC20Handler, 50);
         if (options && options.extraHandlers) {
             for (const handler of options.extraHandlers) {
                 this.registerHandler(handler);

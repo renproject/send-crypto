@@ -21,10 +21,12 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         t: ExecutionContext<unknown>,
         asset: string | { type: "ERC20"; name: string; address?: string },
         decimals: number,
-        network: string
+        network: string,
+        constructorConfig: { [key: string]: any } = {}
     ) => {
         const account = new CryptoAccount(process.env.PRIVATE_KEY || "", {
             network,
+            ...constructorConfig,
         });
         const address = await account.address(asset);
 
@@ -108,7 +110,11 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         t.is(0, 0);
     };
 
-    test("send BTC", sendToken, "BTC", 8, "testnet");
+    test("send FIL", sendToken, "FIL", 18, "testnet", {
+        apiAddress: process.env.FILECOIN_TESTNET_URL,
+        token: process.env.FILECOIN_TESTNET_TOKEN,
+    });
+    test.skip("send BTC", sendToken, "BTC", 8, "testnet");
     test.skip("send ZEC", sendToken, "ZEC", 8, "testnet");
     test.skip("send BCH", sendToken, "BCH", 8, "testnet");
     test.serial("send ETH", sendToken, "ETH", 18, "kovan");
@@ -161,6 +167,7 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
     test("generate private key for BTC", generatePrivateKey, "BTC", "mainnet");
     test("generate private key for ZEC", generatePrivateKey, "ZEC", "mainnet");
     test("generate private key for BCH", generatePrivateKey, "BCH", "mainnet");
+    test("generate private key for FIL", generatePrivateKey, "FIL", "mainnet");
     test("generate private key for ETH", generatePrivateKey, "ETH", "mainnet");
     test(
         "generate private key for ERC20",
@@ -185,6 +192,12 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         "generate private key for BCH (testnet)",
         generatePrivateKey,
         "BCH",
+        "testnet"
+    );
+    test(
+        "generate private key for FIL (testnet)",
+        generatePrivateKey,
+        "FIL",
         "testnet"
     );
     test(
