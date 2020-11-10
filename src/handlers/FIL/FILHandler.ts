@@ -42,7 +42,7 @@ export class FILHandler
         });
 
         this.network =
-            network === "testnet" ? FilNetwork.TEST : FilNetwork.MAIN;
+            network === "mainnet" ? FilNetwork.MAIN : FilNetwork.TEST;
 
         sharedState.filecoin = filecoin;
         this.sharedState = sharedState;
