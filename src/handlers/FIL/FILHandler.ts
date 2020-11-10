@@ -74,18 +74,18 @@ export class FILHandler
         asset: Asset,
         options: BalanceOptions = {}
     ): Promise<BigNumber> =>
-        (await this.getBalanceInSats(asset, options)).dividedBy(
-            new BigNumber(10).exponentiatedBy(this.decimals)
+        new BigNumber(
+            await this.sharedState.filecoin.getBalance(
+                (options && options.address) || (await this.address(asset))
+            )
         );
 
     public readonly getBalanceInSats = async (
         asset: Asset,
         options: BalanceOptions = {}
     ): Promise<BigNumber> =>
-        new BigNumber(
-            await this.sharedState.filecoin.getBalance(
-                (options && options.address) || (await this.address(asset))
-            )
+        (await this.getBalance(asset, options)).multipliedBy(
+            new BigNumber(10).exponentiatedBy(this.decimals)
         );
 
     // Transfer
