@@ -78,6 +78,8 @@
 					</li>
 					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH</p>
 					</li>
+					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/fil.png" /> FIL</p>
+					</li>
 					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ETH</p>
 					</li>
 					<li><p><img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/eth.png" /> ERC20 tokens</p>
@@ -87,7 +89,9 @@
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h1>Usage</h1>
 				</a>
-				<pre><code class="language-sh">npm install --save send-crypto</code></pre>
+				<pre><code class="language-sh">npm install --save send-crypto
+<span class="hljs-comment"># or</span>
+yarn add send-crypto</code></pre>
 				<p>Replace &quot;BTC&quot; with any supported asset:</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
 
@@ -104,12 +108,13 @@
 <span class="hljs-comment">// &gt; 0.01</span>
 
 <span class="hljs-comment">/* Send 0.01 BTC */</span>
-<span class="hljs-keyword">const</span> txHash = <span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>)
+<span class="hljs-keyword">const</span> txHash = <span class="hljs-keyword">await</span> account
+    .send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>)
     .on(<span class="hljs-string">"transactionHash"</span>, <span class="hljs-built_in">console</span>.log)
     <span class="hljs-comment">// &gt; "3387418aaddb4927209c5032f515aa442a6587d6e54677f08a03b8fa7789e688"</span>
     .on(<span class="hljs-string">"confirmation"</span>, <span class="hljs-built_in">console</span>.log);
-    <span class="hljs-comment">// &gt; 1</span>
-    <span class="hljs-comment">// &gt; 2 ...</span></code></pre>
+<span class="hljs-comment">// &gt; 1</span>
+<span class="hljs-comment">// &gt; 2 ...</span></code></pre>
 				<p><strong>UNITS</strong>: <code>getBalance</code> and <code>send</code> can be replaced with <code>getBalanceInSats</code> and <code>sendSats</code> respectively to use the blockchain&#39;s smallest units (satoshis for BTC, wei for ETH, etc.).</p>
 				<p><strong>CONFIG</strong>: Each of the functions <code>address</code>, <code>getBalance</code> and <code>send</code> accept an optional <code>options</code> parameter. See the available options in the sections &quot;All balance and transaction options&quot; for each asset below.</p>
 				<p><br /><br /></p>
@@ -169,7 +174,11 @@
 <span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
 
 <span class="hljs-comment">// Send BCH</span>
-<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BCH"</span>);</code></pre>
+<span class="hljs-keyword">await</span> account.send(
+    <span class="hljs-string">"bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy"</span>,
+    <span class="hljs-number">0.01</span>,
+    <span class="hljs-string">"BCH"</span>
+);</code></pre>
 					<hr />
 				</details>
 				<p>You can replace <code>&quot;BTC&quot;</code> with <code>&quot;ZEC&quot;</code> or <code>&quot;BCH&quot;</code> in the following examples:</p>
@@ -177,11 +186,18 @@
 					<hr />
 					<summary>Send entire balance</summary>
 					<pre><code class="language-ts"><span class="hljs-keyword">const</span> balance = <span class="hljs-keyword">await</span> account.getBalance(<span class="hljs-string">"BTC"</span>);
-<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balance, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balance, <span class="hljs-string">"BTC"</span>, {
+    subtractFee: <span class="hljs-literal">true</span>,
+});
 
 <span class="hljs-comment">// Or using sats as the unit</span>
 <span class="hljs-keyword">const</span> balanceInSats = <span class="hljs-keyword">await</span> account.getBalanceInSats(<span class="hljs-string">"BTC"</span>);
-<span class="hljs-keyword">await</span> account.sendSats(<span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>, balanceInSats, <span class="hljs-string">"BTC"</span>, { subtractFee: <span class="hljs-literal">true</span> });</code></pre>
+<span class="hljs-keyword">await</span> account.sendSats(
+    <span class="hljs-string">"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"</span>,
+    balanceInSats,
+    <span class="hljs-string">"BTC"</span>,
+    { subtractFee: <span class="hljs-literal">true</span> }
+);</code></pre>
 					<hr />
 				</details>
 				<details>
@@ -197,7 +213,9 @@
 				<details>
 					<hr />
 					<summary>Send testnet funds</summary>
-					<pre><code class="language-ts"><span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"testnet"</span> });
+					<pre><code class="language-ts"><span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, {
+    network: <span class="hljs-string">"testnet"</span>,
+});
 <span class="hljs-keyword">await</span> testnetAccount.send(<span class="hljs-string">"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX"</span>, <span class="hljs-number">0.01</span>, <span class="hljs-string">"BTC"</span>);</code></pre>
 					<hr />
 				</details>
@@ -245,16 +263,15 @@
 					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
 <span class="hljs-keyword">const</span> account = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY);
 
-<span class="hljs-keyword">await</span> account.send(
-    <span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>,
-    { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, address: <span class="hljs-string">"0x408e41876cccdc0f92210600ef50372656052a38"</span> },
-);</code></pre>
+<span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>, {
+    <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>,
+    address: <span class="hljs-string">"0x408e41876cccdc0f92210600ef50372656052a38"</span>,
+});</code></pre>
 					<p>A few well known ERC20 tokens can be referenced by name:</p>
-					<pre><code class="language-ts"><span class="hljs-keyword">await</span> account.send(
-    <span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>,
-    <span class="hljs-number">1.234</span>,
-    { <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>, name: <span class="hljs-string">"DAI"</span> },
-);</code></pre>
+					<pre><code class="language-ts"><span class="hljs-keyword">await</span> account.send(<span class="hljs-string">"0x05a56e2d52c817161883f50c441c3228cfe54d9f"</span>, <span class="hljs-number">1.234</span>, {
+    <span class="hljs-keyword">type</span>: <span class="hljs-string">"ERC20"</span>,
+    name: <span class="hljs-string">"DAI"</span>,
+});</code></pre>
 					<p>See the <a href="./src/handlers/ERC20/ERC20s.ts">ERC20s.ts</a> to see the tokens than can be referenced by name.</p>
 					<hr />
 				</details>
@@ -263,10 +280,16 @@
 					<summary>Send testnet funds (<i>ropsten</i>, <i>kovan</i>, etc.)</summary>
 					<p>The supported testnets are <code>mainnet</code>, <code>ropsten</code>, <code>kovan</code>, <code>rinkeby</code> and <code>goerli</code>.</p>
 					<pre><code class="language-ts"><span class="hljs-comment">// Use "testnet" BTC, BCH &amp; ZEC; use "ropsten" ETH.</span>
-<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"testnet"</span> });
-<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"ropsten"</span> });</code></pre>
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, {
+    network: <span class="hljs-string">"testnet"</span>,
+});
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, {
+    network: <span class="hljs-string">"ropsten"</span>,
+});</code></pre>
 					<pre><code class="language-ts"><span class="hljs-comment">// Use "testnet" BTC, BCH &amp; ZEC; use "kovan" ETH.</span>
-<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, { network: <span class="hljs-string">"kovan"</span> });</code></pre>
+<span class="hljs-keyword">const</span> testnetAccount = <span class="hljs-keyword">new</span> CryptoAccount(process.env.PRIVATE_KEY, {
+    network: <span class="hljs-string">"kovan"</span>,
+});</code></pre>
 					<hr />
 				</details>
 				<details>
@@ -314,28 +337,55 @@
     ConstructorOptions = {},
     AddressOptions = {},
     BalanceOptions <span class="hljs-keyword">extends</span> { address?: <span class="hljs-built_in">string</span> } = { address?: <span class="hljs-built_in">string</span> },
-    TxOptions = {},
+    TxOptions = {}
 &gt; {
     <span class="hljs-comment">// sharedState allows multiple handlers access common state.</span>
-    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">privateKey: <span class="hljs-built_in">string</span>, network: <span class="hljs-built_in">string</span>, constructorOptions?: ConstructorOptions, sharedState?: <span class="hljs-built_in">any</span></span>) { <span class="hljs-comment">/* */</span> }
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">
+        privateKey: <span class="hljs-built_in">string</span>,
+        network: <span class="hljs-built_in">string</span>,
+        constructorOptions?: ConstructorOptions,
+        sharedState?: <span class="hljs-built_in">any</span>
+    </span>) {
+        <span class="hljs-comment">/* */</span>
+    }
 
     <span class="hljs-comment">// Returns whether or not this can handle the asset</span>
     <span class="hljs-keyword">public</span> handlesAsset!: <span class="hljs-function">(<span class="hljs-params">asset: Asset</span>) =&gt;</span> <span class="hljs-built_in">boolean</span>;
 
     <span class="hljs-comment">// Returns the address of the account</span>
-    <span class="hljs-keyword">public</span> address?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: AddressOptions, deferHandler?: DeferHandler</span>) =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+    <span class="hljs-keyword">public</span> address?: (
+        asset: Asset,
+        options?: AddressOptions,
+        deferHandler?: DeferHandler
+    ) =&gt; <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt;;
 
     <span class="hljs-comment">// Returns the balance of the account</span>
-    <span class="hljs-keyword">public</span> getBalance?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
-        =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
-    <span class="hljs-keyword">public</span> getBalanceInSats?: <span class="hljs-function">(<span class="hljs-params">asset: Asset, options?: BalanceOptions, deferHandler?: DeferHandler</span>)
-        =&gt;</span> <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
+    <span class="hljs-keyword">public</span> getBalance?: (
+        asset: Asset,
+        options?: BalanceOptions,
+        deferHandler?: DeferHandler
+    ) =&gt; <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
+    <span class="hljs-keyword">public</span> getBalanceInSats?: (
+        asset: Asset,
+        options?: BalanceOptions,
+        deferHandler?: DeferHandler
+    ) =&gt; <span class="hljs-built_in">Promise</span>&lt;BigNumber&gt;;
 
     <span class="hljs-comment">// Transfers the asset to the provided address</span>
-    <span class="hljs-keyword">public</span> send?: <span class="hljs-function">(<span class="hljs-params">to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler</span>)
-        =&gt;</span> PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
-    <span class="hljs-keyword">public</span> sendSats?: <span class="hljs-function">(<span class="hljs-params">to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, options?: TxOptions, deferHandler?: DeferHandler</span>)
-        =&gt;</span> PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
+    <span class="hljs-keyword">public</span> send?: (
+        to: <span class="hljs-built_in">string</span>,
+        value: BigNumber,
+        asset: Asset,
+        options?: TxOptions,
+        deferHandler?: DeferHandler
+    ) =&gt; PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
+    <span class="hljs-keyword">public</span> sendSats?: (
+        to: <span class="hljs-built_in">string</span>,
+        value: BigNumber,
+        asset: Asset,
+        options?: TxOptions,
+        deferHandler?: DeferHandler
+    ) =&gt; PromiEvent&lt;<span class="hljs-built_in">string</span>&gt;;
 }</code></pre>
 					<p>And then register the handler:</p>
 					<pre><code class="language-ts"><span class="hljs-keyword">const</span> CryptoAccount = <span class="hljs-built_in">require</span>(<span class="hljs-string">"send-crypto"</span>);
@@ -348,13 +398,18 @@ account.registerHandler(MyCystomHandler);</code></pre>
 
     handlesAsset = <span class="hljs-function">(<span class="hljs-params">asset: Asset</span>) =&gt;</span> asset === <span class="hljs-string">"ETH"</span>;
 
-    resolveENSName = (to: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; =&gt; { <span class="hljs-comment">/* ... */</span> }
+    resolveENSName = (to: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">string</span>&gt; =&gt; {
+        <span class="hljs-comment">/* ... */</span>
+    };
 
     send = <span class="hljs-keyword">async</span> (
-        to: <span class="hljs-built_in">string</span>, value: BigNumber, asset: Asset, deferHandler: Handler,
+        to: <span class="hljs-built_in">string</span>,
+        value: BigNumber,
+        asset: Asset,
+        deferHandler: Handler
     ): PromiEvent&lt;<span class="hljs-built_in">string</span>&gt; =&gt; {
         <span class="hljs-keyword">return</span> deferHandler.send(<span class="hljs-keyword">await</span> resolveENSName(to), value, asset);
-    }
+    };
 }</code></pre>
 					<p>See the following handlers as references:</p>
 					<ul>
@@ -402,6 +457,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/ethhandler.html" class="tsd-kind-icon">ETHHandler</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/filhandler.html" class="tsd-kind-icon">FILHandler</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/handler.html" class="tsd-kind-icon">Handler</a>
@@ -522,6 +580,9 @@ account.registerHandler(MyCystomHandler);</code></pre>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#ox" class="tsd-kind-icon">Ox</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#singlekeyprovider" class="tsd-kind-icon">Single<wbr>Key<wbr>Provider</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#broadcasttransaction" class="tsd-kind-icon">broadcast<wbr>Transaction</a>
