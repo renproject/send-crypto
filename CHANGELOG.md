@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.26](https://github.com/renproject/send-crypto/compare/v0.2.25...v0.2.26) (2020-11-26)
+
+
+### Features
+
+* updated bitgo-utxo-lib to fix zcash, updated bch endpoint ([2cdec25](https://github.com/renproject/send-crypto/commit/2cdec25ce79010e7fe95d12a403fd44065ae100c))
+
 ### [0.2.25](https://github.com/renproject/send-crypto/compare/v0.2.24...v0.2.25) (2020-11-10)
 
 
