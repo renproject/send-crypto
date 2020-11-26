@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.27](https://github.com/renproject/send-crypto/compare/v0.2.26...v0.2.27) (2020-11-26)
+
+
+### Features
+
+* updated dependencies ([319d0c8](https://github.com/renproject/send-crypto/commit/319d0c851867537c332e4209ed8dfe24863e82b4))
+
 ### [0.2.26](https://github.com/renproject/send-crypto/compare/v0.2.25...v0.2.26) (2020-11-26)
 
 
