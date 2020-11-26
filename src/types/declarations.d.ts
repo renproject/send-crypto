@@ -19,3 +19,7 @@ declare module "@glif/filecoin-number" {
 }
 
 declare module "glif__filecoin-rpc-client";
+
+declare module "@glif/filecoin-rpc-client" {
+    export type LotusRpcEngineConfig = any;
+}

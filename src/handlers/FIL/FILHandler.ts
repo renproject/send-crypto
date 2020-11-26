@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import { Message, MessageObj } from "@glif/filecoin-message";
-import Filecoin, { Network as FilNetwork } from "@glif/filecoin-wallet-provider";
+import Filecoin from "@glif/filecoin-wallet-provider";
+import { Network as FilNetwork } from "@glif/filecoin-address";
 
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { sleep } from "../../lib/retry";

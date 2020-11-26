@@ -1,9 +1,7 @@
 // tslint:disable no-submodule-imports
 import filecoin_signer from "@zondax/filecoin-signing-tools/js";
-import {
-    Network as FilNetwork,
-    WalletSubProvider,
-} from "@glif/filecoin-wallet-provider";
+import { WalletSubProvider } from "@glif/filecoin-wallet-provider";
+import { Network as FilNetwork } from "@glif/filecoin-address";
 import { LotusMessage, SignedLotusMessage } from "@glif/filecoin-message";
 
 export const SingleKeyProvider = (

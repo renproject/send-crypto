@@ -114,7 +114,7 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         apiAddress: process.env.FILECOIN_TESTNET_URL,
         token: process.env.FILECOIN_TESTNET_TOKEN,
     });
-    test.skip("send BTC", sendToken, "BTC", 8, "testnet");
+    test("send BTC", sendToken, "BTC", 8, "testnet");
     test("send ZEC", sendToken, "ZEC", 8, "testnet");
     test.skip("send BCH", sendToken, "BCH", 8, "testnet");
     test.serial("send ETH", sendToken, "ETH", 18, "kovan");
