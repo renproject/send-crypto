@@ -127,8 +127,7 @@ const broadcastTransaction = (network: string) => async (
             txid: string; // Hex without 0x
         };
     }>(
-        // `https://sochain.com/api/v2/send_tx/${network}`,
-        `https://chain.so/send_tx/${network}`,
+        `https://sochain.com/api/v2/send_tx/${network}`,
         { tx_hex: txHex },
         { timeout: DEFAULT_TIMEOUT }
     );

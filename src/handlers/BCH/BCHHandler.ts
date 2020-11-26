@@ -222,6 +222,7 @@ export class BCHHandler implements Handler {
                 {
                     ...options,
                     signFlag:
+                        // bitcoin.Transaction.SIGHASH_ALL |
                         // tslint:disable-next-line: no-bitwise
                         bitcoin.Transaction.SIGHASH_SINGLE |
                         bitcoin.Transaction.SIGHASH_BITCOINCASHBIP143,

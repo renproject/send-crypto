@@ -143,12 +143,11 @@ export const _apiFallbacks = {
     broadcastTransaction: (testnet: boolean, hex: string) =>
         testnet
             ? [
-                  ...shuffleArray(() =>
+                  () =>
                       Insight.broadcastTransaction(
                           InsightEndpoints.TestnetZCash
-                      )(hex)
-                  ),
-                  () => Sochain.broadcastTransaction("ZECTEST")(hex),
+                      )(hex),
+                  //   () => Sochain.broadcastTransaction("ZECTEST")(hex),
               ]
             : [
                   ...shuffleArray(
@@ -308,7 +307,7 @@ export class ZECHandler implements Handler {
 
             if (this.testnet) {
                 // tslint:disable-next-line: no-object-mutation
-                bitcoin.networks.zcashTest.consensusBranchId["4"] = 0xf5b9230b;
+                bitcoin.networks.zcashTest.consensusBranchId["4"] = 0xe9ff75a6;
             }
 
             const built = await BitgoUTXOLib.buildUTXO(
@@ -323,7 +322,8 @@ export class ZECHandler implements Handler {
                 {
                     ...options,
                     version: 4,
-                    versionGroupID: this.testnet ? 0xf5b9230b : 0x892f2085,
+                    versionGroupID: 0x892f2085,
+                    consensusBranchId: 0xe9ff75a6,
                 }
             );
 

@@ -4,70 +4,21 @@ import { fixUTXO, fixUTXOs, fixValue, sortUTXOs, UTXO } from "../../lib/utxo";
 import { FetchTXsResult } from "./insight";
 import { DEFAULT_TIMEOUT } from "./timeout";
 
-export interface ScriptSig {
-    hex: string;
-    asm: string;
-}
-
-export interface Vin {
-    txid: string; // "4f72fce028ff1e99459393232e8bf8a430815ec5cea8700676c101b02be3649c",
-    vout: number; // 1,
-    sequence: number; // 4294967295,
-    n: number; // 0,
-    scriptSig: ScriptSig;
-    value: number; // 7223963,
-    legacyAddress: string; // "1D4NXvNvjucShZeyLsDzYz1ky2W8gYKQH7",
-    cashAddress: string; // "bitcoincash:qzzyfwmnz3dlld7svwzn53xzr6ycz5kwavpd9uqf4l"
-}
-
-export interface ScriptPubKey {
-    hex: string; // "76a91427bad06158841621ed33eb91efdb1cc4af4996cb88ac",
-    asm: string; // "OP_DUP OP_HASH160 27bad06158841621ed33eb91efdb1cc4af4996cb OP_EQUALVERIFY OP_CHECKSIG",
-    addresses: string[]; // ["14d59YbC2D9W9y5kozabCDhxkY3eDQq7B3"],
-    type: string; // "pubkeyhash",
-    cashAddrs: string[]; // ["bitcoincash:qqnm45rptzzpvg0dx04erm7mrnz27jvkevaf3ys3c5"]
-}
-
-export interface Vout {
-    value: string; // "0.04159505",
-    n: number; // 0,
-    scriptPubKey: ScriptPubKey;
-    spentTxId: string; // "9fa7bc86ad4729cbd5c182a8cd5cfc5eb457608fe430ce673f33ca52bfb1a187",
-    spentIndex: number; // 1,
-    spentHeight: number; // 617875
-}
-
-export interface QueryTransaction {
-    vin: Vin[];
-    vout: Vout[];
-    txid: string; // "03e29b07bb98b1e964296289dadb2fb034cb52e178cc306d20cc9ddc951d2a31",
-    version: number; // 1,
-    locktime: number; // 0,
-    blockhash: string; // "0000000000000000011c71094699e3ba47c43da76d775cf5eb5fbea1787fafb5",
-    blockheight: number; // 616200,
-    confirmations: number; // 27433,
-    time: number; // 1578054427,
-    blocktime: number; // 1578054427,
-    firstSeenTime: number; // 1578054360,
-    valueOut: number; // 0.07213963,
-    size: number; // 226,
-    valueIn: number; // 0.07223963,
-    fees: number; // 0.0001
-}
-
 const endpoint = (testnet: boolean) =>
     testnet ? "https://trest.bitcoin.com/v2/" : "https://rest.bitcoin.com/v2/";
+
+const endpointV2 = (testnet: boolean) =>
+    testnet
+        ? "https://explorer-tbch.api.bitcoin.com/tbch/v1"
+        : "https://explorer.api.bitcoin.com/bch/v1";
 
 const fetchUTXO = (testnet: boolean) => async (
     txHash: string,
     vOut: number
 ): Promise<UTXO> => {
-    const url = `${endpoint(testnet).replace(
-        /\/$/,
-        ""
-    )}/transaction/details/${txHash}`;
+    const url = `${endpointV2(testnet)}/tx/${txHash}`;
 
-    const response = await axios.get<QueryTransaction>(`${url}`, {
+    const response = await axios.get<FetchTXResponse>(`${url}`, {
         timeout: DEFAULT_TIMEOUT,
     });
 
@@ -85,32 +36,16 @@ const fetchUTXO = (testnet: boolean) => async (
     );
 };
 
-interface FetchUTXOs {
-    utxos: ReadonlyArray<{
-        address: string;
-        txid: string;
-        vout: number;
-        scriptPubKey: string;
-        amount: number;
-        satoshis: number;
-        confirmations: number;
-        ts: number;
-    }>;
-}
-
 const fetchUTXOs = (testnet: boolean) => async (
     address: string,
     confirmations: number
 ): Promise<readonly UTXO[]> => {
-    const url = `${endpoint(testnet).replace(
-        /\/$/,
-        ""
-    )}/address/utxo/${address}`;
-    const response = await axios.get<FetchUTXOs>(url, {
+    const url = `${endpointV2(testnet)}/addr/${address}/utxo`;
+    const response = await axios.get<FetchUTXOSResponse>(url, {
         timeout: DEFAULT_TIMEOUT,
     });
     return fixUTXOs(
-        response.data.utxos
+        response.data
             .map((utxo) => ({
                 txHash: utxo.txid,
                 amount: utxo.amount,
@@ -184,4 +119,58 @@ export const BitcoinDotCom = {
     fetchUTXOs,
     fetchTXs,
     broadcastTransaction,
+};
+
+type FetchUTXOSResponse = Array<{
+    address: string; // "miMi2VET41YV1j6SDNTeZoPBbmH8B4nEx6";
+    txid: string; // "cfa3301a29937b0571b759a9af895b713214060aaeef2ac35b9d290dd7d10553";
+    vout: number; // 1;
+    scriptPubKey: string; // "76a9141f28b9198368dcc57cbdadd55092ba8d0cfc0cdb88ac";
+    amount: number; // 1.39903978;
+    satoshis: number; // 139903978;
+    height: number; // 1401543;
+    confirmations: number; // 21295;
+}>;
+
+type FetchTXResponse = {
+    txid: string; // "cfa3301a29937b0571b759a9af895b713214060aaeef2ac35b9d290dd7d10553";
+    version: number; // 1;
+    locktime: number; // 0;
+    vin: Array<{
+        txid: string; // "195e1f3a70235216e1e61c19b3c3b89c6384f707f5c68b0570c30603eed72f12";
+        vout: number; // 0;
+        sequence: number; // 4294967295;
+        n: number; // 0;
+        scriptSig: {
+            hex: string; // "4730440220732686ea0e3582e23a0008682b215bc8b03bd4ecb730828f94d28df2b3fa865f0220310273bb51e727bbb6e2e816ec6c4f79276508d9f634b183450dabd38898d8ca41210268ccfdd69648ff16ddc607994462d235b520bc29f5b1f88d3e4a6403971f1413";
+            asm: string; // "30440220732686ea0e3582e23a0008682b215bc8b03bd4ecb730828f94d28df2b3fa865f0220310273bb51e727bbb6e2e816ec6c4f79276508d9f634b183450dabd38898d8ca41 0268ccfdd69648ff16ddc607994462d235b520bc29f5b1f88d3e4a6403971f1413";
+        };
+        addr: string; // "miMi2VET41YV1j6SDNTeZoPBbmH8B4nEx6";
+        valueSat: number; // 11769;
+        value: number; // 0.00011769;
+        doubleSpentTxID: null; // null;
+    }>;
+    vout: Array<{
+        value: string; // "0.10000000";
+        n: number; // 0;
+        scriptPubKey: {
+            hex: string; // "76a914eb7af4368d7c9365a09f445827b8a6841792773388ac";
+            asm: string; // "OP_DUP OP_HASH160 eb7af4368d7c9365a09f445827b8a68417927733 OP_EQUALVERIFY OP_CHECKSIG";
+            addresses: number; // ["n2z4P8CQxeDMeckx817v9qvkfNsxMpC48E"];
+            type: string; // "pubkeyhash";
+        };
+        spentTxId: string; // "7a794b095f169f554ff89df2c07179803fb6a71496fd1e3a1ff273641d8050ac";
+        spentIndex: number; // 2;
+        spentHeight: number; // 1403107;
+    }>;
+    blockhash: string; // "00000000001d49c2bf7a8509e4f35aa49f091801c144ed9046cff4354bea7389";
+    blockheight: number; // 1401543;
+    confirmations: number; // 21295;
+    time: number; // 1597282685;
+    blocktime: number; // 1597282685;
+    firstSeenTime: number; // 1597282384;
+    valueOut: number; // 1.49903978;
+    size: number; // 1699;
+    valueIn: number; // 1.49913978;
+    fees: number; // 0.0001;
 };

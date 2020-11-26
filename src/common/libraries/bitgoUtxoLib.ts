@@ -19,6 +19,7 @@ const buildUTXO = async (
         versionGroupID?: number;
         expiryHeight?: number;
         lockTime?: number;
+        consensusBranchId?: number;
     }
 ): Promise<{ toHex: () => string }> => {
     const fees = new BigNumber(
@@ -38,13 +39,16 @@ const buildUTXO = async (
         tx.setVersion(options.version);
     }
     if (options && options.versionGroupID) {
-        tx.setVersionGroupId(0xf5b9230b);
+        tx.setVersionGroupId(options.versionGroupID);
     }
     if (options && options.expiryHeight) {
         tx.setExpiryHeight(options.expiryHeight);
     }
     if (options && options.lockTime) {
         tx.setLockTime(options.lockTime);
+    }
+    if (options && options.consensusBranchId) {
+        tx.setConsensusBranchId(options.consensusBranchId);
     }
 
     // Only use the required utxos
@@ -78,7 +82,7 @@ const buildUTXO = async (
         tx.sign(
             i,
             privateKey,
-            "",
+            null,
             options && options.signFlag !== undefined ? options.signFlag : null,
             utxo.amount
         );
