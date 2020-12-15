@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.28](https://github.com/renproject/send-crypto/compare/v0.2.27...v0.2.28) (2020-12-15)
+
+
+### Features
+
+* added terra/luna support ([bdad20c](https://github.com/renproject/send-crypto/commit/bdad20cae50ffffd57198ac0be5afbcfed204b97))
+
 ### [0.2.27](https://github.com/renproject/send-crypto/compare/v0.2.26...v0.2.27) (2020-11-26)
 
 
