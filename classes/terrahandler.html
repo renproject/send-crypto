@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FILHandler | send-crypto</title>
+	<title>TERRAHandler | send-crypto</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="filhandler.html">FILHandler</a>
+					<a href="terrahandler.html">TERRAHandler</a>
 				</li>
 			</ul>
-			<h1>Class FILHandler</h1>
+			<h1>Class TERRAHandler</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">FILHandler</span>
+						<span class="target">TERRAHandler</span>
 					</li>
 				</ul>
 			</section>
@@ -87,26 +87,28 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="filhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="terrahandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="filhandler.html#decimals" class="tsd-kind-icon">decimals</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="filhandler.html#network" class="tsd-kind-icon">network</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="filhandler.html#sharedstate" class="tsd-kind-icon">shared<wbr>State</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="terrahandler.html#client" class="tsd-kind-icon">client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="terrahandler.html#decimals" class="tsd-kind-icon">decimals</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="terrahandler.html#key" class="tsd-kind-icon">key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="terrahandler.html#network" class="tsd-kind-icon">network</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="terrahandler.html#wallet" class="tsd-kind-icon">wallet</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#address" class="tsd-kind-icon">address</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#getbalance" class="tsd-kind-icon">get<wbr>Balance</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#getbalanceinsats" class="tsd-kind-icon">get<wbr>Balance<wbr>InSats</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#handlesasset" class="tsd-kind-icon">handles<wbr>Asset</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#send" class="tsd-kind-icon">send</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="filhandler.html#sendsats" class="tsd-kind-icon">send<wbr>Sats</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#address" class="tsd-kind-icon">address</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#getbalance" class="tsd-kind-icon">get<wbr>Balance</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#getbalanceinsats" class="tsd-kind-icon">get<wbr>Balance<wbr>InSats</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#handlesasset" class="tsd-kind-icon">handles<wbr>Asset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#send" class="tsd-kind-icon">send</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="terrahandler.html#sendsats" class="tsd-kind-icon">send<wbr>Sats</a></li>
 							</ul>
 						</section>
 					</div>
@@ -118,13 +120,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new FILHandler<span class="tsd-signature-symbol">(</span>privateKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, network<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ConstructorOptions</span>, sharedState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="filhandler.html" class="tsd-signature-type">FILHandler</a></li>
+						<li class="tsd-signature tsd-kind-icon">new TERRAHandler<span class="tsd-signature-symbol">(</span>privateKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, network<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ConstructorOptions</span>, sharedState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="terrahandler.html" class="tsd-signature-type">TERRAHandler</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L32">handlers/FIL/FILHandler.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L44">handlers/TERRA/TERRAHandler.ts:44</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -142,50 +144,62 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sharedState: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="filhandler.html" class="tsd-signature-type">FILHandler</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="terrahandler.html" class="tsd-signature-type">TERRAHandler</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="client" class="tsd-anchor"></a>
+					<h3>client</h3>
+					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LCDClient</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L42">handlers/TERRA/TERRAHandler.ts:42</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="decimals" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> decimals</h3>
-					<div class="tsd-signature tsd-kind-icon">decimals<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">18</span><span class="tsd-signature-symbol"> =&nbsp;18</span></div>
+					<div class="tsd-signature tsd-kind-icon">decimals<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">6</span><span class="tsd-signature-symbol"> =&nbsp;6</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L28">handlers/FIL/FILHandler.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L40">handlers/TERRA/TERRAHandler.ts:40</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="key" class="tsd-anchor"></a>
+					<h3>key</h3>
+					<div class="tsd-signature tsd-kind-icon">key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RawKey</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L44">handlers/TERRA/TERRAHandler.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="network" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> network</h3>
-					<div class="tsd-signature tsd-kind-icon">network<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">FilNetwork</span></div>
+					<div class="tsd-signature tsd-kind-icon">network<span class="tsd-signature-symbol">:</span> <a href="../enums/terranetwork.html" class="tsd-signature-type">TerraNetwork</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L26">handlers/FIL/FILHandler.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L38">handlers/TERRA/TERRAHandler.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="sharedstate" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> shared<wbr>State</h3>
-					<div class="tsd-signature tsd-kind-icon">shared<wbr>State<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="wallet" class="tsd-anchor"></a>
+					<h3>wallet</h3>
+					<div class="tsd-signature tsd-kind-icon">wallet<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Wallet</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L30">handlers/FIL/FILHandler.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L43">handlers/TERRA/TERRAHandler.ts:43</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>filecoin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Filecoin</span></h5>
-							</li>
-						</ul>
-					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -194,13 +208,13 @@
 					<a name="address" class="tsd-anchor"></a>
 					<h3>address</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">address<span class="tsd-signature-symbol">(</span>asset<span class="tsd-signature-symbol">: </span><a href="../globals.html#asset" class="tsd-signature-type">Asset</a>, _options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">AddressOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">address<span class="tsd-signature-symbol">(</span>asset<span class="tsd-signature-symbol">: </span><a href="../globals.html#asset" class="tsd-signature-type">Asset</a>, _options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">AddressOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L57">handlers/FIL/FILHandler.ts:57</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L78">handlers/TERRA/TERRAHandler.ts:78</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -212,7 +226,7 @@
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> _options: <span class="tsd-signature-type">AddressOptions</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -226,7 +240,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L74">handlers/FIL/FILHandler.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L90">handlers/TERRA/TERRAHandler.ts:90</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -252,7 +266,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L84">handlers/FIL/FILHandler.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L98">handlers/TERRA/TERRAHandler.ts:98</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -278,7 +292,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L53">handlers/FIL/FILHandler.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L74">handlers/TERRA/TERRAHandler.ts:74</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -301,7 +315,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L93">handlers/FIL/FILHandler.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L118">handlers/TERRA/TERRAHandler.ts:118</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -327,13 +341,13 @@
 					<a name="sendsats" class="tsd-anchor"></a>
 					<h3>send<wbr>Sats</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">send<wbr>Sats<span class="tsd-signature-symbol">(</span>to<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, valueIn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BigNumber</span>, asset<span class="tsd-signature-symbol">: </span><a href="../globals.html#asset" class="tsd-signature-type">Asset</a>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TxOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#promievent" class="tsd-signature-type">PromiEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">send<wbr>Sats<span class="tsd-signature-symbol">(</span>to<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BigNumber</span>, asset<span class="tsd-signature-symbol">: </span><a href="../globals.html#asset" class="tsd-signature-type">Asset</a>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TxOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#promievent" class="tsd-signature-type">PromiEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/FIL/FILHandler.ts#L106">handlers/FIL/FILHandler.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L131">handlers/TERRA/TERRAHandler.ts:131</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -342,7 +356,7 @@
 									<h5>to: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>valueIn: <span class="tsd-signature-type">BigNumber</span></h5>
+									<h5>value: <span class="tsd-signature-type">BigNumber</span></h5>
 								</li>
 								<li>
 									<h5>asset: <a href="../globals.html#asset" class="tsd-signature-type">Asset</a></h5>
@@ -370,37 +384,43 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="filhandler.html" class="tsd-kind-icon">FILHandler</a>
+						<a href="terrahandler.html" class="tsd-kind-icon">TERRAHandler</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="filhandler.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="terrahandler.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="terrahandler.html#client" class="tsd-kind-icon">client</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="filhandler.html#decimals" class="tsd-kind-icon">decimals</a>
+								<a href="terrahandler.html#decimals" class="tsd-kind-icon">decimals</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="terrahandler.html#key" class="tsd-kind-icon">key</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="filhandler.html#network" class="tsd-kind-icon">network</a>
+								<a href="terrahandler.html#network" class="tsd-kind-icon">network</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="filhandler.html#sharedstate" class="tsd-kind-icon">shared<wbr>State</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#address" class="tsd-kind-icon">address</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="terrahandler.html#wallet" class="tsd-kind-icon">wallet</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#getbalance" class="tsd-kind-icon">get<wbr>Balance</a>
+								<a href="terrahandler.html#address" class="tsd-kind-icon">address</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#getbalanceinsats" class="tsd-kind-icon">get<wbr>Balance<wbr>InSats</a>
+								<a href="terrahandler.html#getbalance" class="tsd-kind-icon">get<wbr>Balance</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#handlesasset" class="tsd-kind-icon">handles<wbr>Asset</a>
+								<a href="terrahandler.html#getbalanceinsats" class="tsd-kind-icon">get<wbr>Balance<wbr>InSats</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#send" class="tsd-kind-icon">send</a>
+								<a href="terrahandler.html#handlesasset" class="tsd-kind-icon">handles<wbr>Asset</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="filhandler.html#sendsats" class="tsd-kind-icon">send<wbr>Sats</a>
+								<a href="terrahandler.html#send" class="tsd-kind-icon">send</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="terrahandler.html#sendsats" class="tsd-kind-icon">send<wbr>Sats</a>
 							</li>
 						</ul>
 					</li>

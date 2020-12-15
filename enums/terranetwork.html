@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>UTXO | send-crypto</title>
+	<title>TerraNetwork | send-crypto</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,90 +56,49 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="utxo.html">UTXO</a>
+					<a href="terranetwork.html">TerraNetwork</a>
 				</li>
 			</ul>
-			<h1>Interface UTXO</h1>
+			<h1>Enumeration TerraNetwork</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">UTXO</span>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="utxo.html#amount" class="tsd-kind-icon">amount</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="utxo.html#confirmations" class="tsd-kind-icon">confirmations</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="utxo.html#scriptpubkey" class="tsd-kind-icon">script<wbr>Pub<wbr>Key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="utxo.html#txhash" class="tsd-kind-icon">tx<wbr>Hash</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="utxo.html#vout" class="tsd-kind-icon">v<wbr>Out</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="terranetwork.html#columbus" class="tsd-kind-icon">Columbus</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="terranetwork.html#tequila" class="tsd-kind-icon">Tequila</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="amount" class="tsd-anchor"></a>
-					<h3>amount</h3>
-					<div class="tsd-signature tsd-kind-icon">amount<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="columbus" class="tsd-anchor"></a>
+					<h3>Columbus</h3>
+					<div class="tsd-signature tsd-kind-icon">Columbus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;columbus-3&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/lib/utxo.ts#L6">lib/utxo.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L16">handlers/TERRA/TERRAHandler.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="confirmations" class="tsd-anchor"></a>
-					<h3>confirmations</h3>
-					<div class="tsd-signature tsd-kind-icon">confirmations<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="tequila" class="tsd-anchor"></a>
+					<h3>Tequila</h3>
+					<div class="tsd-signature tsd-kind-icon">Tequila<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;tequila-0004&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/lib/utxo.ts#L8">lib/utxo.ts:8</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="scriptpubkey" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> script<wbr>Pub<wbr>Key</h3>
-					<div class="tsd-signature tsd-kind-icon">script<wbr>Pub<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/lib/utxo.ts#L7">lib/utxo.ts:7</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="txhash" class="tsd-anchor"></a>
-					<h3>tx<wbr>Hash</h3>
-					<div class="tsd-signature tsd-kind-icon">tx<wbr>Hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/lib/utxo.ts#L4">lib/utxo.ts:4</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="vout" class="tsd-anchor"></a>
-					<h3>v<wbr>Out</h3>
-					<div class="tsd-signature tsd-kind-icon">v<wbr>Out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/lib/utxo.ts#L5">lib/utxo.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/bdad20c/src/handlers/TERRA/TERRAHandler.ts#L15">handlers/TERRA/TERRAHandler.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -157,23 +116,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="utxo.html" class="tsd-kind-icon">UTXO</a>
+					<li class="current tsd-kind-enum">
+						<a href="terranetwork.html" class="tsd-kind-icon">Terra<wbr>Network</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="utxo.html#amount" class="tsd-kind-icon">amount</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="terranetwork.html#columbus" class="tsd-kind-icon">Columbus</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="utxo.html#confirmations" class="tsd-kind-icon">confirmations</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="utxo.html#scriptpubkey" class="tsd-kind-icon">script<wbr>Pub<wbr>Key</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="utxo.html#txhash" class="tsd-kind-icon">tx<wbr>Hash</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="utxo.html#vout" class="tsd-kind-icon">v<wbr>Out</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="terranetwork.html#tequila" class="tsd-kind-icon">Tequila</a>
 							</li>
 						</ul>
 					</li>
