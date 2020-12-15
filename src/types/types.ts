@@ -6,7 +6,10 @@ export type Asset = string | object;
 export type Value = string | number | BigNumber | { toString: () => string };
 
 export interface DeferHandler<Options = {}> {
-    readonly address: (asset: Asset, options?: any & {}) => Promise<string>;
+    readonly address: (
+        asset: Asset,
+        options?: any & {}
+    ) => Promise<string> | string;
 
     // Balance
     readonly getBalance: (
@@ -55,7 +58,7 @@ export abstract class Handler<
         asset: Asset,
         options: AddressOptions,
         deferHandler: DeferHandler
-    ) => Promise<string>;
+    ) => Promise<string> | string;
 
     // Returns the balance of the account
     public getBalance?: (
