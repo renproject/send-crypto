@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.29](https://github.com/renproject/send-crypto/compare/v0.2.28...v0.2.29) (2021-01-13)
+
+
+### Features
+
+* added jsonrpc api ([047624f](https://github.com/renproject/send-crypto/commit/047624f85377091ad8e28883a66474d36c7c1bc9))
+* reduced retry amounts ([1804776](https://github.com/renproject/send-crypto/commit/18047764ed0fffc2165eb750cd7bacd6ccb66adc))
+
 ### [0.2.28](https://github.com/renproject/send-crypto/compare/v0.2.27...v0.2.28) (2020-12-15)
 
 
