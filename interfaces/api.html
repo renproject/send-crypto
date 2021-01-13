@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FetchTXsResult | send-crypto</title>
+	<title>API | send-crypto</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="fetchtxsresult.html">FetchTXsResult</a>
+					<a href="api.html">API</a>
 				</li>
 			</ul>
-			<h1>Interface FetchTXsResult</h1>
+			<h1>Interface API</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">FetchTXsResult</span>
+						<span class="target">API</span>
 					</li>
 				</ul>
 			</section>
@@ -81,8 +81,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="fetchtxsresult.html#pagestotal" class="tsd-kind-icon">pages<wbr>Total</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="fetchtxsresult.html#txs" class="tsd-kind-icon">txs</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="api.html#broadcasttransaction" class="tsd-kind-icon">broadcast<wbr>Transaction</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="api.html#fetchtxs" class="tsd-kind-icon">fetchTXs</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="api.html#fetchutxo" class="tsd-kind-icon">fetchUTXO</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="api.html#fetchutxos" class="tsd-kind-icon">fetchUTXOs</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,22 +93,42 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="pagestotal" class="tsd-anchor"></a>
-					<h3>pages<wbr>Total</h3>
-					<div class="tsd-signature tsd-kind-icon">pages<wbr>Total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="broadcasttransaction" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> broadcast<wbr>Transaction</h3>
+					<div class="tsd-signature tsd-kind-icon">broadcast<wbr>Transaction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/insight.ts#L178">common/apis/insight.ts:178</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/API.ts#L14">common/apis/API.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="txs" class="tsd-anchor"></a>
-					<h3>txs</h3>
-					<div class="tsd-signature tsd-kind-icon">txs<span class="tsd-signature-symbol">:</span> <a href="txresponse.html" class="tsd-signature-type">TxResponse</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="fetchtxs" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> fetchTXs</h3>
+					<div class="tsd-signature tsd-kind-icon">fetchTXs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/insight.ts#L179">common/apis/insight.ts:179</a></li>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/API.ts#L13">common/apis/API.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="fetchutxo" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> fetchUTXO</h3>
+					<div class="tsd-signature tsd-kind-icon">fetchUTXO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/API.ts#L11">common/apis/API.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="fetchutxos" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> fetchUTXOs</h3>
+					<div class="tsd-signature tsd-kind-icon">fetchUTXOs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/renproject/send-crypto/blob/1804776/src/common/apis/API.ts#L12">common/apis/API.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -125,13 +147,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="fetchtxsresult.html" class="tsd-kind-icon">FetchTXs<wbr>Result</a>
+						<a href="api.html" class="tsd-kind-icon">API</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="fetchtxsresult.html#pagestotal" class="tsd-kind-icon">pages<wbr>Total</a>
+								<a href="api.html#broadcasttransaction" class="tsd-kind-icon">broadcast<wbr>Transaction</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="fetchtxsresult.html#txs" class="tsd-kind-icon">txs</a>
+								<a href="api.html#fetchtxs" class="tsd-kind-icon">fetchTXs</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="api.html#fetchutxo" class="tsd-kind-icon">fetchUTXO</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="api.html#fetchutxos" class="tsd-kind-icon">fetchUTXOs</a>
 							</li>
 						</ul>
 					</li>
