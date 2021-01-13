@@ -1,6 +1,6 @@
 import { Blockchair } from "../../common/apis/blockchair";
 import { Sochain } from "../../common/apis/sochain";
-import { fallback, onlyMainnet, retryNTimes } from "../../lib/retry";
+import { fallback, onlyMainnet } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 
@@ -88,7 +88,7 @@ export class DOGEHandler {
             options.address,
             confirmations
         );
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 
     static getUTXO = async (
@@ -97,7 +97,7 @@ export class DOGEHandler {
         vOut: number
     ): Promise<UTXO> => {
         const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 
     static getTransactions = async (
@@ -114,6 +114,6 @@ export class DOGEHandler {
             options.address,
             confirmations
         );
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 }

@@ -71,9 +71,6 @@ export const retryNTimes = async <T>(
 ) => {
     let returnError;
     for (let i = 0; i < retries; i++) {
-        // if (i > 0) {
-        //     console.debug(`Retrying...`);
-        // }
         try {
             return await fnCall();
         } catch (error) {

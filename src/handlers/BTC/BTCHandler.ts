@@ -114,7 +114,7 @@ export class BTCHandler implements Handler {
             options.address,
             confirmations
         );
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 
     static getUTXO = async (
@@ -123,7 +123,7 @@ export class BTCHandler implements Handler {
         vOut: number
     ): Promise<UTXO> => {
         const endpoints = _apiFallbacks.fetchUTXO(testnet, txHash, vOut);
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 
     static getTransactions = async (
@@ -140,7 +140,7 @@ export class BTCHandler implements Handler {
             options.address,
             confirmations
         );
-        return retryNTimes(() => fallback(endpoints), 2);
+        return fallback(endpoints);
     };
 
     constructor(privateKey: string, network: string) {
@@ -262,15 +262,13 @@ export class BTCHandler implements Handler {
         return promiEvent;
     };
 
-    private readonly _getConfirmations = (txHash: string): Promise<number> =>
-        retryNTimes(
-            async () =>
-                (
-                    await fallback(
-                        // Fetch confirmations for first output of transaction.
-                        _apiFallbacks.fetchUTXO(this.testnet, txHash, 0)
-                    )
-                ).confirmations,
-            2
-        );
+    private readonly _getConfirmations = async (
+        txHash: string
+    ): Promise<number> =>
+        (
+            await fallback(
+                // Fetch confirmations for first output of transaction.
+                _apiFallbacks.fetchUTXO(this.testnet, txHash, 0)
+            )
+        ).confirmations;
 }
