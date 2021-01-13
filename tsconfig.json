@@ -31,7 +31,9 @@
         // "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
         "lib": ["es2017"],
         "types": ["node"],
-        "typeRoots": ["node_modules/@types", "src/types"]
+        "typeRoots": ["node_modules/@types", "src/types"],
+        // Fix terra.js issues.
+        "skipLibCheck": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules/**"],

@@ -12,6 +12,7 @@ import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -70,6 +71,10 @@ export const _apiFallbacks = {
     ],
 
     broadcastTransaction: (testnet: boolean, hex: string) => [
+        () =>
+            JSONRPC.broadcastTransaction(
+                testnet ? MULTICHAIN_URLS.BCHTEST : MULTICHAIN_URLS.BCH
+            )(hex),
         () => BitcoinDotCom.broadcastTransaction(testnet)(hex),
         testnet
             ? undefined

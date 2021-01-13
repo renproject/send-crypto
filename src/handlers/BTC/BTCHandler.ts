@@ -13,6 +13,7 @@ import { fallback, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -86,6 +87,10 @@ export const _apiFallbacks = {
                 )(hex)
         ),
         () => Sochain.broadcastTransaction(testnet ? "BTCTEST" : "BTC")(hex),
+        () =>
+            JSONRPC.broadcastTransaction(
+                testnet ? MULTICHAIN_URLS.BTCTEST : MULTICHAIN_URLS.BTC
+            )(hex),
     ],
 };
 

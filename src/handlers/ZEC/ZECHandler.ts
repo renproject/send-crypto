@@ -12,6 +12,7 @@ import { fallback, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -36,9 +37,15 @@ enum InsightEndpoints {
 export const _apiFallbacks = {
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) =>
         testnet
-            ? shuffleArray(() =>
-                  Insight.fetchUTXO(InsightEndpoints.TestnetZCash)(txHash, vOut)
-              )
+            ? [
+                  ...shuffleArray(() =>
+                      Insight.fetchUTXO(InsightEndpoints.TestnetZCash)(
+                          txHash,
+                          vOut
+                      )
+                  ),
+                  () => Sochain.fetchUTXO("ZECTEST")(txHash, vOut),
+              ]
             : [
                   ...shuffleArray(
                       () =>
@@ -144,10 +151,14 @@ export const _apiFallbacks = {
         testnet
             ? [
                   () =>
+                      JSONRPC.broadcastTransaction(MULTICHAIN_URLS.ZECTEST)(
+                          hex
+                      ),
+                  () =>
                       Insight.broadcastTransaction(
                           InsightEndpoints.TestnetZCash
                       )(hex),
-                  //   () => Sochain.broadcastTransaction("ZECTEST")(hex),
+                  () => Sochain.broadcastTransaction("ZECTEST")(hex),
               ]
             : [
                   ...shuffleArray(
@@ -169,6 +180,7 @@ export const _apiFallbacks = {
                       Insight.broadcastTransaction(
                           InsightEndpoints.BlockExplorer
                       )(hex),
+                  () => JSONRPC.broadcastTransaction(MULTICHAIN_URLS.ZEC)(hex),
               ],
 };
 

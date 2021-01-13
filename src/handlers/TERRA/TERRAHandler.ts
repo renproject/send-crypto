@@ -103,15 +103,13 @@ export class TERRAHandler
             throw new Error(`Asset ${asset} not supported.`);
         }
 
-        return new BigNumber(
-            (
-                await this.client.bank.balance(
-                    (options && options.address) || (await this.address(asset))
-                )
+        const balances = (
+            await this.client.bank.balance(
+                (options && options.address) || (await this.address(asset))
             )
-                .get(toDenom(asset as "LUNA"))!
-                .amount.toFixed()
-        );
+        ).get(toDenom(asset as "LUNA"));
+
+        return new BigNumber(balances ? balances.amount.toFixed() : 0);
     };
 
     // Transfer
