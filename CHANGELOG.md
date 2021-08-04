@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.33](https://github.com/renproject/send-crypto/compare/v0.2.32...v0.2.33) (2021-08-04)
+
+
+### Bug Fixes
+
+* convert key to buffer before initializing fil wallet ([ac3029e](https://github.com/renproject/send-crypto/commit/ac3029e3d485c2392834f863c908d4461f3a8965))
+
 ### [0.2.32](https://github.com/renproject/send-crypto/compare/v0.2.31...v0.2.32) (2021-08-04)
 
 
