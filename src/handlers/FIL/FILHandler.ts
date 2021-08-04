@@ -22,7 +22,8 @@ interface TxOptions extends Partial<MessageObj> {
 
 export class FILHandler
     implements
-        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
+        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions>
+{
     private readonly network: FilNetwork;
 
     private readonly decimals = 18;
@@ -37,10 +38,13 @@ export class FILHandler
         options: ConstructorOptions = {},
         sharedState?: any
     ) {
-        const filecoin = new Filecoin(SingleKeyProvider(privateKey), {
-            apiAddress: options && options.apiAddress,
-            token: options && options.token,
-        });
+        const filecoin = new Filecoin(
+            SingleKeyProvider(Buffer.from(privateKey, "hex")),
+            {
+                apiAddress: options && options.apiAddress,
+                token: options && options.token,
+            }
+        );
 
         this.network =
             network === "mainnet" ? FilNetwork.MAIN : FilNetwork.TEST;
@@ -135,11 +139,10 @@ export class FILHandler
             );
 
             if (options.subtractFee) {
-                const {
-                    maxFee: fee,
-                } = await this.sharedState.filecoin.gasEstimateMaxFee(
-                    message.toLotusType()
-                );
+                const { maxFee: fee } =
+                    await this.sharedState.filecoin.gasEstimateMaxFee(
+                        message.toLotusType()
+                    );
 
                 if (fee.gt(value)) {
                     throw new Error(
@@ -164,10 +167,11 @@ export class FILHandler
             promiEvent.emit("transactionHash", txHash);
 
             while (true) {
-                const result = await this.sharedState.filecoin.jsonRpcEngine.request(
-                    "StateSearchMsg",
-                    tx
-                );
+                const result =
+                    await this.sharedState.filecoin.jsonRpcEngine.request(
+                        "StateSearchMsg",
+                        tx
+                    );
 
                 /*
                 {
