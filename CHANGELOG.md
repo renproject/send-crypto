@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.31](https://github.com/renproject/send-crypto/compare/v0.2.30...v0.2.31) (2021-08-04)
+
+
+### Features
+
+* update web3 to 1.5.0 ([7a32e10](https://github.com/renproject/send-crypto/commit/7a32e10fc61a58fa784158e29387436147333ee8))
+
+
+### Bug Fixes
+
+* use rimraf in clean command ([e168df3](https://github.com/renproject/send-crypto/commit/e168df37155f2fb314c2d154775d9789bd208a9a))
+
 ### [0.2.30](https://github.com/renproject/send-crypto/compare/v0.2.29...v0.2.30) (2021-08-04)
 
 
