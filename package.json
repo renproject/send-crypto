@@ -49,7 +49,7 @@
         "version": "standard-version",
         "#reset": "git clean -dfx && git reset --hard && npm i",
         "reset": "yarn",
-        "clean": "rm -rf build",
+        "clean": "rimraf build",
         "npmignore": "npmignore",
         "prepare-release": "run-s npmignore reset cov:check build doc:html version doc:publish"
     },
