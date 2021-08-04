@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.32](https://github.com/renproject/send-crypto/compare/v0.2.31...v0.2.32) (2021-08-04)
+
+
+### Bug Fixes
+
+* add babel runtime for filecoin dependency ([84be61d](https://github.com/renproject/send-crypto/commit/84be61d1a78182c69bb95fee11997c9ede09bcc3))
+
 ### [0.2.31](https://github.com/renproject/send-crypto/compare/v0.2.30...v0.2.31) (2021-08-04)
 
 
