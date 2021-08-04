@@ -70,6 +70,7 @@
         "node": ">=8.9"
     },
     "dependencies": {
+        "@babel/runtime": "^7.14.8",
         "@glif/filecoin-address": "^1.1.0",
         "@glif/filecoin-message": "^1.1.0",
         "@glif/filecoin-number": "^1.1.0",

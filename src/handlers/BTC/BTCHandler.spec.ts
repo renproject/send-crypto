@@ -11,24 +11,28 @@ const confirmations = 6;
 test(
     "Testnet BTC UTXOs",
     testEndpoints,
-    _apiFallbacks.fetchUTXOs(true, testnetAddress, confirmations)
+    _apiFallbacks.fetchUTXOs(true, testnetAddress, confirmations),
+    /Must provide script hash./
 );
 test(
     "Mainnet BTC UTXOs",
     testEndpoints,
-    _apiFallbacks.fetchUTXOs(false, mainnetAddress, confirmations)
+    _apiFallbacks.fetchUTXOs(false, mainnetAddress, confirmations),
+    /Must provide script hash./
 );
 
 test(
     "BTCHandler: Testnet BTC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTXs(true, testnetAddress)
+    _apiFallbacks.fetchTXs(true, testnetAddress),
+    /Must provide script hash./
 );
 
 test(
     "BTCHandler: Mainnet BTC TXs",
     testEndpoints,
-    _apiFallbacks.fetchTXs(false, mainnetAddress)
+    _apiFallbacks.fetchTXs(false, mainnetAddress),
+    /Must provide script hash./
 );
 
 // Test confirmations endpoint /////////////////////////////////////////////////
@@ -40,10 +44,12 @@ const mainnetHash =
 test(
     "Testnet BTC UTXO",
     testEndpoints,
-    _apiFallbacks.fetchUTXO(true, testnetHash, 0)
+    _apiFallbacks.fetchUTXO(true, testnetHash, 0),
+    /Must provide script hash./
 );
 test(
     "Mainnet BTC UTXO",
     testEndpoints,
-    _apiFallbacks.fetchUTXO(false, mainnetHash, 0)
+    _apiFallbacks.fetchUTXO(false, mainnetHash, 0),
+    /Must provide script hash./
 );
