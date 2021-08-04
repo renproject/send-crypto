@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.30](https://github.com/renproject/send-crypto/compare/v0.2.29...v0.2.30) (2021-08-04)
+
+
+### Features
+
+* add electrumx api ([91211c3](https://github.com/renproject/send-crypto/commit/91211c35e262a27c1bdbbfdbf412035aebe1cb3c))
+
 ### [0.2.29](https://github.com/renproject/send-crypto/compare/v0.2.28...v0.2.29) (2021-01-13)
 
 
