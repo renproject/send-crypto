@@ -14,6 +14,7 @@ import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
 import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
+import { ElectrumX } from "../../common/apis/electrumx";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -38,7 +39,12 @@ export const _apiFallbacks = {
         ),
     ],
 
-    fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
+    fetchUTXOs: (
+        testnet: boolean,
+        address: string,
+        confirmations: number,
+        scriptHash?: string
+    ) => [
         ...shuffleArray(
             () => Blockstream.fetchUTXOs(testnet)(address, confirmations),
             () =>
@@ -53,12 +59,19 @@ export const _apiFallbacks = {
                 address,
                 confirmations
             ),
+        () =>
+            ElectrumX.fetchUTXOs("bitcoin", testnet)(
+                address,
+                confirmations,
+                scriptHash
+            ),
     ],
 
     fetchTXs: (
         testnet: boolean,
         address: string,
-        confirmations: number = 0
+        confirmations: number = 0,
+        scriptHash?: string
     ) => [
         ...shuffleArray(
             () => Blockstream.fetchTXs(testnet)(address),
@@ -102,7 +115,11 @@ export class BTCHandler implements Handler {
 
     static getUTXOs = async (
         testnet: boolean,
-        options: { address: string; confirmations?: number }
+        options: {
+            address: string;
+            confirmations?: number;
+            scriptHash?: string;
+        }
     ): Promise<readonly UTXO[]> => {
         const confirmations =
             options && options.confirmations !== undefined
@@ -112,7 +129,8 @@ export class BTCHandler implements Handler {
         const endpoints = _apiFallbacks.fetchUTXOs(
             testnet,
             options.address,
-            confirmations
+            confirmations,
+            options.scriptHash
         );
         return fallback(endpoints);
     };
@@ -128,7 +146,11 @@ export class BTCHandler implements Handler {
 
     static getTransactions = async (
         testnet: boolean,
-        options: { address: string; confirmations?: number }
+        options: {
+            address: string;
+            confirmations?: number;
+            scriptHash?: string;
+        }
     ): Promise<readonly UTXO[]> => {
         const confirmations =
             options && options.confirmations !== undefined
@@ -138,7 +160,8 @@ export class BTCHandler implements Handler {
         const endpoints = _apiFallbacks.fetchTXs(
             testnet,
             options.address,
-            confirmations
+            confirmations,
+            options.scriptHash
         );
         return fallback(endpoints);
     };

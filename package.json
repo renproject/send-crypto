@@ -82,8 +82,6 @@
         "axios": "^0.21.0",
         "bchaddrjs": "^0.4.9",
         "bignumber.js": "^9.0.1",
-        "bitcore-lib": "^8.23.1",
-        "bitcore-lib-zcash": "^0.13.20",
         "bitgo-utxo-lib": "https://github.com/ren-forks/bitgo-utxo-lib#b848585e65b42c48b98c207e72d7d3006c9a5da0",
         "dotenv": "^8.2.0",
         "immutable": "^4.0.0-rc.12",
@@ -98,6 +96,7 @@
         "@types/node": ">=14"
     },
     "devDependencies": {
+        "@types/node": "14.0.13",
         "@bitjson/npm-scripts-info": "^1.0.0",
         "@bitjson/typedoc": "^0.15.0-0",
         "@istanbuljs/nyc-config-typescript": "^1.0.1",
