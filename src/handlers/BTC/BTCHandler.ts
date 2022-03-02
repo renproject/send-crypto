@@ -1,10 +1,12 @@
-import * as bitcoin from "bitgo-utxo-lib";
-
 import BigNumber from "bignumber.js";
+import * as bitcoin from "bitgo-utxo-lib";
 import { List } from "immutable";
 
+import { Blockchain, BlockchainNetwork } from "../../common/apis/blockchain";
 import { Blockchair } from "../../common/apis/blockchair";
 import { Blockstream } from "../../common/apis/blockstream";
+import { ElectrumX } from "../../common/apis/electrumx";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 import { Sochain } from "../../common/apis/sochain";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
@@ -13,8 +15,6 @@ import { fallback, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
-import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
-import { ElectrumX } from "../../common/apis/electrumx";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -37,6 +37,12 @@ export const _apiFallbacks = {
                         : Blockchair.networks.BITCOIN
                 )(txHash, vOut)
         ),
+        () =>
+            Blockchain.fetchUTXO(
+                testnet
+                    ? BlockchainNetwork.BitcoinTestnet
+                    : BlockchainNetwork.Bitcoin
+            )(txHash, vOut),
     ],
 
     fetchUTXOs: (
@@ -59,6 +65,12 @@ export const _apiFallbacks = {
                 address,
                 confirmations
             ),
+        () =>
+            Blockchain.fetchUTXOs(
+                testnet
+                    ? BlockchainNetwork.BitcoinTestnet
+                    : BlockchainNetwork.Bitcoin
+            )(address, confirmations),
         () =>
             ElectrumX.fetchUTXOs("bitcoin", testnet)(
                 address,
@@ -85,7 +97,13 @@ export const _apiFallbacks = {
                 Sochain.fetchTXs(testnet ? "BTCTEST" : "BTC")(
                     address,
                     confirmations
-                )
+                ),
+            () =>
+                Blockchain.fetchUTXOs(
+                    testnet
+                        ? BlockchainNetwork.BitcoinTestnet
+                        : BlockchainNetwork.Bitcoin
+                )(address, confirmations)
         ),
     ],
 
@@ -104,6 +122,12 @@ export const _apiFallbacks = {
             JSONRPC.broadcastTransaction(
                 testnet ? MULTICHAIN_URLS.BTCTEST : MULTICHAIN_URLS.BTC
             )(hex),
+        testnet
+            ? undefined
+            : () =>
+                  Blockchain.broadcastTransaction(BlockchainNetwork.Bitcoin)(
+                      hex
+                  ),
     ],
 };
 

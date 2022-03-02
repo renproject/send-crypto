@@ -1,6 +1,5 @@
-import * as bitcoin from "bitgo-utxo-lib";
-
 import BigNumber from "bignumber.js";
+import * as bitcoin from "bitgo-utxo-lib";
 
 import { UTXO } from "../../lib/utxo";
 

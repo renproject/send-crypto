@@ -1,9 +1,9 @@
-import * as bitcoin from "bitgo-utxo-lib";
-
 import BigNumber from "bignumber.js";
+import * as bitcoin from "bitgo-utxo-lib";
 import { List } from "immutable";
 
 import { Insight } from "../../common/apis/insight";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 import { Sochain } from "../../common/apis/sochain";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
@@ -12,7 +12,6 @@ import { fallback, retryNTimes } from "../../lib/retry";
 import { shuffleArray } from "../../lib/utils";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
-import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -311,7 +310,7 @@ export class ZECHandler implements Handler {
 
             if (this.testnet) {
                 // tslint:disable-next-line: no-object-mutation
-                bitcoin.networks.zcashTest.consensusBranchId["4"] = 0xe9ff75a6;
+                bitcoin.networks.zcashTest.consensusBranchId["4"] = 37519621;
             }
 
             const built = await BitgoUTXOLib.buildUTXO(
@@ -327,7 +326,7 @@ export class ZECHandler implements Handler {
                     ...options,
                     version: 4,
                     versionGroupID: 0x892f2085,
-                    consensusBranchId: 0xe9ff75a6,
+                    consensusBranchId: 0x37519621,
                 }
             );
 

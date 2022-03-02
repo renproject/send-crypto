@@ -1,18 +1,22 @@
-import * as bitcoin from "bitgo-utxo-lib";
-
 import { toCashAddress, toLegacyAddress } from "bchaddrjs";
 import BigNumber from "bignumber.js";
+import * as bitcoin from "bitgo-utxo-lib";
 import { List } from "immutable";
 
 import { BitcoinDotCom } from "../../common/apis/bitcoinDotCom";
+import { Blockchain, BlockchainNetwork } from "../../common/apis/blockchain";
 import { Blockchair } from "../../common/apis/blockchair";
+import { Insight } from "../../common/apis/insight";
+import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
 import { BitgoUTXOLib } from "../../common/libraries/bitgoUtxoLib";
 import { subscribeToConfirmations } from "../../lib/confirmations";
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { fallback, retryNTimes } from "../../lib/retry";
 import { UTXO } from "../../lib/utxo";
 import { Asset, Handler } from "../../types/types";
-import { JSONRPC, MULTICHAIN_URLS } from "../../common/apis/jsonrpc";
+
+const testnetInsight = "https://api.bitcore.io/api/BCH/testnet/";
+const mainnetInsight = "https://api.bitcore.io/api/BCH/mainnet/";
 
 interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
@@ -34,6 +38,17 @@ const toCashAddr = (legacyAddress: string) => {
 
 export const _apiFallbacks = {
     fetchUTXO: (testnet: boolean, txHash: string, vOut: number) => [
+        () =>
+            Blockchain.fetchUTXO(
+                testnet
+                    ? BlockchainNetwork.BitcoinCashTestnet
+                    : BlockchainNetwork.BitcoinCash
+            )(txHash, vOut),
+        () =>
+            Insight.fetchUTXO(testnet ? testnetInsight : mainnetInsight)(
+                txHash,
+                vOut
+            ),
         () => BitcoinDotCom.fetchUTXO(testnet)(txHash, vOut),
         testnet
             ? undefined
@@ -45,6 +60,17 @@ export const _apiFallbacks = {
     ],
 
     fetchUTXOs: (testnet: boolean, address: string, confirmations: number) => [
+        () =>
+            Blockchain.fetchUTXOs(
+                testnet
+                    ? BlockchainNetwork.BitcoinCashTestnet
+                    : BlockchainNetwork.BitcoinCash
+            )(address, confirmations),
+        () =>
+            Insight.fetchUTXOs(testnet ? testnetInsight : mainnetInsight)(
+                address,
+                confirmations
+            ),
         () => BitcoinDotCom.fetchUTXOs(testnet)(address, confirmations),
         testnet
             ? undefined
@@ -60,7 +86,18 @@ export const _apiFallbacks = {
         address: string,
         confirmations: number = 0
     ) => [
-        () => BitcoinDotCom.fetchTXs(testnet)(address, confirmations),
+        () =>
+            Blockchain.fetchTXs(
+                testnet
+                    ? BlockchainNetwork.BitcoinCashTestnet
+                    : BlockchainNetwork.BitcoinCash
+            )(address, confirmations),
+        () =>
+            Insight.fetchTXs(testnet ? testnetInsight : mainnetInsight)(
+                address,
+                confirmations
+            ),
+        // () => BitcoinDotCom.fetchTXs(testnet)(address, confirmations),
         testnet
             ? undefined
             : () =>
@@ -74,6 +111,10 @@ export const _apiFallbacks = {
         () =>
             JSONRPC.broadcastTransaction(
                 testnet ? MULTICHAIN_URLS.BCHTEST : MULTICHAIN_URLS.BCH
+            )(hex),
+        () =>
+            Insight.broadcastTransaction(
+                testnet ? testnetInsight : mainnetInsight
             )(hex),
         () => BitcoinDotCom.broadcastTransaction(testnet)(hex),
         testnet
