@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.35](https://github.com/renproject/send-crypto/compare/v0.2.34...v0.2.35) (2022-03-02)
+
+
+### Features
+
+* replaced web3 with ethers ([4f18568](https://github.com/renproject/send-crypto/commit/4f185682df252f8a4c8c2ee32324e2734eff9532))
+
 ### [0.2.34](https://github.com/renproject/send-crypto/compare/v0.2.33...v0.2.34) (2022-03-02)
 
 
