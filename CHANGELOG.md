@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.34](https://github.com/renproject/send-crypto/compare/v0.2.33...v0.2.34) (2022-03-02)
+
+
+### Features
+
+* added blockchain.com api, fix multichain endpoint ([ad95456](https://github.com/renproject/send-crypto/commit/ad9545668e3f2d7c32ff475b9dd58a36782e5afe))
+
 ### [0.2.33](https://github.com/renproject/send-crypto/compare/v0.2.32...v0.2.33) (2021-08-04)
 
 
