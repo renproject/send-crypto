@@ -1,6 +1,6 @@
-import { AbiItem } from "web3-utils";
+import { ethers } from "ethers";
 
-export const ERC20ABI: AbiItem[] = [
+export const ERC20ABI: ethers.ContractInterface = [
     {
         constant: true,
         inputs: [],

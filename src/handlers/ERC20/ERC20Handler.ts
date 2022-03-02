@@ -1,8 +1,7 @@
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-import { TransactionConfig } from "web3-core";
+import { ethers, Overrides } from "ethers";
 
-import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
+import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { Asset, DeferHandler, Handler } from "../../types/types";
 import { getNetwork, getTransactionConfig } from "../ETH/ethUtils";
 import { ERC20ABI } from "./ERC20ABI";
@@ -13,7 +12,7 @@ interface AddressOptions {}
 interface BalanceOptions extends AddressOptions {
     address?: string;
 }
-interface TxOptions extends TransactionConfig {
+interface TxOptions extends Overrides {
     approve?: boolean;
 }
 
@@ -37,10 +36,11 @@ const resolveAsset = (network: string, assetIn: Asset): { address: string } => {
 
 export class ERC20Handler
     implements
-        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
+        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions>
+{
     private readonly network: string;
     private readonly sharedState: {
-        web3: Web3;
+        ethSigner: ethers.Signer;
     };
     private _decimals: { [address: string]: number } = {};
 
@@ -95,11 +95,13 @@ export class ERC20Handler
             (deferHandler && (await deferHandler.address("ETH", options))) ||
             "";
         return new BigNumber(
-            await this.getContract(asset).methods.balanceOf(address).call()
+            (await this.getContract(asset).balanceOf(address)).toString()
         );
     };
 
     // Transfer
+    // This is re-implemented instead of calling sendSats so that a PromiEvent
+    // can be returned.
     public readonly send = (
         to: string,
         valueIn: BigNumber,
@@ -111,32 +113,30 @@ export class ERC20Handler
         const promiEvent = newPromiEvent<string>();
 
         (async () => {
-            const contract = this.getContract(asset);
-            const method = options.approve
-                ? contract.methods.approve
-                : contract.methods.transfer;
-            const call = method(
-                to,
-                valueIn
-                    .times(
-                        new BigNumber(10).exponentiatedBy(
-                            await this.decimals(asset)
-                        )
-                    )
-                    .toFixed()
+            const value = valueIn.times(
+                new BigNumber(10).exponentiatedBy(await this.decimals(asset))
             );
+
+            const contract = this.getContract(asset);
+
             const config = {
                 from: await deferHandler.address("ETH"),
                 ...getTransactionConfig(options),
             };
-            // tslint:disable-next-line: no-object-mutation
-            config.gas = await call.estimateGas(config);
-            const web3PromiEvent = (call.send(config) as unknown) as PromiEvent<
-                string
-            >;
 
-            forwardEvents(web3PromiEvent, promiEvent);
-            web3PromiEvent.then(promiEvent.resolve);
+            let tx: ethers.providers.TransactionResponse;
+            // tslint:disable: prefer-conditional-expression
+            if (options.approve) {
+                // config.gasLimit = contract.estimateGas.approve(to, valueIn.toFixed());
+                tx = await contract.approve(to, value.toFixed(), config);
+            } else {
+                // config.gasLimit = contract.estimateGas.transfer(to, valueIn.toFixed());
+                tx = await contract.transfer(to, value.toFixed(), config);
+            }
+
+            promiEvent.emit("transactionHash", tx.hash);
+            await tx.wait();
+            promiEvent.resolve(tx.hash);
         })().catch((error) => {
             promiEvent.reject(error);
         });
@@ -156,22 +156,25 @@ export class ERC20Handler
 
         (async () => {
             const contract = this.getContract(asset);
-            const method = options.approve
-                ? contract.methods.approve
-                : contract.methods.transfer;
-            const call = method(to, valueIn.toFixed());
+
             const config = {
                 from: await deferHandler.address("ETH"),
                 ...getTransactionConfig(options),
             };
-            // tslint:disable-next-line: no-object-mutation
-            config.gas = await call.estimateGas(config);
-            const web3PromiEvent = (call.send(config) as unknown) as PromiEvent<
-                string
-            >;
 
-            forwardEvents(web3PromiEvent, promiEvent);
-            web3PromiEvent.then(promiEvent.resolve);
+            // tslint:disable: prefer-conditional-expression
+            let tx: ethers.providers.TransactionResponse;
+            if (options.approve) {
+                // config.gasLimit = contract.estimateGas.approve(to, valueIn.toFixed());
+                tx = await contract.approve(to, valueIn.toFixed(), config);
+            } else {
+                // config.gasLimit = contract.estimateGas.transfer(to, valueIn.toFixed());
+                tx = await contract.transfer(to, valueIn.toFixed(), config);
+            }
+
+            promiEvent.emit("transactionHash", tx.hash);
+            await tx.wait();
+            promiEvent.resolve(tx.hash);
         })().catch((error) => {
             promiEvent.reject(error);
         });
@@ -180,17 +183,20 @@ export class ERC20Handler
     };
 
     private readonly getContract = (asset: Asset) => {
-        return new this.sharedState.web3.eth.Contract(
+        return new ethers.Contract(
+            resolveAsset(this.network, asset).address,
             ERC20ABI,
-            resolveAsset(this.network, asset).address
+            this.sharedState.ethSigner
         );
     };
 
-    private readonly decimals = async (asset: Asset) => {
+    private readonly decimals = async (asset: Asset): Promise<number> => {
         const address = resolveAsset(this.network, asset).address;
         if (this._decimals[address]) {
             return this._decimals[address];
         }
-        return this.getContract(asset).methods.decimals().call();
+        return new BigNumber(
+            (await this.getContract(asset).decimals()).toString()
+        ).toNumber();
     };
 }

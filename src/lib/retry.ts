@@ -23,7 +23,7 @@ export const extractError = (error: any): string => {
         }
         try {
             return JSON.stringify(error);
-        } catch (error) {
+        } catch (error: any) {
             // Ignore JSON error
         }
     }
@@ -37,7 +37,7 @@ export const extractError = (error: any): string => {
             return error;
         }
         return JSON.stringify(error);
-    } catch (error) {
+    } catch (error: any) {
         // Ignore JSON error
     }
     return String(error);
@@ -58,7 +58,7 @@ export const fallback = async <T>(
         }
         try {
             return await fn();
-        } catch (error) {
+        } catch (error: any) {
             firstError = firstError || error;
         }
     }
@@ -73,7 +73,7 @@ export const retryNTimes = async <T>(
     for (let i = 0; i < retries; i++) {
         try {
             return await fnCall();
-        } catch (error) {
+        } catch (error: any) {
             if (String(error).match(/timeout of .* exceeded/)) {
                 returnError = error;
             } else {

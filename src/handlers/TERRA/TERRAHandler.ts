@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+
 import {
     Denom,
     LCDClient,
@@ -8,8 +9,8 @@ import {
 } from "@terra-money/terra.js";
 
 import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
-import { Asset, Handler } from "../../types/types";
 import { strip0x } from "../../lib/utils";
+import { Asset, Handler } from "../../types/types";
 
 export enum TerraNetwork {
     Tequila = "tequila-0004",
@@ -30,11 +31,12 @@ interface TxOptions extends Partial<{}> {
     memo?: string;
 }
 
-const toDenom = (asset: "LUNA") => Denom.LUNA;
+const toDenom = (asset: "LUNA") => "uluna";
 
 export class TERRAHandler
     implements
-        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
+        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions>
+{
     private readonly network: TerraNetwork;
 
     private readonly decimals = 6;
@@ -107,9 +109,10 @@ export class TERRAHandler
             await this.client.bank.balance(
                 (options && options.address) || (await this.address(asset))
             )
-        ).get(toDenom(asset as "LUNA"));
+        )[0];
+        const balance = balances.get(toDenom(asset as "LUNA"));
 
-        return new BigNumber(balances ? balances.amount.toFixed() : 0);
+        return new BigNumber(balance ? balance.amount.toFixed() : 0);
     };
 
     // Transfer

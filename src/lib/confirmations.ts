@@ -22,7 +22,7 @@ export const subscribeToConfirmations = <T>(
                     confirmations = newConfirmations;
                     promiEvent.emit("confirmation", confirmations);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error(error);
             }
             await sleep(5000);

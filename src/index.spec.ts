@@ -2,7 +2,7 @@ import test, { ExecutionContext } from "ava";
 import BigNumber from "bignumber.js";
 import { config } from "dotenv";
 
-import CryptoAccount from "./index";
+import CryptoAccount, { newPrivateKey } from "./index";
 import { sleep } from "./lib/retry";
 
 const result = config({ path: ".env" });
@@ -149,7 +149,7 @@ const s = (asset: string | { type: "ERC20"; name: string; address?: string }) =>
         asset: string | { type: "ERC20"; name: string; address?: string },
         network: string
     ) => {
-        const privateKey = CryptoAccount.newPrivateKey();
+        const privateKey = newPrivateKey();
 
         const account = new CryptoAccount(privateKey, { network });
         const address = await account.address(asset);

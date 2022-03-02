@@ -1,18 +1,14 @@
-import Web3 from "web3";
-import { TransactionConfig } from "web3-core";
+import { ethers, Overrides, PopulatedTransaction } from "ethers";
 
-export const getWeb3 = (
+export const getEthersSigner = (
     privateKey: string,
     endpoint: string
-): [Web3, string] => {
+): [ethers.Signer, string] => {
     // const provider = new HDWalletProvider(privateKey, endpoint);
-    const web3 = new Web3(endpoint);
-    const account = web3.eth.accounts.privateKeyToAccount("0x" + privateKey);
-    web3.eth.accounts.wallet.add(account);
-    // tslint:disable-next-line: no-object-mutation
-    web3.eth.defaultAccount = account.address;
-    // return new Web3(provider as any);
-    return [web3, account.address];
+
+    const provider = new ethers.providers.JsonRpcProvider(endpoint);
+    const signer = new ethers.Wallet(privateKey, provider);
+    return [signer, signer.address];
 };
 
 // Free tier - only used as a fallback.
@@ -60,36 +56,39 @@ export const getNetwork = (network: string): Network => {
     }
 };
 
-export const getTransactionConfig = <T extends TransactionConfig>(
+// Create a `txConfig` object with only the relevant fields in the `options`
+// object.
+export const getTransactionConfig = <T extends Overrides>(
     options: T
-): TransactionConfig => {
+): Overrides => {
     const txConfig: any = {};
+
     // tslint:disable: no-object-mutation
-    if (options.from) {
-        txConfig.from = options.from;
+
+    if (options.gasLimit) {
+        txConfig.gasLimit = options.gasLimit;
     }
-    if (options.from) {
-        txConfig.from = options.from;
-    }
-    // if (options.to) { txConfig.to = options.to; }
     if (options.gasPrice) {
         txConfig.gasPrice = options.gasPrice;
     }
-    if (options.gas) {
-        txConfig.gas = options.gas;
+    if (options.maxFeePerGas) {
+        txConfig.maxFeePerGas = options.maxFeePerGas;
     }
-    if (options.value) {
-        txConfig.value = options.value;
-    }
-    if (options.data) {
-        txConfig.data = options.data;
+    if (options.maxPriorityFeePerGas) {
+        txConfig.maxPriorityFeePerGas = options.maxPriorityFeePerGas;
     }
     if (options.nonce) {
         txConfig.nonce = options.nonce;
     }
-    // if (options.chainId) { txConfig.chainId = options.chainId; }
-    // if (options.common) { txConfig.common = options.common; }
-    // if (options.chain) { txConfig.chain = options.chain; }
-    // if (options.hardfork) { txConfig.hardfork = options.hardfork; }
+    if (options.type) {
+        txConfig.type = options.type;
+    }
+    if (options.accessList) {
+        txConfig.accessList = options.accessList;
+    }
+    if (options.customData) {
+        txConfig.customData = options.customData;
+    }
+
     return txConfig;
 };

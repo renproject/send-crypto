@@ -1,14 +1,13 @@
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-import { TransactionConfig } from "web3-core";
+import { ethers, Overrides } from "ethers";
 
-import { forwardEvents, newPromiEvent, PromiEvent } from "../../lib/promiEvent";
+import { newPromiEvent, PromiEvent } from "../../lib/promiEvent";
 import { Asset, Handler } from "../../types/types";
 import {
     getEndpoint,
+    getEthersSigner,
     getNetwork,
     getTransactionConfig,
-    getWeb3,
 } from "./ethUtils";
 
 interface ConstructorOptions {
@@ -23,13 +22,14 @@ interface BalanceOptions extends AddressOptions {
     // (confirmations - 1) blocks ago.
     confirmations?: number; // defaults to 0
 }
-interface TxOptions extends TransactionConfig {
+interface TxOptions extends Overrides {
     subtractFee?: boolean; // defaults to false
 }
 
 export class ETHHandler
     implements
-        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions> {
+        Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions>
+{
     private readonly privateKey: string;
     private readonly network: string;
 
@@ -38,7 +38,7 @@ export class ETHHandler
     private readonly unlockedAddress: string;
 
     private readonly sharedState: {
-        web3: Web3;
+        ethSigner: ethers.Signer;
     };
 
     constructor(
@@ -49,7 +49,7 @@ export class ETHHandler
     ) {
         this.network = getNetwork(network);
         this.privateKey = privateKey;
-        const [web3, address] = getWeb3(
+        const [ethSigner, address] = getEthersSigner(
             this.privateKey,
             getEndpoint(
                 this.network,
@@ -58,7 +58,7 @@ export class ETHHandler
             )
         );
         this.unlockedAddress = address;
-        sharedState.web3 = web3;
+        sharedState.ethSigner = ethSigner;
         this.sharedState = sharedState;
     }
 
@@ -71,7 +71,6 @@ export class ETHHandler
         asset: Asset,
         options?: AddressOptions
     ): Promise<string> => this.unlockedAddress;
-    // (await this.sharedState.web3.eth.getAccounts())[0];
 
     // Balance
     public readonly getBalance = async (
@@ -89,7 +88,7 @@ export class ETHHandler
         let atBlock;
         if (options && options.confirmations && options.confirmations > 0) {
             const currentBlock = new BigNumber(
-                await this.sharedState.web3.eth.getBlockNumber()
+                await this.sharedState.ethSigner.provider!.getBlockNumber()
             );
             atBlock = currentBlock
                 .minus(options.confirmations)
@@ -99,7 +98,12 @@ export class ETHHandler
         const address =
             (options && options.address) || (await this.address(asset));
         return new BigNumber(
-            await this.sharedState.web3.eth.getBalance(address, atBlock as any)
+            (
+                await this.sharedState.ethSigner.provider!.getBalance(
+                    address,
+                    atBlock
+                )
+            ).toString()
         );
     };
 
@@ -135,9 +139,12 @@ export class ETHHandler
             if (options.subtractFee) {
                 const gasPrice =
                     txOptions.gasPrice ||
-                    (await this.sharedState.web3.eth.getGasPrice());
-                const gasLimit = txOptions.gas || 21000;
-                const fee = new BigNumber(gasPrice.toString()).times(gasLimit);
+                    (await this.sharedState.ethSigner.provider!.getGasPrice());
+                const gasPriceBN = new BigNumber(gasPrice.toString());
+
+                const gasLimit = txOptions.gasLimit || 21000;
+                const gasLimitBN = new BigNumber(gasLimit.toString());
+                const fee = gasPriceBN.times(gasLimitBN);
                 if (fee.gt(value)) {
                     throw new Error(
                         `Unable to include fee in value, fee exceeds value (${fee.toFixed()} > ${value.toFixed()})`
@@ -145,15 +152,17 @@ export class ETHHandler
                 }
                 value = value.minus(fee);
             }
-            const web3PromiEvent = (this.sharedState.web3.eth.sendTransaction({
-                from: await this.address(asset),
-                gas: 21000,
+            const from: string = await this.address(asset);
+            const tx = await this.sharedState.ethSigner.sendTransaction({
+                from,
+                gasLimit: 21000,
                 ...txOptions,
                 to,
                 value: value.toFixed(),
-            }) as unknown) as PromiEvent<string>;
-            forwardEvents(web3PromiEvent, promiEvent);
-            web3PromiEvent.then(promiEvent.resolve);
+            });
+            promiEvent.emit("transactionHash", tx.hash);
+            await tx.wait();
+            promiEvent.resolve(tx.hash);
         })().catch((error) => {
             promiEvent.reject(error);
         });

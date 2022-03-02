@@ -31,7 +31,7 @@ interface TxOptions extends BalanceOptions {
 const toCashAddr = (legacyAddress: string) => {
     try {
         return toCashAddress(legacyAddress);
-    } catch (error) {
+    } catch (error: any) {
         return legacyAddress;
     }
 };

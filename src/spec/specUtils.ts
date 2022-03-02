@@ -22,7 +22,7 @@ export const testEndpoints = async (
             //     if (Array.isArray(result)) {
             //         result = List(result).sortBy(x => x.txid).toArray();
             //     }
-            // } catch (error) {
+            // } catch (error: any) {
             //     // ignore error
             // }
             expectedResult = expectedResult || result;
@@ -31,7 +31,7 @@ export const testEndpoints = async (
                 expectedResult,
                 `Comparison failed for endpoint #${i}`
             );
-        } catch (error) {
+        } catch (error: any) {
             // tslint:disable-next-line: no-object-mutation
             error.message = extractError(error);
             if (

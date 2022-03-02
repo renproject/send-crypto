@@ -26,20 +26,6 @@ interface ConstructorOptions {
 }
 
 export default class CryptoAccount {
-    public static readonly newPrivateKey = () => {
-        // @ts-ignore
-        try {
-            // @ts-ignore
-            const array = new Uint32Array(32);
-            // @ts-ignore
-            window.crypto.getRandomBytes(array);
-            return new Buffer(array).toString("hex");
-        } catch (error) {
-            // Ignore window error.
-        }
-        return require("crypto").randomBytes(32).toString("hex");
-    };
-
     private readonly handlers: Array<{
         handler: Handler;
         priority: number;
@@ -127,9 +113,9 @@ export default class CryptoAccount {
             throw new Error(`Must provide an asset`);
         }
         const bn = await this.deferHandler().getBalance(asset, options);
-        return (options && options.bn
-            ? new options.bn(bn.toFixed())
-            : bn.toNumber()) as T;
+        return (
+            options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()
+        ) as T;
     };
     // tslint:disable-next-line: member-ordering
     public readonly balanceOf = this.getBalance;
@@ -146,9 +132,9 @@ export default class CryptoAccount {
             throw new Error(`Must provide an asset`);
         }
         const bn = await this.deferHandler().getBalanceInSats(asset, options);
-        return (options && options.bn
-            ? new options.bn(bn.toFixed())
-            : bn.toNumber()) as T;
+        return (
+            options && options.bn ? new options.bn(bn.toFixed()) : bn.toNumber()
+        ) as T;
     };
     // tslint:disable-next-line: member-ordering
     public readonly balanceOfInSats = this.getBalanceInSats;
@@ -320,12 +306,28 @@ export default class CryptoAccount {
         let assetString;
         try {
             assetString = JSON.stringify(asset);
-        } catch (error) {
+        } catch (error: any) {
             assetString = (asset && (asset as any).name) || asset;
         }
         throw new Error(`Unsupported asset ${assetString}`);
     };
 }
+
+export const newPrivateKey = () => {
+    // @ts-ignore
+    try {
+        // @ts-ignore
+        const array = new Uint32Array(32);
+        // @ts-ignore
+        window.crypto.getRandomBytes(array);
+        return new Buffer(array).toString("hex");
+    } catch (error: any) {
+        // Ignore window error.
+    }
+    return require("crypto").randomBytes(32).toString("hex");
+};
+
+(CryptoAccount as any).newPrivateKey = newPrivateKey;
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS                                                                    //
@@ -335,7 +337,8 @@ export default class CryptoAccount {
 // tslint:disable: no-object-mutation
 
 // tslint:disable-next-line: no-string-literal
-(CryptoAccount as any).default = (CryptoAccount as any).CryptoAccount = CryptoAccount;
+(CryptoAccount as any).default = (CryptoAccount as any).CryptoAccount =
+    CryptoAccount;
 
 // AMD
 try {
@@ -344,7 +347,7 @@ try {
         // @ts-ignore
         define(() => CryptoAccount);
     }
-} catch (error) {
+} catch (error: any) {
     /* ignore */
 }
 
@@ -354,7 +357,7 @@ try {
     if (typeof module !== "undefined" && module.exports) {
         module.exports = CryptoAccount;
     }
-} catch (error) {
+} catch (error: any) {
     /* ignore */
 }
 
@@ -365,6 +368,6 @@ try {
         // @ts-ignore
         (window as any).CryptoAccount = CryptoAccount;
     }
-} catch (error) {
+} catch (error: any) {
     /* ignore */
 }
