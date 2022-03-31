@@ -51,7 +51,7 @@
         "clean": "rimraf build",
         "npmignore": "npmignore",
         "prepare-release": "run-s npmignore reset cov:check build doc:html version doc:publish",
-        "prepare-release-no-docs": "run-s npmignore reset cov:check build version"
+        "prepare-release-no-docs": "run-s npmignore reset build version"
     },
     "scripts-info": {
         "info": "Display information about the package scripts",
