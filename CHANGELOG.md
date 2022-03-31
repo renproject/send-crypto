@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.36](https://github.com/renproject/send-crypto/compare/v0.2.35...v0.2.36) (2022-03-31)
+
+
+### Features
+
+* update ethereum mainnet endpoint ([bde5eb4](https://github.com/renproject/send-crypto/commit/bde5eb4889db656cdde1af6827947bdfb4048489))
+* updated dependencies ([f483881](https://github.com/renproject/send-crypto/commit/f483881595ca9b0818852606564ca023e5d3d1b0))
+
 ### [0.2.35](https://github.com/renproject/send-crypto/compare/v0.2.34...v0.2.35) (2022-03-02)
 
 
