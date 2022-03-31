@@ -21,7 +21,9 @@ export const getEndpoint = (
 ) => {
     return ethereumNode
         ? ethereumNode
-        : `https://${network}.infura.io/v3/${infuraKey || defaultInfuraKey}`;
+        : infuraKey || network !== "mainnet"
+        ? `https://${network}.infura.io/v3/${infuraKey || defaultInfuraKey}`
+        : "https://cloudflare-eth.com";
 };
 
 export enum Network {

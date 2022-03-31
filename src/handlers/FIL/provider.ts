@@ -5,7 +5,7 @@ import { Network as FilNetwork } from "@glif/filecoin-address";
 import { LotusMessage, SignedLotusMessage } from "@glif/filecoin-message";
 
 export const SingleKeyProvider = (
-    privateKey: string | Buffer
+    privateKey: Uint8Array
 ): WalletSubProvider => {
     // here we close over the private variables, so they aren't accessible to the outside world
     const PRIVATE_KEY = privateKey;

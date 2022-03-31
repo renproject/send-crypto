@@ -8,7 +8,7 @@ import { FILHandler } from "./handlers/FIL/FILHandler";
 import { TERRAHandler } from "./handlers/TERRA/TERRAHandler";
 import { ZECHandler } from "./handlers/ZEC/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
-import { strip0x } from "./lib/utils";
+import { strip0x, toHex } from "./lib/utils";
 import {
     Asset,
     DeferHandler,
@@ -38,14 +38,12 @@ export default class CryptoAccount {
     private sharedState: any;
 
     constructor(
-        privateKey: string | Buffer,
+        privateKey: string | Uint8Array,
         options?: ConstructorOptions & { [key: string]: any }
     ) {
         this.privateKey = strip0x(
-            Buffer.isBuffer(privateKey)
-                ? privateKey.toString("hex")
-                : privateKey
-        ); // Buffer.from(privateKey, "base64").toString("hex");
+            privateKey instanceof Uint8Array ? toHex(privateKey) : privateKey
+        );
         this.network = (options && options.network) || "mainnet";
         this.constructorOptions = options;
         this.sharedState = {};
@@ -317,10 +315,10 @@ export const newPrivateKey = () => {
     // @ts-ignore
     try {
         // @ts-ignore
-        const array = new Uint32Array(32);
+        const array = new Uint8Array(32);
         // @ts-ignore
-        window.crypto.getRandomBytes(array);
-        return new Buffer(array).toString("hex");
+        window.crypto.getRandomValues(array);
+        return toHex(array);
     } catch (error: any) {
         // Ignore window error.
     }
