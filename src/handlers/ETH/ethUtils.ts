@@ -14,18 +14,6 @@ export const getEthersSigner = (
 // Free tier - only used as a fallback.
 const defaultInfuraKey = "3b7a6c29f9c048d688a848899888aa96";
 
-export const getEndpoint = (
-    network: string | undefined,
-    ethereumNode: string | undefined,
-    infuraKey: string | undefined
-) => {
-    return ethereumNode
-        ? ethereumNode
-        : infuraKey || network !== "mainnet"
-        ? `https://${network}.infura.io/v3/${infuraKey || defaultInfuraKey}`
-        : "https://cloudflare-eth.com";
-};
-
 export enum Network {
     Mainnet = "mainnet",
     Ropsten = "ropsten",
@@ -33,6 +21,13 @@ export enum Network {
     Rinkeby = "rinkeby",
     Görli = "goerli",
 }
+
+const publicEndpoints: { [network in Network]?: string } = {
+    [Network.Mainnet]: "https://cloudflare-eth.com",
+    [Network.Kovan]: "https://kovan.poa.network",
+    [Network.Rinkeby]: "https://rinkeby-light.eth.linkpool.io",
+    [Network.Görli]: "https://rpc.goerli.mudit.blog",
+};
 
 export const getNetwork = (network: string): Network => {
     switch (network.toLowerCase()) {
@@ -57,6 +52,23 @@ export const getNetwork = (network: string): Network => {
             return Network.Ropsten;
     }
 };
+
+const infuraUrl = (network: Network, infuraKey: string) =>
+    `https://${network}.infura.io/v3/${infuraKey}`;
+
+export const getEndpoint = (
+    network: Network,
+    ethereumNode: string | undefined,
+    infuraKey: string | undefined
+): string =>
+    // Check if an ethereum node has been provided.
+    ethereumNode ||
+    // Check if an infura key has been provided.
+    (infuraKey && infuraUrl(network, infuraKey)) ||
+    // Check if there's a public endpoint.
+    publicEndpoints[network] ||
+    // Use the public infura key.
+    infuraUrl(network, defaultInfuraKey);
 
 // Create a `txConfig` object with only the relevant fields in the `options`
 // object.

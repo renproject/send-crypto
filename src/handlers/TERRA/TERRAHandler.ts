@@ -13,7 +13,7 @@ import { strip0x } from "../../lib/utils";
 import { Asset, Handler } from "../../types/types";
 
 export enum TerraNetwork {
-    Tequila = "tequila-0004",
+    Bombay = "bombay-12",
     Columbus = "columbus-3",
 }
 
@@ -52,9 +52,7 @@ export class TERRAHandler
         sharedState?: any
     ) {
         this.network =
-            network === "mainnet"
-                ? TerraNetwork.Columbus
-                : TerraNetwork.Tequila;
+            network === "mainnet" ? TerraNetwork.Columbus : TerraNetwork.Bombay;
 
         const client =
             sharedState.client ||

@@ -76,7 +76,7 @@
         "@glif/filecoin-number": "^1.1.0",
         "@glif/filecoin-rpc-client": "^1.1.0",
         "@glif/filecoin-wallet-provider": "^1.1.1",
-        "@terra-money/terra.js": "^3.0.9",
+        "@terra-money/terra.js": "^3.0.11",
         "@types/bchaddrjs": "^0.4.0",
         "@zondax/filecoin-signing-tools": "^0.20.1",
         "axios": "^0.26.1",

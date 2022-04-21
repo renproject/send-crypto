@@ -8,6 +8,7 @@ import {
     getEthersSigner,
     getNetwork,
     getTransactionConfig,
+    Network,
 } from "./ethUtils";
 
 interface ConstructorOptions {
@@ -31,7 +32,7 @@ export class ETHHandler
         Handler<ConstructorOptions, AddressOptions, BalanceOptions, TxOptions>
 {
     private readonly privateKey: string;
-    private readonly network: string;
+    private readonly network: Network;
 
     private readonly decimals = 18;
 
