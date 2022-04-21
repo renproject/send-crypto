@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.37](https://github.com/renproject/send-crypto/compare/v0.2.36...v0.2.37) (2022-04-21)
+
+
+### Features
+
+* update terra testnet, add ethereum public rpc endpoints ([28ee695](https://github.com/renproject/send-crypto/commit/28ee695a855ea675f2ea50861bb3d3872f56c3a6))
+
 ### [0.2.36](https://github.com/renproject/send-crypto/compare/v0.2.35...v0.2.36) (2022-03-31)
 
 
