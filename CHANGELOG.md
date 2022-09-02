@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.2.38 (2022-09-02)
+
+
+### Features
+
+* add electrumx api ([91211c3](https://github.com/renproject/send-crypto/commit/91211c35e262a27c1bdbbfdbf412035aebe1cb3c))
+* add fetchUTXO ([e543cd2](https://github.com/renproject/send-crypto/commit/e543cd23bb5dbd89b60fbe084d469b46c2bc9b10))
+* add handler for litecoin ([941f228](https://github.com/renproject/send-crypto/commit/941f228f73705e220de4415e76edd20cc1a6ce90))
+* add litecoin support ([3915e22](https://github.com/renproject/send-crypto/commit/3915e22a0b03ddb028c8f897a2ff582ac0182360))
+* added blockchain.com api, fix multichain endpoint ([ad95456](https://github.com/renproject/send-crypto/commit/ad9545668e3f2d7c32ff475b9dd58a36782e5afe))
+* added doge getTransactions ([d2d8a09](https://github.com/renproject/send-crypto/commit/d2d8a09627f3e035f9fd92b29f28bf2d7815f7e2))
+* added fetchTXs endpoints ([7582026](https://github.com/renproject/send-crypto/commit/75820269260fc5646a5318a179e8b70067907671))
+* added FIL support ([83d56b5](https://github.com/renproject/send-crypto/commit/83d56b5a55267ca41655c0ceea6664da1a8b51ae))
+* added getUTXO to wrap around fetchUTXO ([e146c94](https://github.com/renproject/send-crypto/commit/e146c94400a71308c34b0bdc4cd9dfcac9ca9930))
+* added initial doge api support, updated dependencies ([34cb062](https://github.com/renproject/send-crypto/commit/34cb062a6601f0baf371d9cbb92efd574fd7c2f0))
+* added jsonrpc api ([047624f](https://github.com/renproject/send-crypto/commit/047624f85377091ad8e28883a66474d36c7c1bc9))
+* added terra/luna support ([bdad20c](https://github.com/renproject/send-crypto/commit/bdad20cae50ffffd57198ac0be5afbcfed204b97))
+* export doge handler ([932c107](https://github.com/renproject/send-crypto/commit/932c10710ba754a70f654711d65b1df4fc53650b))
+* **FIL:** default to testnet for unrecognized network ([19401fa](https://github.com/renproject/send-crypto/commit/19401fad0329eccb6be2c156dda6628e63fd6995))
+* reduced retry amounts ([1804776](https://github.com/renproject/send-crypto/commit/18047764ed0fffc2165eb750cd7bacd6ccb66adc))
+* replaced web3 with ethers ([4f18568](https://github.com/renproject/send-crypto/commit/4f185682df252f8a4c8c2ee32324e2734eff9532))
+* update ethereum mainnet endpoint ([bde5eb4](https://github.com/renproject/send-crypto/commit/bde5eb4889db656cdde1af6827947bdfb4048489))
+* update terra testnet, add ethereum public rpc endpoints ([28ee695](https://github.com/renproject/send-crypto/commit/28ee695a855ea675f2ea50861bb3d3872f56c3a6))
+* update web3 to 1.5.0 ([7a32e10](https://github.com/renproject/send-crypto/commit/7a32e10fc61a58fa784158e29387436147333ee8))
+* updated bitgo-utxo-lib to fix zcash, updated bch endpoint ([2cdec25](https://github.com/renproject/send-crypto/commit/2cdec25ce79010e7fe95d12a403fd44065ae100c))
+* updated dependencies ([f483881](https://github.com/renproject/send-crypto/commit/f483881595ca9b0818852606564ca023e5d3d1b0))
+* updated dependencies ([319d0c8](https://github.com/renproject/send-crypto/commit/319d0c851867537c332e4209ed8dfe24863e82b4))
+
+
+### Bug Fixes
+
+* add babel runtime for filecoin dependency ([84be61d](https://github.com/renproject/send-crypto/commit/84be61d1a78182c69bb95fee11997c9ede09bcc3))
+* convert key to buffer before initializing fil wallet ([ac3029e](https://github.com/renproject/send-crypto/commit/ac3029e3d485c2392834f863c908d4461f3a8965))
+* **FIL:** return balance correctly ([67c554d](https://github.com/renproject/send-crypto/commit/67c554d05eb57224055974f36bf094cf26f64097))
+* fixed fetchTransactions calling fetchUTXos instead ([e09da7e](https://github.com/renproject/send-crypto/commit/e09da7e0af6435bea07581244ac6e90d51128095))
+* remove bn.js imports ([71fa3f2](https://github.com/renproject/send-crypto/commit/71fa3f2d8a1a570ac76ce6889c21235209a3447c))
+* use rimraf in clean command ([e168df3](https://github.com/renproject/send-crypto/commit/e168df37155f2fb314c2d154775d9789bd208a9a))
+
 ### [0.2.37](https://github.com/renproject/send-crypto/compare/v0.2.36...v0.2.37) (2022-04-21)
 
 
