@@ -5,6 +5,7 @@ import { BTCHandler } from "./handlers/BTC/BTCHandler";
 import { ERC20Handler } from "./handlers/ERC20/ERC20Handler";
 import { ETHHandler } from "./handlers/ETH/ETHHandler";
 import { FILHandler } from "./handlers/FIL/FILHandler";
+import { LTCHandler } from "./handlers/LTC/LTCHandler";
 import { TERRAHandler } from "./handlers/TERRA/TERRAHandler";
 import { ZECHandler } from "./handlers/ZEC/ZECHandler";
 import { PromiEvent } from "./lib/promiEvent";
@@ -54,6 +55,7 @@ export default class CryptoAccount {
         this.registerHandler(FILHandler, 40);
         this.registerHandler(TERRAHandler, 50);
         this.registerHandler(ERC20Handler, 60);
+        this.registerHandler(LTCHandler, 60);
         if (options && options.extraHandlers) {
             for (const handler of options.extraHandlers) {
                 this.registerHandler(handler);
