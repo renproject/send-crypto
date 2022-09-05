@@ -10,6 +10,8 @@ Currently doesn't support hierarchical or single-use addresses.
 
 -   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/btc.png" /> BTC
 
+-   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/ltc.png" /> LTC
+
 -   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/zec.png" /> ZEC (transparent txs only)
 
 -   <img style="margin-bottom: -5px;" height="20" width="20" src="./.github/icons/bch.png" /> BCH
